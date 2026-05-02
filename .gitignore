@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual envs
+venv/
+env/
+.venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Project-specific
+reportes_generados/
+*.sqlite
+*.sqlite-journal
+
+# Pero NO ignorar los L5X — son la fuente de verdad
+# parque_l5x/*.L5X      ← NO descomentar; los L5X SÍ se versionan
+
+# OS
+Thumbs.db
+.DS_Store

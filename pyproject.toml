@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rockwell-comprehender"
+version = "0.1.0"
+description = "Comprende proyectos Rockwell Studio 5000 / RSLogix 5000 a partir de archivos .L5X"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [
+    { name = "Hedi Vásquez" }
+]
+keywords = ["rockwell", "studio5000", "rslogix", "l5x", "plc", "allen-bradley", "controllogix"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+# Stack mínimo (DT-008 + DT-010): solo dependencias justificadas por uso real.
+# - openpyxl: requerido por reporters.to_excel() para generar .xlsx multi-sheet.
+#   Validado empíricamente antes de comprometerlo (DT-010).
+dependencies = [
+    "openpyxl>=3.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/hedivasquez/rockwell-comprehender"
+
+[tool.setuptools.packages.find]
+include = ["rockwell_comprehender*"]
