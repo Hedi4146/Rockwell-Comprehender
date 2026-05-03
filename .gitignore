@@ -47,6 +47,13 @@ MENSAJE_INICIAL_CODE.md
 # Pero NO ignorar los L5X — son la fuente de verdad
 # parque_l5x/*.L5X      ← NO descomentar; los L5X SÍ se versionan
 
+# Excepción: L5X grandes / con IP de terceros NO se versionan
+# (decisión operativa 2026-05-03 — son ~15 MB cada uno; el paquete los
+# procesa correctamente vía load_project pero no los necesita en repo)
+parque_l5x/CPPIM_BD800_1.L5X
+parque_l5x/CPPIM_BD800_1_010325_paro53min.L5X
+docs/Inf Fase 3/*.L5X
+
 # OS
 Thumbs.db
 .DS_Store
