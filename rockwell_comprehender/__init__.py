@@ -25,8 +25,10 @@ from .model import (
     SearchHit,
     Tag,
     Task,
+    TraceNode,
     UDTDetail,
     UnsupportedFormatError,
+    XrefEntry,
 )
 
 __version__ = "0.1.0"
@@ -48,5 +50,7 @@ __all__ = [
     "Tag",
     "SearchHit",
     "Observation",
+    "XrefEntry",
+    "TraceNode",
     "__version__",
 ]

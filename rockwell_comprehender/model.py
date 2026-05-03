@@ -145,6 +145,80 @@ class SearchHit:
 
 
 @dataclass
+class XrefEntry:
+    """Una entrada del cross-reference (resultado de writers_of/readers_of/etc).
+
+    Cada entry corresponde a una referencia individual a un operando dentro
+    de un rung. Si el operando original era estructurado (`M3Data.Input.X`),
+    `operand_kind="tag_root"` indica que la entry fue matched vía el root
+    indexing (la query fue por `M3Data` pero el código tenía `M3Data.Input.X`).
+    """
+
+    operand: str              # nombre tal como aparece en xref (puede ser root o full path)
+    operand_kind: str         # "tag" | "tag_root"
+    usage: str                # "read" | "write" | "both"
+    location: str             # ej: "AOIs/AHT_Unwinder/Routines/Logic/Rung_13"
+    operator: str             # instrucción que produjo la referencia
+    instruction_index: int = 0  # posición 0-based dentro del rung (Paso 5b.1)
+    source_kind: str = "rung"
+
+
+@dataclass
+class TraceNode:
+    """Nodo del árbol de trace (causal hacia atrás o hacia adelante).
+
+    Cada nodo representa un operando alcanzado durante el trace. `via`
+    indica el XrefEntry (writer/reader) que conectó al nodo padre con
+    este nodo. `children` son los siguientes niveles del trace.
+    `truncated` se setea cuando se cortó la expansión:
+        - "depth"    → alcanzamos depth limit
+        - "cycle"    → el operando ya estaba en el camino (evitar loop)
+        - "branches" → más de max_branches writers/readers; se truncó la lista
+    """
+
+    operand: str
+    depth: int = 0
+    via: Optional["XrefEntry"] = None   # None para el root del trace
+    children: list["TraceNode"] = field(default_factory=list)
+    truncated: Optional[str] = None
+
+    def render(self, indent: int = 0, max_label: int = 0) -> str:
+        """Devuelve el árbol como string ASCII para impresión."""
+        lines: list[str] = []
+        self._render_into(lines, prefix="", is_last=True, is_root=True)
+        return "\n".join(lines)
+
+    def _render_into(self, lines: list[str], prefix: str, is_last: bool, is_root: bool) -> None:
+        if is_root:
+            label = self.operand
+            if self.truncated:
+                label += f"  [TRUNCATED: {self.truncated}]"
+            lines.append(label)
+            child_prefix = ""
+        else:
+            connector = "└─ " if is_last else "├─ "
+            via_str = ""
+            if self.via is not None:
+                via_str = f"  ← via {self.via.operator} @ {self.via.location}  [{self.via.usage}]"
+            label = f"{prefix}{connector}{self.operand}{via_str}"
+            if self.truncated:
+                label += f"  [TRUNCATED: {self.truncated}]"
+            lines.append(label)
+            child_prefix = prefix + ("   " if is_last else "│  ")
+
+        for i, child in enumerate(self.children):
+            child._render_into(
+                lines, prefix=child_prefix,
+                is_last=(i == len(self.children) - 1),
+                is_root=False,
+            )
+
+    def count_nodes(self) -> int:
+        """Cuenta total de nodos en el árbol (incluye este)."""
+        return 1 + sum(c.count_nodes() for c in self.children)
+
+
+@dataclass
 class Observation:
     """Inconsistencia o nota detectada durante el parseo."""
 
@@ -296,6 +370,441 @@ class Project:
                 return u
         return None
 
+    # ─── Trace de dependencias (v0.2) ─────────────────────────────────
+
+    # Flag interno: True después del primer build_xref. Se evalúa lazy en
+    # cada llamada a writers_of/readers_of/references_of. NO es persistente
+    # (si se vuelve a cargar el proyecto, el SQLite es nuevo y el flag se
+    # resetea automáticamente al construirse el dataclass).
+    _xref_built: bool = field(default=False, repr=False, compare=False)
+    # Cache de invocaciones de AOIs para cross-AOI traversal (Paso 5b.2).
+    # Key: aoi_name → list[(location, instruction_index, args_in_order)].
+    _invocation_cache: dict = field(default_factory=dict, repr=False, compare=False)
+
+    def _ensure_xref_built(self) -> None:
+        """Construye el xref la primera vez que se necesita."""
+        if self._xref_built:
+            return
+        from .tracer import build_xref  # import diferido para evitar ciclo
+        build_xref(self)
+        self._xref_built = True
+
+    def writers_of(self, tag: str, scope: Optional[str] = None) -> list[XrefEntry]:
+        """Devuelve todas las referencias donde `tag` es escrito.
+
+        Incluye writes directos (`OTE`, `MOV`, `CPT(dest, ...)`) y writes vía
+        AOI invocations (parámetros Output) o InOut (que cuentan como write).
+
+        Args:
+            tag: nombre del operando. Puede ser path completo
+                (`M3Data.Input.Dancer.Position`) o root (`M3Data`). En el
+                segundo caso, encuentra TODAS las referencias a sub-fields
+                gracias al root indexing del Paso 3.
+            scope: opcional. Filtra por prefijo de location. Útil cuando el
+                mismo nombre de tag local existe en múltiples AOIs. Ejemplos:
+                - `"Programs"` → solo writes en código de programas
+                - `"AOIs/AHT_Unwinder"` → solo writes dentro de AHT_Unwinder
+                - `"AOIs/AHT_Unwinder/Routines/Logic"` → solo en esa rutina
+        """
+        return self._xref_query(tag, scope, usage_in=("write", "both"))
+
+    def readers_of(self, tag: str, scope: Optional[str] = None) -> list[XrefEntry]:
+        """Devuelve todas las referencias donde `tag` es leído.
+
+        Incluye lecturas directas (`XIC`, `XIO`, args de comparadores y math)
+        y lecturas vía AOI invocations (parámetros Input) o InOut. Para
+        operadores tipo CPT/CMP, incluye también tags extraídos del
+        sub-parser de la expresión aritmética.
+
+        Args/scope: ver `writers_of`.
+        """
+        return self._xref_query(tag, scope, usage_in=("read", "both"))
+
+    def references_of(self, tag: str, scope: Optional[str] = None) -> list[XrefEntry]:
+        """Devuelve TODAS las referencias a `tag` (reads + writes + both).
+
+        Útil cuando se quiere ver el universo completo de menciones del tag
+        en código sin filtrar por dirección.
+        """
+        return self._xref_query(tag, scope, usage_in=("read", "write", "both"))
+
+    def trace_back(
+        self,
+        tag: str,
+        depth: int = 3,
+        max_branches: int = 20,
+        scope: Optional[str] = None,
+    ) -> "TraceNode":
+        """Trace causal hacia atrás (antecedentes). Soporta cross-AOI (Paso 5b.2).
+
+        Para cada writer del tag (granularidad por-instrucción del Paso 5b.1),
+        encuentra los tags leídos por la MISMA instrucción y los considera
+        antecedentes. Si un antecedente es un parameter del AOI actual, rastrea
+        las invocaciones del AOI hacia afuera y resuelve qué tag se pasa como
+        ese parameter en cada invocación (cross-AOI traversal del Paso 5b.2).
+
+        Recursivo con limitación por depth, ciclo (visited set por camino),
+        y max_branches.
+
+        Args:
+            tag: operando del que rastrear hacia atrás.
+            depth: profundidad máxima del árbol.
+            max_branches: si un nivel tiene más de N writers (intra + cross),
+                se truncan y se marca `truncated="branches"`.
+            scope: opcional. Filtro inicial de writers (intra-scope). El
+                cross-AOI sale del scope al cruzar (busca invocadores del
+                AOI en cualquier parte del corpus).
+        """
+        self._ensure_xref_built()
+        aoi_context = self._infer_aoi_context_from_scope(scope)
+        return self._trace_back_node(
+            tag=tag,
+            depth_limit=depth,
+            max_branches=max_branches,
+            scope=scope,
+            visited=frozenset(),
+            current_depth=0,
+            via=None,
+            aoi_context=aoi_context,
+        )
+
+    def trace_forward(
+        self,
+        tag: str,
+        depth: int = 3,
+        max_branches: int = 20,
+        scope: Optional[str] = None,
+    ) -> "TraceNode":
+        """Trace causal hacia adelante (consecuentes) — versión intra-scope.
+
+        Para cada reader del tag, encuentra los tags escritos en el MISMO
+        rung y los considera consecuentes potenciales. Mismas limitaciones
+        que `trace_back` respecto a cross-AOI.
+        """
+        self._ensure_xref_built()
+        aoi_context = self._infer_aoi_context_from_scope(scope)
+        return self._trace_forward_node(
+            tag=tag,
+            depth_limit=depth,
+            max_branches=max_branches,
+            scope=scope,
+            visited=frozenset(),
+            current_depth=0,
+            via=None,
+            aoi_context=aoi_context,
+        )
+
+    def _trace_back_node(
+        self,
+        tag: str,
+        depth_limit: int,
+        max_branches: int,
+        scope: Optional[str],
+        visited: frozenset,
+        current_depth: int,
+        via: Optional[XrefEntry],
+        aoi_context: Optional[AOIDetail] = None,
+    ) -> "TraceNode":
+        node = TraceNode(operand=tag, depth=current_depth, via=via)
+        if tag in visited:
+            node.truncated = "cycle"
+            return node
+        if current_depth >= depth_limit:
+            node.truncated = "depth"
+            return node
+
+        # Path 1: writers intra-scope (granularidad por-instrucción del Paso 5b.1)
+        intra_writers = self.writers_of(tag, scope=scope)
+
+        # Path 2: cross-AOI (Paso 5b.2). Si tag es un parameter visible del AOI
+        # actual y no fue escrito intra-scope, rastrear hacia afuera siguiendo
+        # las invocaciones del AOI.
+        cross_writers: list[tuple[XrefEntry, Optional[AOIDetail]]] = []
+        if aoi_context is not None:
+            visible_param_names = {p.name for p in aoi_context.parameters if p.visible}
+            if tag in visible_param_names:
+                cross_writers = self._cross_aoi_back(aoi_context, tag)
+
+        total = len(intra_writers) + len(cross_writers)
+        if total == 0:
+            return node
+
+        new_visited = visited | {tag}
+        if total > max_branches:
+            node.truncated = "branches"
+            # Mantener proporcionalmente
+            keep_intra = min(len(intra_writers), max_branches // 2 + 1)
+            intra_writers = intra_writers[:keep_intra]
+            cross_writers = cross_writers[: max_branches - keep_intra]
+
+        for w in intra_writers:
+            upstream_tags = self._reads_at_instruction(w.location, w.instruction_index)
+            child_aoi_context = self._infer_aoi_context_from_location(w.location)
+            for ut in upstream_tags:
+                if ut == tag:
+                    continue
+                child = self._trace_back_node(
+                    tag=ut,
+                    depth_limit=depth_limit,
+                    max_branches=max_branches,
+                    scope=scope,
+                    visited=new_visited,
+                    current_depth=current_depth + 1,
+                    via=w,
+                    aoi_context=child_aoi_context,
+                )
+                node.children.append(child)
+
+        for entry, child_aoi_context in cross_writers:
+            # `entry.operand` es el arg pasado en la invocación = nuevo tag a rastrear
+            child = self._trace_back_node(
+                tag=entry.operand,
+                depth_limit=depth_limit,
+                max_branches=max_branches,
+                scope=None,  # cross-AOI sale del scope inicial
+                visited=new_visited,
+                current_depth=current_depth + 1,
+                via=entry,
+                aoi_context=child_aoi_context,
+            )
+            node.children.append(child)
+        return node
+
+    def _trace_forward_node(
+        self,
+        tag: str,
+        depth_limit: int,
+        max_branches: int,
+        scope: Optional[str],
+        visited: frozenset,
+        current_depth: int,
+        via: Optional[XrefEntry],
+        aoi_context: Optional[AOIDetail] = None,
+    ) -> "TraceNode":
+        node = TraceNode(operand=tag, depth=current_depth, via=via)
+        if tag in visited:
+            node.truncated = "cycle"
+            return node
+        if current_depth >= depth_limit:
+            node.truncated = "depth"
+            return node
+
+        readers = self.readers_of(tag, scope=scope)
+        if not readers:
+            return node
+
+        new_visited = visited | {tag}
+        if len(readers) > max_branches:
+            node.truncated = "branches"
+            readers = readers[:max_branches]
+
+        for r in readers:
+            downstream_tags = self._writes_at_instruction(r.location, r.instruction_index)
+            child_aoi_context = self._infer_aoi_context_from_location(r.location)
+            for dt in downstream_tags:
+                if dt == tag:
+                    continue
+                child = self._trace_forward_node(
+                    tag=dt,
+                    depth_limit=depth_limit,
+                    max_branches=max_branches,
+                    scope=scope,
+                    visited=new_visited,
+                    current_depth=current_depth + 1,
+                    via=r,
+                    aoi_context=child_aoi_context,
+                )
+                node.children.append(child)
+        return node
+
+    # ─── Cross-AOI helpers (Paso 5b.2) ────────────────────────────────
+
+    def _infer_aoi_context_from_scope(self, scope: Optional[str]) -> Optional[AOIDetail]:
+        """Si `scope` es 'AOIs/X' o 'AOIs/X/...' devuelve self.get_aoi('X')."""
+        if not scope or not scope.startswith("AOIs/"):
+            return None
+        parts = scope.split("/", 2)
+        if len(parts) >= 2:
+            return self.get_aoi(parts[1])
+        return None
+
+    def _infer_aoi_context_from_location(self, location: str) -> Optional[AOIDetail]:
+        """Si `location` es 'AOIs/X/Routines/...' devuelve self.get_aoi('X')."""
+        if not location.startswith("AOIs/"):
+            return None
+        parts = location.split("/", 3)
+        if len(parts) >= 2:
+            return self.get_aoi(parts[1])
+        return None
+
+    def _get_aoi_invocations(self, aoi_name: str) -> list[tuple[str, int, list[str]]]:
+        """Re-tokeniza el corpus para encontrar todas las invocaciones del AOI.
+
+        Retorna list de (location, instruction_index, args_in_order). Cached
+        per-call para evitar re-tokenizar repetidamente.
+        """
+        if aoi_name in self._invocation_cache:
+            return self._invocation_cache[aoi_name]
+
+        from .tokenizer import tokenize_rll
+        results: list[tuple[str, int, list[str]]] = []
+
+        for r in self.routines:
+            if not r.code or r.type != "RLL":
+                continue
+            for rung in tokenize_rll(r.code):
+                for i, inst in enumerate(rung.instructions):
+                    if inst.operator == aoi_name:
+                        args = [o.text for o in inst.operands]
+                        loc = f"Programs/{r.program}/Routines/{r.name}/Rung_{rung.number}"
+                        results.append((loc, i, args))
+
+        for a in self.aois:
+            for rname, r in a.routines.items():
+                if not r.code or r.type != "RLL":
+                    continue
+                for rung in tokenize_rll(r.code):
+                    for i, inst in enumerate(rung.instructions):
+                        if inst.operator == aoi_name:
+                            args = [o.text for o in inst.operands]
+                            loc = f"AOIs/{a.name}/Routines/{rname}/Rung_{rung.number}"
+                            results.append((loc, i, args))
+
+        self._invocation_cache[aoi_name] = results
+        return results
+
+    def _cross_aoi_back(
+        self, aoi: AOIDetail, param_name: str
+    ) -> list[tuple[XrefEntry, Optional["AOIDetail"]]]:
+        """Para `param_name` (un visible parameter del AOI), encuentra los args
+        correspondientes en cada invocación. Devuelve list de
+        (XrefEntry representando el arg, contexto AOI del invoker).
+
+        Convención de mapeo:
+            arg[0] de la invocación = backing tag (instance data)
+            arg[i] (i>=1) → visible_params[i-1]
+        """
+        visible_params = [p for p in aoi.parameters if p.visible]
+        param_idx = next(
+            (i for i, p in enumerate(visible_params) if p.name == param_name),
+            None,
+        )
+        if param_idx is None:
+            return []
+        arg_idx = param_idx + 1  # +1 porque arg[0] = backing
+
+        results: list[tuple[XrefEntry, Optional[AOIDetail]]] = []
+        for loc, inst_idx, args in self._get_aoi_invocations(aoi.name):
+            if arg_idx >= len(args):
+                continue
+            arg_text = args[arg_idx]
+            if not arg_text:
+                continue
+            # Filtrar constantes/literales/enums obvios; solo seguimos tags
+            first = arg_text[0]
+            if first.isdigit() or first in ("-", "?", '"', "'"):
+                continue
+            # Construir XrefEntry sintética representando el arg
+            entry = XrefEntry(
+                operand=arg_text,
+                operand_kind="tag",
+                usage="write",  # la invocación AOI "escribe" en el param desde fuera
+                location=loc,
+                operator=aoi.name,
+                instruction_index=inst_idx,
+                source_kind="rung",
+            )
+            child_context = self._infer_aoi_context_from_location(loc)
+            results.append((entry, child_context))
+        return results
+
+    def _reads_at_location(self, location: str) -> list[str]:
+        """Tags leídos en el rung especificado (todas las instrucciones)."""
+        return self._tags_at_location(location, None, usage_in=("read", "both"))
+
+    def _writes_at_location(self, location: str) -> list[str]:
+        """Tags escritos en el rung especificado (todas las instrucciones)."""
+        return self._tags_at_location(location, None, usage_in=("write", "both"))
+
+    def _reads_at_instruction(self, location: str, instruction_index: int) -> list[str]:
+        """Tags leídos por la instrucción específica dentro del rung (Paso 5b.1).
+
+        Esta es la granularidad fina que necesita trace_back para no producir
+        ruido lateral cuando el rung tiene múltiples instrucciones distintas.
+        """
+        return self._tags_at_location(location, instruction_index, usage_in=("read", "both"))
+
+    def _writes_at_instruction(self, location: str, instruction_index: int) -> list[str]:
+        """Tags escritos por la instrucción específica dentro del rung."""
+        return self._tags_at_location(location, instruction_index, usage_in=("write", "both"))
+
+    def _tags_at_location(
+        self,
+        location: str,
+        instruction_index: Optional[int],
+        usage_in: tuple[str, ...],
+    ) -> list[str]:
+        if not self.db_path:
+            return []
+        import sqlite3 as _sql
+        conn = _sql.connect(self.db_path)
+        try:
+            cur = conn.cursor()
+            placeholders = ",".join("?" * len(usage_in))
+            sql = (
+                f"SELECT DISTINCT operand FROM xref "
+                f"WHERE source_location = ? AND usage IN ({placeholders}) "
+                f"AND operand_kind = 'tag'"
+            )
+            params: list = [location, *usage_in]
+            if instruction_index is not None:
+                sql += " AND instruction_index = ?"
+                params.append(instruction_index)
+            sql += " ORDER BY operand"
+            return [row[0] for row in cur.execute(sql, params)]
+        finally:
+            conn.close()
+
+    def _xref_query(
+        self,
+        tag: str,
+        scope: Optional[str],
+        usage_in: tuple[str, ...],
+    ) -> list[XrefEntry]:
+        self._ensure_xref_built()
+        if not self.db_path:
+            return []
+        import sqlite3 as _sql  # diferido
+        conn = _sql.connect(self.db_path)
+        try:
+            cur = conn.cursor()
+            placeholders = ",".join("?" * len(usage_in))
+            sql = (
+                f"SELECT operand, operand_kind, usage, source_location, operator, "
+                f"instruction_index, source_kind "
+                f"FROM xref "
+                f"WHERE operand = ? AND usage IN ({placeholders})"
+            )
+            params: list = [tag, *usage_in]
+            if scope:
+                sql += " AND source_location LIKE ?"
+                params.append(scope.rstrip("/") + "%")
+            sql += " ORDER BY source_location, instruction_index, operator"
+            return [
+                XrefEntry(
+                    operand=row[0],
+                    operand_kind=row[1],
+                    usage=row[2],
+                    location=row[3],
+                    operator=row[4],
+                    instruction_index=row[5],
+                    source_kind=row[6],
+                )
+                for row in cur.execute(sql, params)
+            ]
+        finally:
+            conn.close()
+
     # ─── Búsqueda full-text simple ────────────────────────────────────
 
     def search(self, query: str) -> list[SearchHit]:
@@ -378,7 +887,7 @@ def _first_match_snippet(text: str, query: str, window: int = 80) -> str:
 # Schema SQLite
 # ─────────────────────────────────────────────────────────────────────────
 
-SCHEMA_VERSION = "v0.1.0"
+SCHEMA_VERSION = "v0.2.1"  # bump: + xref.instruction_index para granularidad por-instrucción
 
 # El schema cubre TODO el modelo, incluyendo `xref` que se crea VACÍA en v0.1
 # (DT-009 — los schemas se establecen temprano y crecen aditivamente).
@@ -517,16 +1026,33 @@ CREATE TABLE IF NOT EXISTS observations (
     references_ TEXT  -- JSON array; "references" es palabra reservada en algunos contextos
 );
 
--- Cross-references derivadas (tabla VACÍA en v0.1, poblada por tracer.py en v0.2 — DT-009)
+-- Cross-references derivadas (tabla creada vacía en v0.1, poblada por
+-- tracer.build_xref() en v0.2 — DT-009).
+--
+-- Evolución:
+-- v0.2.0: + columna `operator` (instrucción que produjo la referencia,
+--         ej. "OTE", "MOV", "AHT_CtcSplicer"). Cambio aditivo (DT-009).
+-- v0.2.1: + columna `instruction_index` (posición 0-based de la instrucción
+--         dentro del rung). Habilita granularidad por-instrucción para trace_back
+--         (resuelve el ruido lateral cuando un rung tiene múltiples writes).
+--
+-- `operand_kind` puede ser "tag" (referencia directa al operando) o "tag_root"
+-- (entrada sintética del root de un tag estructurado — p.ej. una referencia a
+-- "M3Data.Input.X" produce dos rows: una con operand="M3Data.Input.X" kind="tag",
+-- otra con operand="M3Data" kind="tag_root").
 CREATE TABLE IF NOT EXISTS xref (
-    source_kind     TEXT,    -- "rung" | "st_line" | "fbd_block"
-    source_location TEXT,    -- ej: "Programs/MainProgram/Routines/X/Rung_5"
-    operand         TEXT,    -- nombre del tag/operando referenciado
-    operand_kind    TEXT,    -- "tag" | "constant" | "literal"
-    usage           TEXT     -- "read" | "write" | "both"
+    source_kind        TEXT,     -- "rung" | "st_line" | "fbd_block"
+    source_location    TEXT,     -- ej: "Programs/MainProgram/Routines/X/Rung_5"
+    operand            TEXT,     -- nombre del tag/operando referenciado
+    operand_kind       TEXT,     -- "tag" | "tag_root"
+    usage              TEXT,     -- "read" | "write" | "both"
+    operator           TEXT,     -- instrucción que produjo el ref
+    instruction_index  INTEGER   -- posición de la instrucción dentro del rung (0-based)
 );
-CREATE INDEX IF NOT EXISTS idx_xref_operand ON xref(operand);
-CREATE INDEX IF NOT EXISTS idx_xref_source  ON xref(source_location);
+CREATE INDEX IF NOT EXISTS idx_xref_operand     ON xref(operand);
+CREATE INDEX IF NOT EXISTS idx_xref_source      ON xref(source_location);
+CREATE INDEX IF NOT EXISTS idx_xref_operator    ON xref(operator);
+CREATE INDEX IF NOT EXISTS idx_xref_instruction ON xref(source_location, instruction_index);
 """
 
 
