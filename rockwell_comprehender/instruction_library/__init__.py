@@ -20,9 +20,9 @@ Uso:
     # O vía Project:
     project.get_instruction_metadata("CROUT")
 
-Catálogo inicial v0.3 (7 instrucciones):
+Catálogo v0.3.x (9 instrucciones):
 - Safety: CROUT, DCI_STOP, DCI_STOP_TEST_LOCK
-- Motion: MAJ, MAG, MAS, MAH
+- Motion: MAJ, MAG, MAS, MAH, MAOC, MAM
 
 Fuentes:
 - Rockwell pub 1756-RM095 (GuardLogix Safety Instructions)
@@ -312,6 +312,165 @@ _MAH = InstructionMetadata(
 )
 
 
+_MAOC = InstructionMetadata(
+    name="MAOC",
+    full_name="Motion Arm Output Cam",
+    category="motion",
+    summary=(
+        "Conecta levas de salida (output cams) a un eje de movimiento. "
+        "Activa/desactiva bloques de salida (32 bits) según posiciones del "
+        "eje y condiciones de entrada. Modos Once/Continuous/Persistent + "
+        "Schedule Immediate/Pending/Forward/Reverse/Bi-directional. Uso "
+        "típico: máquinas rotativas continuas (web handling, splicers, "
+        "packaging) para latch/unlatch de outputs por posición de eje."
+    ),
+    pins=[
+        InstructionPin("Axis", "input", "AXIS_*", "Eje asociado a la leva de salida"),
+        InstructionPin("ExecutionTarget", "input", "INT", "Output Cam específica (0-7)"),
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura .EN/.DN/.ER/.IP/.PC"),
+        InstructionPin("Output", "input", "DINT",
+                       "32 bits memoria/output activados según leva"),
+        InstructionPin("Input", "input", "DINT",
+                       "32 bits para condicionar/habilitar leva"),
+        InstructionPin("OutputCam", "input", "OUTPUT_CAM[]",
+                       "Arreglo que define eventos Latch/Unlatch por bit"),
+        InstructionPin("CamStartPosition", "input", "REAL",
+                       "Límite izquierdo del rango de leva"),
+        InstructionPin("CamEndPosition", "input", "REAL",
+                       "Límite derecho del rango de leva"),
+        InstructionPin("OutputCompensation", "input", "OUTPUT_COMPENSATION[]",
+                       "Arreglo (1-32 elementos) para compensaciones de bits"),
+        InstructionPin("AxisArmPosition", "input", "REAL",
+                       "Posición del eje en la que se arma la leva"),
+        InstructionPin("CamArmPosition", "input", "REAL",
+                       "Posición del perfil leva al armar"),
+    ],
+    config_attributes=[
+        InstructionPin("ExecutionMode", "config", "ENUM",
+                       "Once | Continuous | Persistent"),
+        InstructionPin("ExecutionSchedule", "config", "ENUM",
+                       "Immediate | Pending | Forward | Reverse | Bi-directional"),
+        InstructionPin("Reference", "config", "ENUM",
+                       "Actual | Command (qué posición usa para evaluación)"),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix 5000 Motion Instructions)",
+    ],
+    notes=(
+        "Cam profiles disponibles en cada elemento OUTPUT_CAM: Inactive | "
+        "Position | Enable | Position and Enable | Duration and Enable. Modo "
+        "Persistent rearma automáticamente al regresar al rango. Curado vía "
+        "NotebookLM (workflow Ruflo+NotebookLM 2026-05-03)."
+    ),
+)
+
+
+_MAM = InstructionMetadata(
+    name="MAM",
+    full_name="Motion Axis Move",
+    category="motion",
+    summary=(
+        "Comanda al eje a moverse a una posición absoluta especificada o por "
+        "una distancia incremental. Calcula automáticamente el perfil "
+        "(trapezoidal o S-Curve) según las dinámicas dadas. Soporta modos "
+        "Absolute / Incremental / Rotary (shortest path / positive / negative) "
+        "y variantes Master Offset para Master Driven Speed Control (MDSC). "
+        "Uso típico: posicionamiento, packaging, web handling, indexado."
+    ),
+    pins=[
+        InstructionPin("Axis", "both", "AXIS_*",
+                       "Eje a mover. En modo Master Offset, este es el eje slave."),
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER/.IP/.PC/.AC/.ACCEL/.DECEL)"),
+        InstructionPin("Position", "input", "REAL",
+                       "Coordenada absoluta destino o distancia incremental, según MoveType."),
+        InstructionPin("Speed", "input", "REAL",
+                       "Velocidad vector máxima programada del move."),
+        InstructionPin("AccelRate", "input", "REAL",
+                       "Tasa de aceleración programada."),
+        InstructionPin("DecelRate", "input", "REAL",
+                       "Tasa de desaceleración programada."),
+        InstructionPin("AccelJerk", "input", "REAL",
+                       "Tasa de cambio de aceleración (solo aplica si Profile=S-Curve, "
+                       "pero debe estar poblado)."),
+        InstructionPin("DecelJerk", "input", "REAL",
+                       "Tasa de cambio de desaceleración (idem AccelJerk)."),
+        InstructionPin("LockPosition", "input", "REAL",
+                       "Master Driven Speed Control (MDSC): posición del Master donde el "
+                       "Slave empieza a seguir."),
+        InstructionPin("EventDistance", "input", "REAL[] or 0",
+                       "Posición(es) medidas hacia atrás desde el final del move que "
+                       "disparan el cálculo de CalculatedData."),
+        InstructionPin("CalculatedData", "output", "REAL[] or 0",
+                       "Almacena la distancia master o el tiempo computado para alcanzar "
+                       "el EventDistance."),
+    ],
+    config_attributes=[
+        InstructionPin("MoveType", "config", "ENUM",
+                       "0=Absolute | 1=Incremental | 2=Rotary Shortest Path | "
+                       "3=Rotary Positive | 4=Rotary Negative | "
+                       "5=Absolute Master Offset | 6=Incremental Master Offset"),
+        InstructionPin("SpeedUnits", "config", "ENUM",
+                       "0='Units per sec' | 1='% of Maximum' | 3='Time' | "
+                       "4='Units per MasterUnit' | 7='Master Units'"),
+        InstructionPin("AccelUnits", "config", "ENUM",
+                       "0='Units per sec²' | 1='% of Maximum' | 3='Time' | "
+                       "4='Units per MasterUnit²' | 7='Master Units'"),
+        InstructionPin("DecelUnits", "config", "ENUM",
+                       "Mismo enum que AccelUnits."),
+        InstructionPin("Profile", "config", "ENUM",
+                       "0='Trapezoidal' | 1='S-Curve'"),
+        InstructionPin("JerkUnits", "config", "ENUM",
+                       "0='Units per sec³' | 1='% of Maximum' | 2='% of Time' | "
+                       "3='Time' | 4='Units per MasterUnit³' | "
+                       "6='% of Time-Master Driven' | 7='Master Units'"),
+        InstructionPin("Merge", "config", "ENUM",
+                       "0='Disabled' | 1='Enabled' (define qué pasa si hay motion previo activo)"),
+        InstructionPin("MergeSpeed", "config", "ENUM",
+                       "0='Programmed' | 1='Current' (qué speed evaluar al hacer merge)"),
+        InstructionPin("LockDirection", "config", "ENUM",
+                       "0='None' | 1='Immediate Forward Only' | 2='Immediate Reverse Only' | "
+                       "3='Position Forward Only' | 4='Position Reverse Only'"),
+    ],
+    fault_modes=[
+        InstructionFault(
+            "NonRestStartError",
+            "Cuando SpeedUnits='Time' o 'Master Units', el move debe arrancar desde "
+            "estado de reposo (velocidad y aceleración = 0). Si no, runtime error."
+        ),
+        InstructionFault(
+            "OvershootRisk",
+            "Riesgo de overshoot de velocidad o posición si las dinámicas cambian "
+            "durante deceleración con DecelRate menor, o si Profile=S-Curve y los "
+            "límites de jerk no pueden prevenir overshoot en la distancia restante."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "Instrucción process-type transitional. Status bits clave: .DN va TRUE "
+        "inmediatamente cuando el motion planner ACEPTA el move (no cuando "
+        "completa); .PC va TRUE solo cuando el eje arriva al endpoint Position; "
+        ".IP es TRUE durante el movimiento. .ACCEL/.DECEL reflejan la fase actual "
+        "de velocidad. "
+        "\n\n"
+        "Re-issue (Absolute): un MAM nuevo SUPERSEDE al anterior — el eje abandona "
+        "el target previo y va directo al nuevo target con las nuevas dinámicas, "
+        "incluso si requiere cambiar dirección. NO para en el target original. "
+        "\n\n"
+        "Re-issue (Incremental + Merge=Enabled): el remanente del move anterior se "
+        "conserva y se SUMA al nuevo move. Ej: move incremental de 4 unidades "
+        "interrumpido en posición 1 con un nuevo move incremental de 4 → eje "
+        "termina en posición 8 (no 5). "
+        "\n\n"
+        "Aparece intensivamente en el parque (AQL: 24 invocaciones; CPPIM: 12; "
+        "CINTA: 11). Curado vía NotebookLM (workflow Ruflo+NotebookLM 2026-05-03)."
+    ),
+)
+
+
 # Catálogo público (orden curado: safety primero, después motion)
 ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _CROUT,
@@ -321,6 +480,8 @@ ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _MAG,
     _MAS,
     _MAH,
+    _MAOC,
+    _MAM,
 ]
 
 
