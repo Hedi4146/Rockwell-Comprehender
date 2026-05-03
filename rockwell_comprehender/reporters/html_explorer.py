@@ -919,14 +919,79 @@ def _panel_program_tags(prog, p: Project) -> str:
     )
 
 
+def _detect_library_in_routines(routines) -> "Counter":
+    """Cuenta invocaciones de instrucciones del library en una lista de routines."""
+    from ..instruction_library import known_instruction_names as _known
+    from ..tokenizer import tokenize_rll as _tok
+    from collections import Counter as _Counter
+    known = _known()
+    out: _Counter[str] = _Counter()
+    for r in routines:
+        if not getattr(r, "code", "") or getattr(r, "type", "") != "RLL":
+            continue
+        if getattr(r, "protected", False):
+            continue
+        try:
+            for rung in _tok(r.code):
+                for inst in rung.instructions:
+                    if inst.operator in known:
+                        out[inst.operator] += 1
+        except Exception:
+            pass
+    return out
+
+
+def _render_library_block(op_count, where_label: str) -> str:
+    """Renderiza el bloque 'Instrucciones del library detectadas'. `where_label`
+    aparece en el header (ej. 'este routine' / 'routines internas del AOI')."""
+    if not op_count:
+        return ""
+    from ..instruction_library import get_instruction_metadata as _get_meta
+    rows = []
+    for op, n in op_count.most_common():
+        meta = _get_meta(op)
+        if not meta:
+            continue
+        rows.append(
+            f'<tr><td><code>{_e(op)}</code></td>'
+            f'<td><span class="lib-cat-{_e(meta.category)}">'
+            f'{_e(meta.category)}</span></td>'
+            f'<td>{_e(meta.full_name)}</td>'
+            f'<td style="text-align:right"><strong>{n}</strong></td></tr>'
+        )
+    if not rows:
+        return ""
+    return (
+        f'<h3>Instrucciones del library detectadas en {_e(where_label)}</h3>'
+        '<table class="kv"><thead><tr>'
+        '<th>Nombre</th><th>Categoría</th><th>Full name</th>'
+        '<th style="text-align:right">Invocaciones</th></tr></thead>'
+        '<tbody>' + "".join(rows) + '</tbody></table>'
+        '<p class="meta">Metadata completa (pines, configuración, fault modes) '
+        'vía <code>project.get_instruction_metadata(name)</code>.</p>'
+    )
+
+
 def _panel_routine(r) -> str:
     code_block = ""
-    if r.code:
+    library_block = ""
+
+    if getattr(r, "protected", False):
+        code_block = (
+            '<div class="badge-warn">⊕ Routine protegida (Source Protection, '
+            '<code>EncryptionConfig=9</code>). Su código no se carga ni se '
+            'tokeniza; análisis estructural sigue disponible vía naming + '
+            'patterns + library.</div>'
+        )
+    elif r.code:
         code_html = html.escape(r.code)
         code_block = (
             f'<details><summary>Ver código completo ({len(r.code):,} caracteres)</summary>'
             f'<pre><code>{code_html}</code></pre></details>'
         )
+        op_count = _detect_library_in_routines([r])
+        library_block = _render_library_block(op_count, "este routine")
+
     return (
         f'<div class="panel"><h1>{_e(r.name)}</h1>'
         f'<p class="subtitle">Routine · programa <code>{_e(r.program or "")}</code></p>'
@@ -935,7 +1000,9 @@ def _panel_routine(r) -> str:
             ("Programa", f"<code>{_e(r.program or '—')}</code>"),
             ("Descripción", _or_dash(r.description)),
             ("Tamaño del código", f"{len(r.code or ''):,} caracteres"),
+            ("Protected", "Sí ⊕ (Source Protection)" if getattr(r, "protected", False) else "No"),
         ])
+        + library_block
         + code_block
         + '</div>'
     )
@@ -1115,6 +1182,12 @@ def _panel_aoi(a, partners: set[str]) -> str:
             f'/ código muerto.</div>'
         )
 
+    # Capa D: instrucciones del library en routines internas del AOI
+    library_block = _render_library_block(
+        _detect_library_in_routines(list(a.routines.values())),
+        "routines internas del AOI",
+    )
+
     return (
         f'<div class="panel"><h1>{_e(a.name)}</h1>'
         f'<p class="subtitle">Add-On Instruction · revisión {_e(a.revision) or "—"}</p>'
@@ -1123,8 +1196,10 @@ def _panel_aoi(a, partners: set[str]) -> str:
             ("Parámetros", f"{len(a.parameters)} ({usage_str})"),
             ("Local tags", str(len(a.local_tags))),
             ("Descripción", _or_dash(a.description)),
+            ("Protected", "Sí ⊕ (Source Protection)" if getattr(a, "protected", False) else "No"),
         ])
         + routines_block
+        + library_block
         + '</div>'
     )
 
@@ -1517,6 +1592,18 @@ body {
 .panel .usage-read  { color: #1f6feb; font-weight: 600; font-family: monospace; }
 .panel .usage-write { color: #b35900; font-weight: 600; font-family: monospace; }
 .panel .usage-both  { color: #6f42c1; font-weight: 600; font-family: monospace; }
+.panel .lib-cat-safety {
+  background: #fce8e8; color: #8b1a1a; padding: 1px 8px;
+  border-radius: 3px; font-size: 11px; font-weight: 600;
+}
+.panel .lib-cat-motion {
+  background: #d1ecf1; color: #0c5460; padding: 1px 8px;
+  border-radius: 3px; font-size: 11px; font-weight: 600;
+}
+.panel .lib-cat-logic {
+  background: #f5f5f5; color: #495057; padding: 1px 8px;
+  border-radius: 3px; font-size: 11px; font-weight: 600;
+}
 """
 
 
