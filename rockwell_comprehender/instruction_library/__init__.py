@@ -20,9 +20,9 @@ Uso:
     # O vía Project:
     project.get_instruction_metadata("CROUT")
 
-Catálogo v0.3.x (14 instrucciones):
+Catálogo v0.3.x (17 instrucciones):
 - Safety: CROUT, DCI_STOP, DCI_STOP_TEST_LOCK
-- Motion: MAJ, MAG, MAS, MAH, MAOC, MAM, MSO, MSF, MAFR, MASR, MAPC
+- Motion: MAJ, MAG, MAS, MAH, MAOC, MAM, MSO, MSF, MAFR, MASR, MAPC, MAR, MCCP, MCSV
 
 Fuentes:
 - Rockwell pub 1756-RM095 (GuardLogix Safety Instructions)
@@ -693,6 +693,152 @@ _MAPC = InstructionMetadata(
 )
 
 
+_MAR = InstructionMetadata(
+    name="MAR",
+    full_name="Motion Arm Registration",
+    category="motion",
+    summary=(
+        "Arma un evento de registration para almacenar la posición real del eje "
+        "físico cuando ocurre un trigger de hardware. Uso típico: registration "
+        "inputs de alta velocidad para capturar posición exacta cuando dispara "
+        "un sensor."
+    ),
+    pins=[
+        InstructionPin("Axis", "both", "AXIS_*",
+                       "Eje sobre el que se arma la registration."),
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER/.IP/.PC)"),
+        InstructionPin("TriggerCondition", "input", "BOOL",
+                       "Transición del Registration Input que define el evento "
+                       "(0=positive_edge, 1=negative_edge)."),
+        InstructionPin("WindowedRegistration", "input", "BOOL",
+                       "Habilita que el evento solo ocurra dentro de una ventana "
+                       "de posición (0=disabled, 1=enabled)."),
+        InstructionPin("MinPosition", "input", "REAL",
+                       "Límite mínimo de la ventana de registration (si Windowed=enabled)."),
+        InstructionPin("MaxPosition", "input", "REAL",
+                       "Límite máximo de la ventana de registration."),
+        InstructionPin("InputNumber", "input", "UINT32",
+                       "Selecciona qué Registration Input físico usar."),
+    ],
+    config_attributes=[],
+    fault_modes=[
+        InstructionFault(
+            "ServoMessageFailure (12)",
+            "Extended Error 2: insuficientes recursos de memoria para completar el request."
+        ),
+        InstructionFault(
+            "ParameterOutOfRange (13)",
+            "Extended Error 4: MinPosition fuera de la ventana aceptada."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "Semántica especial de .PC: se setea cuando el EVENTO de registration ocurre "
+        "(no cuando el instruction completa el armado). Para detección continua de "
+        "registration, hay que toggle el rung false→true después de cada .PC para "
+        "rearmar. La ejecución requiere múltiples coarse updates al hardware, así que "
+        ".DN puede tardar varios scans. Force values en inputs ralentizan el "
+        "processing de registration repetitivos. Aparece en CPPIM (5). Curado vía "
+        "NotebookLM batch (2026-05-03)."
+    ),
+)
+
+
+_MCCP = InstructionMetadata(
+    name="MCCP",
+    full_name="Motion Calculate Cam Profile",
+    category="motion",
+    summary=(
+        "Calcula matemáticamente un cam profile a partir de un set de puntos en "
+        "un cam array. El profile resultante lo usan instrucciones MAPC (position "
+        "cam) o MATC (time cam) para gobernar el slave según la posición o tiempo "
+        "del master."
+    ),
+    pins=[
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER)"),
+        InstructionPin("Cam", "both", "CAM | CAM_EXTENDED",
+                       "Array de cam points raw (input al cálculo)."),
+        InstructionPin("Length", "input", "UINT",
+                       "Cantidad de elementos del cam array a usar en el cálculo."),
+        InstructionPin("StartSlope", "input", "REAL",
+                       "Boundary condition: pendiente inicial del profile."),
+        InstructionPin("EndSlope", "input", "REAL",
+                       "Boundary condition: pendiente final del profile."),
+        InstructionPin("CamProfile", "both", "CAM_PROFILE | CAM_PROFILE_EXTENDED",
+                       "Array de salida con el profile calculado (consumible por MAPC/MATC)."),
+    ],
+    config_attributes=[],
+    fault_modes=[
+        InstructionFault(
+            "IllegalCamLength (26)",
+            "Length input no corresponde a la cantidad esperada en el Cam tag."
+        ),
+        InstructionFault(
+            "IllegalCamProfileLength (27)",
+            "Length no corresponde a la cantidad de puntos que la instrucción "
+            "intenta generar en el profile."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "Completa en 1 scan, pero el cómputo es pesado — colocar en task SEPARADO "
+        "del MainTask para no impactar scan time del usuario. El Status member del "
+        "primer elemento del CamProfile array se usa internamente para data integrity. "
+        "Si una instrucción MAPC/MATC intenta usar elementos uncalculated del profile, "
+        "fault inmediato. Aparece en CINTA (1). Curado vía NotebookLM batch (2026-05-03)."
+    ),
+)
+
+
+_MCSV = InstructionMetadata(
+    name="MCSV",
+    full_name="Motion Calculate Slave Values",
+    category="motion",
+    summary=(
+        "Calcula slave value, slope value, y derivada de slope para un cam profile "
+        "y un master value dados. Provee valores matemáticos de path esenciales "
+        "para recovery from faults durante operaciones de camming."
+    ),
+    pins=[
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER)"),
+        InstructionPin("CamProfile", "both", "CAM_PROFILE | CAM_PROFILE_EXTENDED",
+                       "Array del cam profile a evaluar (index 0 inicia)."),
+        InstructionPin("MasterValue", "input", "REAL",
+                       "Coordenada exacta del master donde calcular los slave values."),
+        InstructionPin("SlaveValue", "output", "REAL",
+                       "Valor del slave en el master point dado."),
+        InstructionPin("SlopeValue", "output", "REAL",
+                       "Primera derivada del slave en el master point."),
+        InstructionPin("SlopeDerivative", "output", "REAL",
+                       "Segunda derivada del slave en el master point."),
+    ],
+    config_attributes=[],
+    fault_modes=[
+        InstructionFault(
+            "ParameterOutOfRange (13)",
+            "Extended Error 2: MasterValue fuera de los bounds aceptados del cam profile."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "Funciona como calculadora pura — no produce motion física, no modifica "
+        "status bits del eje. Ejecuta instantáneamente y setea .DN inmediatamente "
+        "tras cómputo. Usado típicamente en recovery logic post-fault para reconstruir "
+        "trayectoria del slave en cualquier punto del cam. Aparece en CINTA (1). "
+        "Curado vía NotebookLM batch (2026-05-03)."
+    ),
+)
+
+
 # Catálogo público (orden curado: safety primero, después motion)
 ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _CROUT,
@@ -709,6 +855,9 @@ ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _MAFR,
     _MASR,
     _MAPC,
+    _MAR,
+    _MCCP,
+    _MCSV,
 ]
 
 
