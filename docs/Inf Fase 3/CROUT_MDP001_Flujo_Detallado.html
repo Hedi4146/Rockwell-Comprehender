@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CROUT_MDP001_ServoGroup1_Safeoff - Flujo Detallado</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f4f8;
+        }
+        h1 {
+            color: #1a5276;
+            text-align: center;
+            border-bottom: 3px solid #2980b9;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+        }
+        .diagram-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .description {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 5px solid #3498db;
+            margin: 10px 0 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+        }
+        .rung-box {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .rung-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .tag {
+            font-family: 'Courier New', monospace;
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        .highlight { background-color: #fff3cd; }
+        .success { color: #28a745; font-weight: bold; }
+        .danger { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🔧 CROUT_MDP001_ServoGroup1_Safeoff<br/>Flujo Detallado de la Instrucción</h1>
+
+    <!-- DIAGRAMA PRINCIPAL -->
+    <h2>1️⃣ Flujo Completo de la Instrucción CROUT</h2>
+    <div class="diagram-container">
+        <div class="description">
+            Este diagrama muestra cómo fluye la información desde las condiciones de entrada, a través de la instrucción CROUT, hasta las salidas a los 6 servo drives del grupo MDP001.
+        </div>
+        <div class="mermaid">
+flowchart TB
+    subgraph RUNG13["📥 RUNG 13: Generación del ACTUATE"]
+        direction LR
+        E1["Estop_RDY_Machine<br/>✅ = 1"]
+        G1["SafeGate_RDY_MachineInline<br/>✅ = 1"]
+        L1["CROUT.O1<br/>(latch previo)<br/>✅ = 1"]
+        R1["Main_SafeReset<br/>✅ = 1"]
+        AND1{{"AND"}}
+        ACT["MDP001_ServoGroup1<br/>_Safeoff_Enable<br/>= 1"]
+        
+        E1 --> AND1
+        G1 --> AND1
+        L1 --> AND1
+        R1 --> AND1
+        AND1 --> ACT
+    end
+
+    subgraph RUNG14_15["📥 RUNG 14-15: Lectura de FEEDBACK desde Drives"]
+        direction TB
+        
+        subgraph CHA["Canal A - TorqueDisabled1"]
+            SD1A["/SD01:SI.TorqueDisabled1"]
+            SD2A["/SD02:SI.TorqueDisabled1"]
+            SD3A["/SD03:SI.TorqueDisabled1"]
+            SD4A["/SD04:SI.TorqueDisabled1"]
+            SD5A["/SD05:SI.TorqueDisabled1"]
+            SD6A["/SD06:SI.TorqueDisabled1"]
+            ANDA{{"AND"}}
+            FBA["Feedback_ChA<br/>= 1"]
+            
+            SD1A --> ANDA
+            SD2A --> ANDA
+            SD3A --> ANDA
+            SD4A --> ANDA
+            SD5A --> ANDA
+            SD6A --> ANDA
+            ANDA --> FBA
+        end
+        
+        subgraph CHB["Canal B - TorqueDisabled2"]
+            SD1B["/SD01:SI.TorqueDisabled2"]
+            SD2B["/SD02:SI.TorqueDisabled2"]
+            SD3B["/SD03:SI.TorqueDisabled2"]
+            SD4B["/SD04:SI.TorqueDisabled2"]
+            SD5B["/SD05:SI.TorqueDisabled2"]
+            SD6B["/SD06:SI.TorqueDisabled2"]
+            ANDB{{"AND"}}
+            FBB["Feedback_ChB<br/>= 1"]
+            
+            SD1B --> ANDB
+            SD2B --> ANDB
+            SD3B --> ANDB
+            SD4B --> ANDB
+            SD5B --> ANDB
+            SD6B --> ANDB
+            ANDB --> FBB
+        end
+    end
+
+    subgraph RUNG16["⚙️ RUNG 16: Instrucción CROUT"]
+        direction TB
+        CROUT["🔷 CROUT<br/>CROUT_MDP001_ServoGroup1_Safeoff<br/>━━━━━━━━━━━━━━━━━━━<br/>Feedback Type: POSITIVE<br/>Reaction Time: 1000ms"]
+        
+        O1["O1 = 1<br/>(Salida Canal 1)"]
+        O2["O2 = 1<br/>(Salida Canal 2)"]
+        FP["FP = 0<br/>(No Fault)"]
+        
+        CROUT --> O1
+        CROUT --> O2
+        CROUT --> FP
+    end
+
+    subgraph RUNG17_18["📤 RUNG 17-18: Salidas a los Drives"]
+        direction TB
+        
+        subgraph OUT1["Canal 1 - SafeTorqueOff1"]
+            STO1_1["SD01:SO.SafeTorqueOff1 = 1"]
+            STO1_2["SD02:SO.SafeTorqueOff1 = 1"]
+            STO1_3["SD03:SO.SafeTorqueOff1 = 1"]
+            STO1_4["SD04:SO.SafeTorqueOff1 = 1"]
+            STO1_5["SD05:SO.SafeTorqueOff1 = 1"]
+            STO1_6["SD06:SO.SafeTorqueOff1 = 1"]
+        end
+        
+        subgraph OUT2["Canal 2 - SafeTorqueOff2"]
+            STO2_1["SD01:SO.SafeTorqueOff2 = 1"]
+            STO2_2["SD02:SO.SafeTorqueOff2 = 1"]
+            STO2_3["SD03:SO.SafeTorqueOff2 = 1"]
+            STO2_4["SD04:SO.SafeTorqueOff2 = 1"]
+            STO2_5["SD05:SO.SafeTorqueOff2 = 1"]
+            STO2_6["SD06:SO.SafeTorqueOff2 = 1"]
+        end
+    end
+
+    subgraph DRIVES["🔌 KINETIX 5700 - Estado Resultante"]
+        direction LR
+        D1["SD01<br/>✅ Habilitado"]
+        D2["SD02<br/>✅ Habilitado"]
+        D3["SD03<br/>✅ Habilitado"]
+        D4["SD04<br/>✅ Habilitado"]
+        D5["SD05<br/>✅ Habilitado"]
+        D6["SD06<br/>✅ Habilitado"]
+    end
+
+    %% Conexiones principales
+    ACT -->|"Actuate"| CROUT
+    FBA -->|"Feedback 1"| CROUT
+    FBB -->|"Feedback 2"| CROUT
+    
+    O1 --> STO1_1
+    O1 --> STO1_2
+    O1 --> STO1_3
+    O1 --> STO1_4
+    O1 --> STO1_5
+    O1 --> STO1_6
+    
+    O2 --> STO2_1
+    O2 --> STO2_2
+    O2 --> STO2_3
+    O2 --> STO2_4
+    O2 --> STO2_5
+    O2 --> STO2_6
+    
+    OUT1 --> D1
+    OUT1 --> D2
+    OUT1 --> D3
+    OUT2 --> D4
+    OUT2 --> D5
+    OUT2 --> D6
+
+    %% Estilos
+    classDef input fill:#d4edda,stroke:#28a745,stroke-width:2px
+    classDef crout fill:#cce5ff,stroke:#0066cc,stroke-width:3px
+    classDef output fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+    classDef drive fill:#e2e3e5,stroke:#6c757d,stroke-width:2px
+    classDef and fill:#f8f9fa,stroke:#dee2e6,stroke-width:1px
+
+    class E1,G1,L1,R1,ACT,FBA,FBB input
+    class CROUT crout
+    class O1,O2,FP,STO1_1,STO1_2,STO1_3,STO1_4,STO1_5,STO1_6,STO2_1,STO2_2,STO2_3,STO2_4,STO2_5,STO2_6 output
+    class D1,D2,D3,D4,D5,D6 drive
+        </div>
+    </div>
+
+    <!-- DIAGRAMA DE ENTRADAS/SALIDAS CROUT -->
+    <h2>2️⃣ Detalle de Conexiones del CROUT</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+flowchart LR
+    subgraph INPUTS["📥 ENTRADAS"]
+        direction TB
+        I1["<b>Actuate</b><br/>MDP001_ServoGroup1_Safeoff_Enable"]
+        I2["<b>Feedback 1</b><br/>MDP001_ServoGroup1_Safeoff_Feedback_ChA"]
+        I3["<b>Feedback 2</b><br/>MDP001_ServoGroup1_Safeoff_Feedback_ChB"]
+        I4["<b>Input Status</b><br/>MDP001_ServoGroup1_InputStatus_OK"]
+        I5["<b>Output Status</b><br/>MDP001_ServoGroup1_OutputStatus_OK"]
+        I6["<b>Reset</b><br/>Main_SafeReset"]
+    end
+
+    subgraph CROUT_BOX["⚙️ CROUT_MDP001_ServoGroup1_Safeoff"]
+        direction TB
+        CONFIG["<b>Configuración:</b><br/>━━━━━━━━━━━━━━<br/>Feedback Type: POSITIVE<br/>Reaction Time: 1000 ms"]
+        LOGIC["<b>Lógica Interna:</b><br/>━━━━━━━━━━━━━━<br/>1. Verifica Actuate<br/>2. Genera O1, O2<br/>3. Espera Feedback<br/>4. Compara FB1 vs FB2<br/>5. Si timeout → FP=1"]
+    end
+
+    subgraph OUTPUTS["📤 SALIDAS"]
+        direction TB
+        O1["<b>O1</b><br/>Comando STO Canal 1<br/>→ SafeTorqueOff1"]
+        O2["<b>O2</b><br/>Comando STO Canal 2<br/>→ SafeTorqueOff2"]
+        O3["<b>FP</b><br/>Fault Present<br/>(0=OK, 1=Falla)"]
+    end
+
+    I1 --> CROUT_BOX
+    I2 --> CROUT_BOX
+    I3 --> CROUT_BOX
+    I4 --> CROUT_BOX
+    I5 --> CROUT_BOX
+    I6 --> CROUT_BOX
+    
+    CROUT_BOX --> O1
+    CROUT_BOX --> O2
+    CROUT_BOX --> O3
+
+    classDef inputs fill:#d4edda,stroke:#28a745,stroke-width:2px
+    classDef crout fill:#cce5ff,stroke:#0066cc,stroke-width:3px
+    classDef outputs fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+
+    class I1,I2,I3,I4,I5,I6 inputs
+    class CROUT_BOX,CONFIG,LOGIC crout
+    class O1,O2,O3 outputs
+        </div>
+
+        <table>
+            <tr>
+                <th>Pin</th>
+                <th>Tag Conectado</th>
+                <th>Descripción</th>
+                <th>Valor Normal</th>
+            </tr>
+            <tr>
+                <td><strong>Actuate</strong></td>
+                <td class="tag">MDP001_ServoGroup1_Safeoff_Enable</td>
+                <td>Comando para habilitar los drives</td>
+                <td class="success">1 = Habilitar</td>
+            </tr>
+            <tr>
+                <td><strong>Feedback 1</strong></td>
+                <td class="tag">MDP001_ServoGroup1_Safeoff_Feedback_ChA</td>
+                <td>Confirmación Canal A (de los 6 drives)</td>
+                <td class="success">1 = Drives OK</td>
+            </tr>
+            <tr>
+                <td><strong>Feedback 2</strong></td>
+                <td class="tag">MDP001_ServoGroup1_Safeoff_Feedback_ChB</td>
+                <td>Confirmación Canal B (de los 6 drives)</td>
+                <td class="success">1 = Drives OK</td>
+            </tr>
+            <tr>
+                <td><strong>Reset</strong></td>
+                <td class="tag">Main_SafeReset</td>
+                <td>Señal de reset manual</td>
+                <td>Pulso para rearmar</td>
+            </tr>
+            <tr class="highlight">
+                <td><strong>O1</strong></td>
+                <td class="tag">→ SDxx:SO.SafeTorqueOff1</td>
+                <td>Salida STO Canal 1 a los 6 drives</td>
+                <td class="success">1 = Torque permitido</td>
+            </tr>
+            <tr class="highlight">
+                <td><strong>O2</strong></td>
+                <td class="tag">→ SDxx:SO.SafeTorqueOff2</td>
+                <td>Salida STO Canal 2 a los 6 drives</td>
+                <td class="success">1 = Torque permitido</td>
+            </tr>
+            <tr>
+                <td><strong>FP</strong></td>
+                <td class="tag">CROUT_MDP001_ServoGroup1_Safeoff.FP</td>
+                <td>Fault Present - indica problema</td>
+                <td class="success">0 = Sin falla</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- DIAGRAMA DE FEEDBACK -->
+    <h2>3️⃣ Ciclo de Feedback (Verificación)</h2>
+    <div class="diagram-container">
+        <div class="description">
+            El CROUT envía el comando y luego verifica que los drives respondieron correctamente. Los contactos de feedback están <strong>negados</strong> porque TorqueDisabled=1 significa "STO activo" (drive deshabilitado).
+        </div>
+        <div class="mermaid">
+flowchart TB
+    subgraph COMANDO["1️⃣ COMANDO (PLC → Drives)"]
+        C1["CROUT genera<br/>O1=1, O2=1"]
+        C2["SafeTorqueOff1 = 1<br/>SafeTorqueOff2 = 1"]
+        C3["CIP Safety<br/>transmite a drives"]
+    end
+
+    subgraph DRIVE_ACTION["2️⃣ ACCIÓN DEL DRIVE"]
+        D1["Kinetix 5700 recibe<br/>SafeTorqueOff = 1"]
+        D2["Drive PERMITE torque<br/>(PWM activo)"]
+        D3["Drive reporta:<br/>TorqueDisabled1 = 0<br/>TorqueDisabled2 = 0"]
+    end
+
+    subgraph FEEDBACK["3️⃣ FEEDBACK (Drives → PLC)"]
+        F1["PLC lee TorqueDisabled<br/>de cada drive"]
+        F2["Rung 14: Contactos NEGADOS<br/>/TorqueDisabled1 = 1"]
+        F3["Rung 15: Contactos NEGADOS<br/>/TorqueDisabled2 = 1"]
+        F4["Feedback_ChA = 1<br/>Feedback_ChB = 1"]
+    end
+
+    subgraph VERIFY["4️⃣ VERIFICACIÓN EN CROUT"]
+        V1["CROUT compara:<br/>Feedback1 == Feedback2?"]
+        V2{"¿Llegó en<br/>1000ms?"}
+        V3["✅ FP = 0<br/>Todo OK"]
+        V4["❌ FP = 1<br/>FAULT!"]
+    end
+
+    C1 --> C2 --> C3
+    C3 -->|"EtherNet/IP"| D1
+    D1 --> D2 --> D3
+    D3 -->|"EtherNet/IP"| F1
+    F1 --> F2 --> F4
+    F1 --> F3 --> F4
+    F4 --> V1 --> V2
+    V2 -->|"SÍ"| V3
+    V2 -->|"NO"| V4
+
+    classDef comando fill:#cce5ff,stroke:#0066cc,stroke-width:2px
+    classDef drive fill:#d4edda,stroke:#28a745,stroke-width:2px
+    classDef feedback fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+    classDef ok fill:#d4edda,stroke:#28a745,stroke-width:3px
+    classDef fail fill:#f8d7da,stroke:#dc3545,stroke-width:3px
+
+    class C1,C2,C3 comando
+    class D1,D2,D3 drive
+    class F1,F2,F3,F4,V1,V2 feedback
+    class V3 ok
+    class V4 fail
+        </div>
+    </div>
+
+    <!-- TABLA DE VERDAD -->
+    <h2>4️⃣ Tabla de Verdad del CROUT</h2>
+    <div class="diagram-container">
+        <div class="description">
+            Esta tabla muestra todos los escenarios posibles y cómo responde el CROUT.
+        </div>
+        <div class="mermaid">
+flowchart TB
+    subgraph NORMAL["✅ OPERACIÓN NORMAL"]
+        N1["Actuate = 1<br/>Feedback1 = 1<br/>Feedback2 = 1"]
+        N2["O1 = 1<br/>O2 = 1<br/>FP = 0"]
+        N3["Drives habilitados<br/>Motores con torque"]
+        N1 --> N2 --> N3
+    end
+
+    subgraph ESTOP["🛑 E-STOP PRESIONADO"]
+        E1["Actuate = 0<br/>(Estop_RDY = 0)"]
+        E2["O1 = 0<br/>O2 = 0<br/>FP = 0"]
+        E3["Drives en STO<br/>Motores sin torque"]
+        E1 --> E2 --> E3
+    end
+
+    subgraph TIMEOUT["⚠️ TIMEOUT DE FEEDBACK"]
+        T1["Actuate = 1<br/>Feedback NO llega<br/>en 1000ms"]
+        T2["O1 = 0<br/>O2 = 0<br/>FP = 1"]
+        T3["FAULT!<br/>Requiere diagnóstico"]
+        T1 --> T2 --> T3
+    end
+
+    subgraph DISCREPANCIA["❌ DISCREPANCIA DE CANALES"]
+        D1["Feedback1 = 1<br/>Feedback2 = 0<br/>(o viceversa)"]
+        D2["O1 = 0<br/>O2 = 0<br/>FP = 1"]
+        D3["FAULT!<br/>Posible falla de cableado"]
+        D1 --> D2 --> D3
+    end
+
+    classDef normal fill:#d4edda,stroke:#28a745,stroke-width:2px
+    classDef estop fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+    classDef fault fill:#f8d7da,stroke:#dc3545,stroke-width:2px
+
+    class N1,N2,N3 normal
+    class E1,E2,E3 estop
+    class T1,T2,T3,D1,D2,D3 fault
+        </div>
+
+        <table>
+            <tr>
+                <th>Escenario</th>
+                <th>Actuate</th>
+                <th>FB1</th>
+                <th>FB2</th>
+                <th>O1</th>
+                <th>O2</th>
+                <th>FP</th>
+                <th>Resultado</th>
+            </tr>
+            <tr>
+                <td>✅ Normal</td>
+                <td class="success">1</td>
+                <td class="success">1</td>
+                <td class="success">1</td>
+                <td class="success">1</td>
+                <td class="success">1</td>
+                <td class="success">0</td>
+                <td>Drives habilitados</td>
+            </tr>
+            <tr>
+                <td>🛑 E-Stop</td>
+                <td class="danger">0</td>
+                <td>X</td>
+                <td>X</td>
+                <td class="danger">0</td>
+                <td class="danger">0</td>
+                <td class="success">0</td>
+                <td>STO activo (normal)</td>
+            </tr>
+            <tr>
+                <td>⚠️ Timeout</td>
+                <td class="success">1</td>
+                <td class="danger">-</td>
+                <td class="danger">-</td>
+                <td class="danger">0</td>
+                <td class="danger">0</td>
+                <td class="danger">1</td>
+                <td>FAULT - Sin respuesta</td>
+            </tr>
+            <tr>
+                <td>❌ Discrepancia</td>
+                <td class="success">1</td>
+                <td class="success">1</td>
+                <td class="danger">0</td>
+                <td class="danger">0</td>
+                <td class="danger">0</td>
+                <td class="danger">1</td>
+                <td>FAULT - Canales difieren</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SECUENCIA TEMPORAL -->
+    <h2>5️⃣ Secuencia Temporal</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+sequenceDiagram
+    participant PLC as Safety PLC
+    participant CROUT as CROUT_MDP001
+    participant NET as CIP Safety
+    participant SD01 as Kinetix SD01
+    participant SD06 as Kinetix SD06
+
+    Note over PLC: Condiciones OK:<br/>Estop_RDY=1, SafeGate_RDY=1
+
+    PLC->>CROUT: Actuate = 1
+    CROUT->>CROUT: Genera O1=1, O2=1
+    CROUT->>CROUT: Inicia timer 1000ms
+    
+    CROUT->>NET: SafeTorqueOff1=1, SafeTorqueOff2=1
+    NET->>SD01: Comando STO
+    NET->>SD06: Comando STO
+    
+    Note over SD01,SD06: Drives habilitan torque<br/>PWM activo
+
+    SD01->>NET: TorqueDisabled1=0, TorqueDisabled2=0
+    SD06->>NET: TorqueDisabled1=0, TorqueDisabled2=0
+    NET->>PLC: Feedback de todos los drives
+    
+    PLC->>PLC: Rung 14-15: Procesa feedback
+    PLC->>CROUT: Feedback1=1, Feedback2=1
+    
+    CROUT->>CROUT: Verifica FB1==FB2 ✓
+    CROUT->>CROUT: Timer < 1000ms ✓
+    CROUT->>CROUT: FP = 0 (OK)
+    
+    Note over PLC,SD06: ✅ Sistema operando normalmente
+        </div>
+    </div>
+
+    <!-- RESUMEN -->
+    <h2>📋 Resumen de Tags del CROUT MDP001</h2>
+    <div class="diagram-container">
+        <table>
+            <tr>
+                <th>Categoría</th>
+                <th>Tag</th>
+                <th>Tipo</th>
+                <th>Fuente/Destino</th>
+            </tr>
+            <tr>
+                <td rowspan="4"><strong>Entradas</strong></td>
+                <td class="tag">MDP001_ServoGroup1_Safeoff_Enable</td>
+                <td>BOOL</td>
+                <td>Rung 13 (AND de condiciones)</td>
+            </tr>
+            <tr>
+                <td class="tag">MDP001_ServoGroup1_Safeoff_Feedback_ChA</td>
+                <td>BOOL</td>
+                <td>Rung 14 (AND de 6 drives)</td>
+            </tr>
+            <tr>
+                <td class="tag">MDP001_ServoGroup1_Safeoff_Feedback_ChB</td>
+                <td>BOOL</td>
+                <td>Rung 15 (AND de 6 drives)</td>
+            </tr>
+            <tr>
+                <td class="tag">Main_SafeReset</td>
+                <td>BOOL</td>
+                <td>Botón de reset</td>
+            </tr>
+            <tr>
+                <td rowspan="3"><strong>Salidas</strong></td>
+                <td class="tag">CROUT_MDP001_ServoGroup1_Safeoff.O1</td>
+                <td>BOOL</td>
+                <td>→ SDxx:SO.SafeTorqueOff1</td>
+            </tr>
+            <tr>
+                <td class="tag">CROUT_MDP001_ServoGroup1_Safeoff.O2</td>
+                <td>BOOL</td>
+                <td>→ SDxx:SO.SafeTorqueOff2</td>
+            </tr>
+            <tr>
+                <td class="tag">CROUT_MDP001_ServoGroup1_Safeoff.FP</td>
+                <td>BOOL</td>
+                <td>Fault Present</td>
+            </tr>
+            <tr>
+                <td rowspan="6"><strong>Drives</strong></td>
+                <td class="tag">MDP001_SD01</td>
+                <td>Module</td>
+                <td>Kinetix 5700</td>
+            </tr>
+            <tr>
+                <td class="tag">MDP001_SD02</td>
+                <td>Module</td>
+                <td>Kinetix 5700</td>
+            </tr>
+            <tr>
+                <td class="tag">MDP001_SD03</td>
+                <td>Module</td>
+                <td>Kinetix 5700</td>
+            </tr>
+            <tr>
+                <td class="tag">MDP001_SD04</td>
+                <td>Module</td>
+                <td>Kinetix 5700</td>
+            </tr>
+            <tr>
+                <td class="tag">MDP001_SD05</td>
+                <td>Module</td>
+                <td>Kinetix 5700</td>
+            </tr>
+            <tr>
+                <td class="tag">MDP001_SD06</td>
+                <td>Module</td>
+                <td>Kinetix 5700</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true,
+                showSequenceNumbers: true
+            }
+        });
+    </script>
+</body>
+</html>
