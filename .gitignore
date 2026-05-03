@@ -41,6 +41,9 @@ reportes_generados/
 *.sqlite
 *.sqlite-journal
 
+# Notas locales (no versionar — viven solo en el repo del owner)
+MENSAJE_INICIAL_CODE.md
+
 # Pero NO ignorar los L5X — son la fuente de verdad
 # parque_l5x/*.L5X      ← NO descomentar; los L5X SÍ se versionan
 
