@@ -20,9 +20,9 @@ Uso:
     # O vía Project:
     project.get_instruction_metadata("CROUT")
 
-Catálogo v0.3.x (9 instrucciones):
+Catálogo v0.3.x (14 instrucciones):
 - Safety: CROUT, DCI_STOP, DCI_STOP_TEST_LOCK
-- Motion: MAJ, MAG, MAS, MAH, MAOC, MAM
+- Motion: MAJ, MAG, MAS, MAH, MAOC, MAM, MSO, MSF, MAFR, MASR, MAPC
 
 Fuentes:
 - Rockwell pub 1756-RM095 (GuardLogix Safety Instructions)
@@ -471,6 +471,228 @@ _MAM = InstructionMetadata(
 )
 
 
+_MSO = InstructionMetadata(
+    name="MSO",
+    full_name="Motion Servo On",
+    category="motion",
+    summary=(
+        "Activa el amplificador del drive y habilita el lazo cerrado de servo "
+        "control para un eje físico. Engancha el lazo en la posición actual del "
+        "eje en preparación para comandos de movimiento subsiguientes."
+    ),
+    pins=[
+        InstructionPin("Axis", "both", "AXIS_*",
+                       "Eje sobre el que se activa el servo."),
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER)"),
+    ],
+    config_attributes=[],
+    fault_modes=[
+        InstructionFault(
+            "AxisInMotion (22)",
+            "Error si MSO se intenta mientras el eje está en movimiento."
+        ),
+        InstructionFault(
+            "ServoMessageFailure (12)",
+            "Falló el messaging al módulo de servo (Object Mode conflict, "
+            "dispositivo en estado incorrecto)."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "Ejecución asíncrona: puede tomar múltiples scans en completar. La lógica "
+        "de secuencia debe esperar al .DN antes de comandar motion subsiguiente. Al "
+        "éxito, fuerza ServoActionStatus y DriveEnableStatus a TRUE. Aparece en "
+        "CINTA (1). Curado vía NotebookLM batch (2026-05-03)."
+    ),
+)
+
+
+_MSF = InstructionMetadata(
+    name="MSF",
+    full_name="Motion Servo Off",
+    category="motion",
+    summary=(
+        "Desactiva inmediatamente la salida del drive y deshabilita el lazo de "
+        "servo del eje. Deshabilita planners de motion activos. Para non-CIP "
+        "transiciona a Axis Ready; para CIP a Stopped."
+    ),
+    pins=[
+        InstructionPin("Axis", "both", "AXIS_*",
+                       "Eje sobre el que se desactiva el servo."),
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER)"),
+    ],
+    config_attributes=[],
+    fault_modes=[
+        InstructionFault(
+            "OperandTypeFault",
+            "Major fault si se pasa referencia no inicializada o tipo "
+            "incorrecto al operando Axis."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "PELIGRO operacional: si se ejecuta MSF mientras el eje está en movimiento, "
+        "el eje COASTS to uncontrolled stop (no hay deceleración controlada — usar MAS "
+        "primero para parada controlada). El .DN solo se setea tras completar el "
+        "messaging asíncrono. Limpia todos los status bits de motion tracking. "
+        "Aparece en CINTA (1). Curado vía NotebookLM batch (2026-05-03)."
+    ),
+)
+
+
+_MAFR = InstructionMetadata(
+    name="MAFR",
+    full_name="Motion Axis Fault Reset",
+    category="motion",
+    summary=(
+        "Limpia el status de fault del eje especificado. Es el único método "
+        "programático para limpiar motion faults del eje. Solo limpia el status — "
+        "NO realiza recovery (no re-habilita el servo, hay que invocar MSO después)."
+    ),
+    pins=[
+        InstructionPin("Axis", "both", "AXIS_*",
+                       "Eje sobre el que se resetea el fault."),
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER)"),
+    ],
+    config_attributes=[],
+    fault_modes=[
+        InstructionFault(
+            "OperandTypeFault",
+            "Major fault si se pasa referencia no inicializada o tipo "
+            "incorrecto al operando Axis."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "Si la condición física que causó el fault no se corrigió previamente, el eje "
+        "vuelve a faultar inmediatamente — da apariencia de 'reset no funcionó'. La "
+        "ejecución requiere multiple coarse updates al hardware del drive, así que el "
+        ".DN puede tardar varios segundos en setearse. Aparece en CINTA (3) + "
+        "AQL (3) + CPPIM (4) = 10 invocaciones acumuladas. Curado vía NotebookLM "
+        "batch (2026-05-03)."
+    ),
+)
+
+
+_MASR = InstructionMetadata(
+    name="MASR",
+    full_name="Motion Axis Shutdown Reset",
+    category="motion",
+    summary=(
+        "Transiciona un eje específico de Shutdown a Axis Ready, limpiando "
+        "automáticamente los faults asociados. Si todos los ejes del módulo se "
+        "sacan de Shutdown, el contacto OK del módulo se cierra."
+    ),
+    pins=[
+        InstructionPin("Axis", "both", "AXIS_*",
+                       "Eje a sacar del estado Shutdown."),
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER)"),
+    ],
+    config_attributes=[],
+    fault_modes=[
+        InstructionFault(
+            "OperandTypeFault",
+            "Major fault si se pasa referencia no inicializada o tipo "
+            "incorrecto al operando Axis."
+        ),
+        InstructionFault(
+            "ShutdownStatusTimeout",
+            "Sequencing issue: reset iniciado antes de que el shutdown previo "
+            "finalice del lado del hardware."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "El .DN solo se setea tras múltiples coarse updates de hardware. Si la causa "
+        "física del shutdown persiste, el reset 'falla' (eje refalla inmediatamente). "
+        "Para que cierre el contacto OK del módulo, hay que ejecutar MASR sobre TODOS "
+        "los ejes en shutdown asociados al módulo. Aparece en CINTA (1) + AQL (3) + "
+        "CPPIM (5) = 9 invocaciones. Curado vía NotebookLM batch (2026-05-03)."
+    ),
+)
+
+
+_MAPC = InstructionMetadata(
+    name="MAPC",
+    full_name="Motion Axis Position Cam",
+    category="motion",
+    summary=(
+        "Camming electrónico entre dos ejes — sincroniza un Slave a un Master "
+        "usando un Position Cam Profile pre-calculado (vía MCCP). Permite "
+        "cancelar/reemplazar/agendar el cam profile en posiciones específicas "
+        "del Master. Complementa MAOC (output cams) para máquinas rotativas."
+    ),
+    pins=[
+        InstructionPin("SlaveAxis", "both", "AXIS_*",
+                       "Eje slave controlado por el Master."),
+        InstructionPin("MasterAxis", "both", "AXIS_*",
+                       "Eje master que provee la posición de referencia."),
+        InstructionPin("MotionControl", "both", "MOTION_INSTRUCTION",
+                       "Estructura de control (.EN/.DN/.ER/.IP/.AC/.PC)"),
+        InstructionPin("CamProfile", "input", "CAM_PROFILE",
+                       "Array con datos del cam profile ya calculados (vía MCCP)."),
+        InstructionPin("SlaveScaling", "input", "REAL",
+                       "Multiplicador unitless que escala la distancia del Slave."),
+        InstructionPin("MasterScaling", "input", "REAL",
+                       "Multiplicador unitless que escala la distancia del Master."),
+        InstructionPin("MasterLockPosition", "input", "REAL",
+                       "Posición absoluta del Master donde inicia ejecución del cam."),
+        InstructionPin("CamLockPosition", "input", "REAL",
+                       "Punto de inicio dentro del cam profile cuando el Slave engancha."),
+    ],
+    config_attributes=[
+        InstructionPin("Direction", "config", "ENUM",
+                       "0='Same' | 1='Opposite' | 2='Reverse' | 3='Unchanged'"),
+        InstructionPin("ExecutionMode", "config", "ENUM",
+                       "0='Once' | 1='Continuous' | 2='Persistent'"),
+        InstructionPin("ExecutionSchedule", "config", "ENUM",
+                       "0='Immediate' | 1='Pending' | 2='ForwardOnly' | "
+                       "3='ReverseOnly' | 4='Bidirectional'"),
+        InstructionPin("CamType", "config", "ENUM",
+                       "0='New Cam' | 1='Replace and Restart' | 2='Replace and Continue'"),
+        InstructionPin("MasterReference", "config", "ENUM",
+                       "0='Actual' | 1='Command'"),
+        InstructionPin("MasterDirection", "config", "ENUM",
+                       "0='Bidirectional' | 1='ForwardOnly' | 2='ReverseOnly'"),
+    ],
+    fault_modes=[
+        InstructionFault(
+            "AxisNotConfigured",
+            "EXERR=1 si Slave no configurado, EXERR=2 si Master no configurado."
+        ),
+        InstructionFault(
+            "UncalculatedCamProfile",
+            "El array CamProfile no tiene status que indique que ya se calculó "
+            "(ejecutar MCCP antes que MAPC)."
+        ),
+    ],
+    references=[
+        "Rockwell pub MOTION-RM002 (Logix5000 Controllers Motion Instructions Reference Manual)",
+    ],
+    notes=(
+        "Completa en 1 scan: .DN y .IP se setean inmediatamente al iniciar (no "
+        "esperan al fin físico del cam). Con Schedule='Pending' espera a que el cam "
+        "actual termine antes de tomar control — IGNORA MasterAxis y "
+        "MasterLockPosition. Decrementar MasterScaling o incrementar SlaveScaling "
+        "sube velocidades y aceleraciones requeridas drásticamente — causa común de "
+        "motion faults inesperados. Aparece en CINTA (1) + AQL (1) + CPPIM (7) = 9 "
+        "invocaciones. Curado vía NotebookLM batch (2026-05-03)."
+    ),
+)
+
+
 # Catálogo público (orden curado: safety primero, después motion)
 ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _CROUT,
@@ -482,6 +704,11 @@ ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _MAH,
     _MAOC,
     _MAM,
+    _MSO,
+    _MSF,
+    _MAFR,
+    _MASR,
+    _MAPC,
 ]
 
 
