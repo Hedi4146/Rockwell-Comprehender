@@ -104,6 +104,12 @@ class Routine:
     """Rutina (puede pertenecer a un programa o a un AOI).
 
     Si pertenece a un AOI, .program será None.
+
+    `protected=True` indica que la rutina está protegida con Source Protection
+    en Studio 5000 (`<EncodedData EncryptionConfig="9">` en el L5X).
+    Cuando es protected, `code=""` porque el cuerpo está encriptado en blob
+    base64 que no podemos parsear. Es común en GuardLogix Safety routines y
+    en proyectos integrados por terceros (Amantrini, HCH, etc.).
     """
 
     name: str
@@ -111,11 +117,19 @@ class Routine:
     type: str  # "RLL" | "ST" | "FBD" | "SFC"
     code: str
     description: str = ""
+    protected: bool = False
 
 
 @dataclass
 class AOIDetail:
-    """AOI con su definición completa."""
+    """AOI con su definición completa.
+
+    `protected=True` indica que el AOI completo está encriptado (vendor
+    como Xu/Jin/Rockwell/etc. lo distribuyó con Source Protection).
+    Cuando es protected, `parameters` y `routines` quedan vacíos porque
+    no podemos parsear el blob; solo conocemos el nombre y metadata del
+    header (revision, vendor, etc.).
+    """
 
     name: str
     revision: str
@@ -123,6 +137,7 @@ class AOIDetail:
     parameters: list[Parameter] = field(default_factory=list)
     local_tags: list[Tag] = field(default_factory=list)
     routines: dict[str, Routine] = field(default_factory=dict)
+    protected: bool = False
 
 
 @dataclass
@@ -142,6 +157,19 @@ class SearchHit:
     location: str  # ej: "Programs/MainProgram/Routines/Drive_Rolls/Rung_5"
     snippet: str
     context: str   # "rung" | "st_line" | "tag_description" | etc.
+
+
+@dataclass
+class PathStep:
+    """Un paso de un path causal devuelto por `find_causal_path`.
+
+    `target` es el tag alcanzado en este step (NO el operand de la xref entry,
+    que apunta al predecesor). `via` es la entry que conectó el paso anterior
+    con este target.
+    """
+
+    target: str
+    via: "XrefEntry"
 
 
 @dataclass
@@ -380,6 +408,30 @@ class Project:
     # Cache de invocaciones de AOIs para cross-AOI traversal (Paso 5b.2).
     # Key: aoi_name → list[(location, instruction_index, args_in_order)].
     _invocation_cache: dict = field(default_factory=dict, repr=False, compare=False)
+    # Cache lazy de pattern recognition (v0.3 Capa C). None hasta primer acceso.
+    _detected_patterns_cache: object = field(default=None, repr=False, compare=False)
+
+    @property
+    def detected_patterns(self):
+        """Devuelve los patterns detectados (zonas, naming matches, roles).
+
+        Lazy: la primera llamada ejecuta `detect_patterns(self)`; las
+        siguientes retornan el cache. Ver `rockwell_comprehender.patterns`.
+        """
+        if self._detected_patterns_cache is None:
+            from .patterns import detect_patterns
+            self._detected_patterns_cache = detect_patterns(self)
+        return self._detected_patterns_cache
+
+    def get_instruction_metadata(self, name: str):
+        """Devuelve metadata curada de una instrucción Rockwell, o None.
+
+        Wrapper de conveniencia para `instruction_library.get_instruction_metadata`.
+        Útil en flujos donde se tiene el Project en mano y se quiere consultar
+        metadata sin importar el módulo aparte.
+        """
+        from .instruction_library import get_instruction_metadata as _get
+        return _get(name)
 
     def _ensure_xref_built(self) -> None:
         """Construye el xref la primera vez que se necesita."""
@@ -616,6 +668,122 @@ class Project:
                 )
                 node.children.append(child)
         return node
+
+    # ─── BFS find_causal_path (Paso 3 v0.2.x) ─────────────────────────
+
+    def find_causal_path(
+        self,
+        from_tag: str,
+        to_tag: str,
+        max_depth: int = 10,
+        direction: str = "back",
+        scope: Optional[str] = None,
+    ) -> Optional[list["PathStep"]]:
+        """Encuentra el camino causal más corto entre dos tags usando BFS.
+
+        Resuelve el problema de explosión de árbol que aparece con `trace_back`
+        a depth alto: en lugar de generar todo el grafo y filtrar, BFS encuentra
+        el path más corto en O(nodos+aristas) sin construir el árbol completo.
+
+        Args:
+            from_tag: tag origen (donde inicia la búsqueda).
+            to_tag: tag destino que queremos alcanzar.
+            max_depth: profundidad máxima de exploración. 10 es razonable para
+                proyectos industriales típicos.
+            direction:
+                - `"back"`: rastrea hacia atrás (`from_tag` depende causalmente
+                   de `to_tag` — antecedentes / writers chain). Soporta cross-AOI.
+                - `"forward"`: rastrea hacia adelante (`to_tag` depende de
+                   `from_tag` — consecuentes / readers chain). Cross-AOI no
+                   implementado todavía.
+            scope: opcional. Filtro inicial de búsqueda. Cuando el BFS cruza
+                una invocación AOI, el `scope` se resetea a None desde ese
+                hop en adelante (cross-AOI sale del scope intencionalmente).
+
+        Returns:
+            Lista de `PathStep`: cada step expone `target` (tag alcanzado) y
+            `via` (XrefEntry que conectó). Lista vacía si `from_tag == to_tag`.
+            `None` si no existe path en `max_depth`.
+        """
+        self._ensure_xref_built()
+
+        if from_tag == to_tag:
+            return []
+
+        initial_aoi_ctx = self._infer_aoi_context_from_scope(scope)
+
+        from collections import deque
+        # frontier: deque de (tag, aoi_context, depth, current_scope)
+        # current_scope se resetea a None después de un cross-AOI hop.
+        # visited: dict tag -> (predecessor_tag, via_entry) — None para from_tag
+        frontier: deque = deque([(from_tag, initial_aoi_ctx, 0, scope)])
+        visited: dict[str, Optional[tuple[str, XrefEntry]]] = {from_tag: None}
+
+        while frontier:
+            current, aoi_ctx, depth, current_scope = frontier.popleft()
+
+            if depth >= max_depth:
+                continue
+
+            # Generar candidatos del próximo hop según dirección.
+            # Cada candidato es (next_tag, via_entry, next_aoi_ctx, next_scope).
+            candidates: list[tuple[str, XrefEntry, Optional[AOIDetail], Optional[str]]] = []
+
+            if direction == "back":
+                # Intra-scope: writers + sus reads (granularidad por-instrucción).
+                # next_scope = current_scope (sigue intra)
+                for w in self.writers_of(current, scope=current_scope):
+                    new_ctx = self._infer_aoi_context_from_location(w.location)
+                    for ut in self._reads_at_instruction(w.location, w.instruction_index):
+                        if ut == current:
+                            continue
+                        candidates.append((ut, w, new_ctx, current_scope))
+                # Cross-AOI: si current es parameter del aoi_context actual.
+                # next_scope = None (salimos del scope al cruzar la frontera).
+                if aoi_ctx is not None:
+                    visible_param_names = {p.name for p in aoi_ctx.parameters if p.visible}
+                    if current in visible_param_names:
+                        for entry, child_ctx in self._cross_aoi_back(aoi_ctx, current):
+                            candidates.append((entry.operand, entry, child_ctx, None))
+            elif direction == "forward":
+                for r in self.readers_of(current, scope=current_scope):
+                    new_ctx = self._infer_aoi_context_from_location(r.location)
+                    for dt in self._writes_at_instruction(r.location, r.instruction_index):
+                        if dt == current:
+                            continue
+                        candidates.append((dt, r, new_ctx, current_scope))
+                # Cross-AOI forward: no implementado en esta iteración
+            else:
+                raise ValueError(f"direction debe ser 'back' o 'forward', no '{direction}'")
+
+            for next_tag, via, next_ctx, next_scope in candidates:
+                if next_tag in visited:
+                    continue
+                visited[next_tag] = (current, via)
+
+                if next_tag == to_tag:
+                    return self._reconstruct_path(visited, to_tag)
+
+                frontier.append((next_tag, next_ctx, depth + 1, next_scope))
+
+        return None  # no path found within max_depth
+
+    @staticmethod
+    def _reconstruct_path(
+        visited: dict, end: str
+    ) -> list["PathStep"]:
+        """Reconstruye el path BFS desde `end` hacia atrás siguiendo predecessors.
+
+        Cada PathStep tiene `target` = el tag alcanzado en ese step (NO el operand
+        de la xref entry, que apunta al predecesor del step).
+        """
+        steps: list[PathStep] = []
+        current = end
+        while visited.get(current) is not None:
+            pred, via = visited[current]
+            steps.append(PathStep(target=current, via=via))
+            current = pred
+        return list(reversed(steps))
 
     # ─── Cross-AOI helpers (Paso 5b.2) ────────────────────────────────
 
@@ -887,7 +1055,7 @@ def _first_match_snippet(text: str, query: str, window: int = 80) -> str:
 # Schema SQLite
 # ─────────────────────────────────────────────────────────────────────────
 
-SCHEMA_VERSION = "v0.2.1"  # bump: + xref.instruction_index para granularidad por-instrucción
+SCHEMA_VERSION = "v0.2.2"  # bump: + columnas protected en routines / aoi_routines / aois
 
 # El schema cubre TODO el modelo, incluyendo `xref` que se crea VACÍA en v0.1
 # (DT-009 — los schemas se establecen temprano y crecen aditivamente).
@@ -949,20 +1117,23 @@ CREATE TABLE IF NOT EXISTS programs (
 );
 
 -- Routines (de programas; las de AOIs se asocian via aoi_name en la tabla aoi_routines)
+-- v0.2.2: + protected (Source Protection / EncodedData EncryptionConfig=9)
 CREATE TABLE IF NOT EXISTS routines (
     program     TEXT,
     name        TEXT,
     type        TEXT,
     code        TEXT,
     description TEXT,
+    protected   INTEGER DEFAULT 0,
     PRIMARY KEY (program, name)
 );
 
--- AOIs
+-- AOIs (v0.2.2: + protected)
 CREATE TABLE IF NOT EXISTS aois (
     name        TEXT PRIMARY KEY,
     revision    TEXT,
-    description TEXT
+    description TEXT,
+    protected   INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS aoi_parameters (
@@ -978,12 +1149,14 @@ CREATE TABLE IF NOT EXISTS aoi_parameters (
     PRIMARY KEY (aoi_name, name)
 );
 
+-- v0.2.2: + protected
 CREATE TABLE IF NOT EXISTS aoi_routines (
     aoi_name    TEXT,
     name        TEXT,
     type        TEXT,
     code        TEXT,
     description TEXT,
+    protected   INTEGER DEFAULT 0,
     PRIMARY KEY (aoi_name, name)
 );
 

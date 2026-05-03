@@ -23,6 +23,7 @@ from .model import (
     Project,
     Routine,
     SearchHit,
+    PathStep,
     Tag,
     Task,
     TraceNode,
@@ -52,5 +53,6 @@ __all__ = [
     "Observation",
     "XrefEntry",
     "TraceNode",
+    "PathStep",
     "__version__",
 ]

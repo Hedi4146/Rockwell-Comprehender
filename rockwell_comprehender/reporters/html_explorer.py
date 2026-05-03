@@ -138,6 +138,22 @@ def _render_topbar(project: Project) -> str:
             f'<button class="obs-badge info" id="obs-badge" type="button">'
             f'ⓘ {n_obs} observaciones</button>'
         )
+
+    # v0.3 Capa C: badge de patterns (lazy — solo si hay zonas detectadas)
+    dp = project.detected_patterns
+    n_zones = len(dp.zones)
+    n_safety = sum(len(nm.matches) for nm in dp.naming_matches if nm.category == "safety")
+    if n_zones > 0 or n_safety > 0:
+        title = f"{n_zones} zonas, {n_safety} safety patterns detectados"
+        patterns_btn = (
+            f'<button class="patterns-badge" id="patterns-badge" type="button" '
+            f'title="{title}">🗺️ {n_zones} zonas'
+            f'{f" · 🛡 {n_safety}" if n_safety else ""}'
+            f'</button>'
+        )
+    else:
+        patterns_btn = ""
+
     return (
         '<header class="topbar">\n'
         '  <div class="title">\n'
@@ -152,6 +168,7 @@ def _render_topbar(project: Project) -> str:
         'spellcheck="false" autocomplete="off" />\n'
         '    <label class="filter-toggle">'
         '<input type="checkbox" id="filter-hide-tags"> Ocultar Tags</label>\n'
+        f'    {patterns_btn}\n'
         f'    {obs_btn}\n'
         "  </div>\n"
         "</header>"
@@ -385,6 +402,10 @@ def _build_panels(p: Project) -> dict[str, str]:
     axis_to_module = _build_axis_to_module(p, primitive_axes)
     axis_to_aois = _map_axes_to_aois(p, [a.name for a in primitive_axes])
     aoi_partners = _aoi_duplicate_partners(p)
+    # v0.3 Capa C: detected patterns (lazy, cached). El index facilita lookups
+    # O(1) en los paneles individuales (axis, module).
+    dp = p.detected_patterns
+    pattern_idx = _build_pattern_index(dp)
 
     panels: dict[str, str] = {}
 
@@ -424,6 +445,7 @@ def _build_panels(p: Project) -> dict[str, str]:
             axis_to_module.get(ax.name),
             axis_to_aois.get(ax.name, set()),
             p,
+            pattern_idx,
         )
 
     for a in p.aois:
@@ -433,13 +455,136 @@ def _build_panels(p: Project) -> dict[str, str]:
         panels[f"udt::{u.name}"] = _panel_udt(u)
 
     for m in p.modules:
-        panels[f"module::{m.name}"] = _panel_module(m, p)
+        panels[f"module::{m.name}"] = _panel_module(m, p, pattern_idx)
 
     # Panel de observaciones (accesible vía badge en header)
     if p.observations:
         panels["__observations__::__all__"] = _panel_observations(p)
 
+    # v0.3 Capa C: panel resumen de patterns detectados
+    if dp.zones or dp.naming_matches:
+        panels["__patterns__::__all__"] = _panel_patterns_overview(dp)
+
     return panels
+
+
+def _build_pattern_index(dp) -> dict:
+    """Construye índices inversos sobre DetectedPatterns para lookup O(1) en
+    los paneles individuales.
+    """
+    module_to_zone: dict = {}
+    tag_to_zone: dict = {}
+    for z in dp.zones:
+        for m in z.member_modules:
+            module_to_zone[m] = z
+        for t in z.member_tags:
+            tag_to_zone[t] = z
+
+    tag_to_safety_patterns: dict[str, list[str]] = {}
+    name_to_drive_kind: dict[str, str] = {}
+    for nm in dp.naming_matches:
+        for name in nm.matches:
+            if nm.category == "safety":
+                tag_to_safety_patterns.setdefault(name, []).append(nm.pattern_name)
+            elif nm.category == "drive":
+                # Si un name matchea más de uno, queda el último; raro
+                name_to_drive_kind[name] = nm.pattern_name
+
+    return {
+        "module_to_zone": module_to_zone,
+        "tag_to_zone": tag_to_zone,
+        "tag_to_safety": tag_to_safety_patterns,
+        "name_to_drive_kind": name_to_drive_kind,
+        "tag_to_role": {n: tr.role for n, tr in dp.tag_roles.items()},
+    }
+
+
+def _panel_patterns_overview(dp) -> str:
+    """Panel resumen de DetectedPatterns: zonas + naming matches + roles."""
+    parts = [
+        f'<div class="panel"><h1>Patterns detectados</h1>',
+        f'<p class="subtitle">'
+        f'{dp.summary.get("zones_total", 0)} zonas · '
+        f'{dp.summary.get("naming_matches_total", 0)} naming matches · '
+        f'{dp.summary.get("tag_roles_total", 0)} tag roles'
+        f'</p>',
+    ]
+
+    # Zonas
+    if dp.zones:
+        # Group by kind
+        from collections import defaultdict as _dd
+        zones_by_kind = _dd(list)
+        for z in dp.zones:
+            zones_by_kind[z.kind].append(z)
+        parts.append('<h3>Zonas físicas detectadas</h3>')
+        for kind in sorted(zones_by_kind.keys()):
+            zs = sorted(zones_by_kind[kind], key=lambda z: z.name)
+            parts.append(f'<h4>{_e(kind)} ({len(zs)})</h4>')
+            parts.append('<table class="kv"><thead><tr>'
+                         '<th>Zona</th><th>Modules</th><th>Tags</th>'
+                         '<th>Miembros (sample)</th></tr></thead><tbody>')
+            for z in zs:
+                sample = (z.member_modules[:3] + z.member_tags[:3])[:4]
+                sample_str = ", ".join(f"<code>{_e(s)}</code>" for s in sample)
+                parts.append(
+                    f'<tr><td><code>{_e(z.name)}</code></td>'
+                    f'<td style="text-align:right">{len(z.member_modules)}</td>'
+                    f'<td style="text-align:right">{len(z.member_tags)}</td>'
+                    f'<td>{sample_str}</td></tr>'
+                )
+            parts.append('</tbody></table>')
+
+    # Naming matches por categoría
+    if dp.naming_matches:
+        parts.append('<h3>Naming patterns por categoría</h3>')
+        # Group by category
+        from collections import defaultdict as _dd
+        by_cat = _dd(list)
+        for nm in dp.naming_matches:
+            by_cat[nm.category].append(nm)
+        for cat in sorted(by_cat.keys()):
+            nms = by_cat[cat]
+            total_matches = sum(len(nm.matches) for nm in nms)
+            parts.append(f'<h4>{_e(cat)} ({total_matches} matches en {len(nms)} patrones)</h4>')
+            parts.append('<table class="kv"><thead><tr>'
+                         '<th>Patrón</th><th>Regex</th><th>Matches</th>'
+                         '<th>Ejemplos</th></tr></thead><tbody>')
+            for nm in sorted(nms, key=lambda n: -len(n.matches)):
+                examples = ", ".join(f"<code>{_e(s)}</code>" for s in nm.matches[:3])
+                parts.append(
+                    f'<tr><td><code>{_e(nm.pattern_name)}</code></td>'
+                    f'<td><code>{_e(nm.regex)}</code></td>'
+                    f'<td style="text-align:right">{len(nm.matches)}</td>'
+                    f'<td>{examples}</td></tr>'
+                )
+            parts.append('</tbody></table>')
+
+    # Tag roles
+    if dp.tag_roles:
+        from collections import Counter as _C
+        role_counts = _C(tr.role for tr in dp.tag_roles.values())
+        parts.append('<h3>Roles HMI detectados (top por count)</h3>')
+        parts.append('<table class="kv"><thead><tr>'
+                     '<th>Rol</th><th>Count</th>'
+                     '<th>Ejemplos</th></tr></thead><tbody>')
+        for role, n in role_counts.most_common():
+            examples = [tr.tag_name for tr in dp.tag_roles.values() if tr.role == role][:3]
+            ex_str = ", ".join(f"<code>{_e(e)}</code>" for e in examples)
+            parts.append(
+                f'<tr><td><code>{_e(role)}</code></td>'
+                f'<td style="text-align:right">{n}</td>'
+                f'<td>{ex_str}</td></tr>'
+            )
+        parts.append('</tbody></table>')
+
+    parts.append(
+        '<p class="meta">Patterns derivados de regex curados sobre nombres '
+        'de tags / modules. Catálogo extensible (DT-010 — añadir patrones '
+        'cuando aparezcan casos reales nuevos). API: <code>project.detected_patterns</code>.</p>'
+    )
+    parts.append('</div>')
+    return "".join(parts)
 
 
 def _panel_observations(p: Project) -> str:
@@ -526,8 +671,65 @@ def _or_dash(s: str | None) -> str:
 
 
 def _trace_note() -> str:
-    return ('<p class="meta">Trace de uso completo (writers/readers): '
-            'disponible en v0.2 del paquete (<code>tracer.py</code>).</p>')
+    """Reservada — el placeholder original quedó obsoleto cuando se integró
+    el tracer en los paneles. Se mantiene la función para no romper imports
+    futuros si algún panel la invoca."""
+    return ""
+
+
+def _render_xref_summary(p, tag_name: str, max_per_kind: int = 8) -> str:
+    """Renderiza un bloque resumen de writers/readers de un tag para el panel.
+
+    Lista top `max_per_kind` de cada categoría con la opción de expandir el
+    resto vía <details>. Usa `p.writers_of` y `p.readers_of` (lazy build).
+    Si el xref no encuentra nada, muestra placeholder explícito.
+    """
+    writers = p.writers_of(tag_name)
+    readers = p.readers_of(tag_name)
+    n_w, n_r = len(writers), len(readers)
+
+    if n_w == 0 and n_r == 0:
+        return (
+            '<h3>Trace de uso (xref v0.2)</h3>'
+            '<p class="meta">Sin writers ni readers detectados. Posibles causas: '
+            '(a) el tag se usa solo desde HMI externo, (b) el código que lo '
+            'referencia está protegido, (c) no se referencia en código RLL.</p>'
+        )
+
+    def _row(e):
+        usage_badge = {"read":"R", "write":"W", "both":"RW"}.get(e.usage, "·")
+        return (
+            f'<li><span class="usage-{e.usage}">[{usage_badge:2}]</span> '
+            f'<code>{_e(e.location)}</code> '
+            f'<span class="meta">via {_e(e.operator)}</span></li>'
+        )
+
+    def _block(label: str, entries, total: int) -> str:
+        if not entries:
+            return f'<h4>{label} (0)</h4>'
+        visible = entries[:max_per_kind]
+        rest = entries[max_per_kind:]
+        out = [f'<h4>{label} ({total})</h4>']
+        out.append('<ul class="xref-list">')
+        out.extend(_row(e) for e in visible)
+        out.append('</ul>')
+        if rest:
+            out.append(
+                f'<details><summary>Ver {len(rest)} más</summary>'
+                f'<ul class="xref-list">'
+                + "".join(_row(e) for e in rest)
+                + '</ul></details>'
+            )
+        return "".join(out)
+
+    return (
+        '<h3>Trace de uso (xref v0.2)</h3>'
+        + _block("Writers", writers, n_w)
+        + _block("Readers", readers, n_r)
+        + '<p class="meta">Para cadenas causales completas usar '
+          '<code>project.find_causal_path(from_tag, to_tag)</code> o '
+          '<code>project.trace_back(tag, depth=N)</code> desde Python.</p>'
+    )
 
 
 def _panel_placeholder(title: str, note: str) -> str:
@@ -739,7 +941,7 @@ def _panel_routine(r) -> str:
     )
 
 
-def _panel_axis(ax, module, aois_set, p: Project) -> str:
+def _panel_axis(ax, module, aois_set, p: Project, pattern_idx: dict | None = None) -> str:
     # Función inferida: prioridad nombre > AOIs filtrados > AOIs todos
     sorted_aois = sorted(aois_set)
     filtered = [a for a in sorted_aois if not _is_generic_aoi(a)]
@@ -787,27 +989,48 @@ def _panel_axis(ax, module, aois_set, p: Project) -> str:
         if other_aois else "—"
     )
 
+    # v0.3 Capa C: enriquecer con zona / safety / role si pattern_idx existe
+    pattern_rows: list[tuple[str, str]] = []
+    if pattern_idx:
+        zone = pattern_idx["tag_to_zone"].get(ax.name)
+        if zone is None and module is not None:
+            zone = pattern_idx["module_to_zone"].get(module.name)
+        if zone:
+            pattern_rows.append(("Zona física", f'<code>{_e(zone.name)}</code> ({_e(zone.kind)})'))
+        safety_pats = pattern_idx["tag_to_safety"].get(ax.name, [])
+        if safety_pats:
+            pattern_rows.append(("Safety patterns",
+                                 ", ".join(f'<code>{_e(s)}</code>' for s in safety_pats)))
+        drive_kind = pattern_idx["name_to_drive_kind"].get(ax.name)
+        if drive_kind:
+            pattern_rows.append(("Drive category", f'<code>{_e(drive_kind)}</code>'))
+        role = pattern_idx["tag_to_role"].get(ax.name)
+        if role:
+            pattern_rows.append(("Rol HMI inferido", f'<code>{_e(role)}</code>'))
+
+    base_rows = [
+        ("Función inferida", _e(inferred) if inferred != "—" else "—"),
+        ("Drive físico", drive_str),
+        ("Canal", channel_str),
+        ("Programa(s) que lo usan", progs_str),
+        ("AOIs principales", main_aois_str),
+        ("AOIs de servicio (genéricos)", other_aois_str),
+        ("Motion module (raw)",
+         f"<code>{_e(mm)}</code>" if mm else '<span class="meta">vacío</span>'),
+        ("Descripción", _or_dash(ax.description)),
+        ("External access", _or_dash(ax.external_access)),
+    ]
+
     return (
         f'<div class="panel"><h1>{_e(ax.name)}</h1>'
         f'<p class="subtitle">Eje · <code>{_e(ax.datatype)}</code></p>'
-        + _kv([
-            ("Función inferida", _e(inferred) if inferred != "—" else "—"),
-            ("Drive físico", drive_str),
-            ("Canal", channel_str),
-            ("Programa(s) que lo usan", progs_str),
-            ("AOIs principales", main_aois_str),
-            ("AOIs de servicio (genéricos)", other_aois_str),
-            ("Motion module (raw)",
-             f"<code>{_e(mm)}</code>" if mm else '<span class="meta">vacío</span>'),
-            ("Descripción", _or_dash(ax.description)),
-            ("External access", _or_dash(ax.external_access)),
-        ])
-        + _trace_note()
+        + _kv(base_rows + pattern_rows)
+        + _render_xref_summary(p, ax.name)
         + '</div>'
     )
 
 
-def _panel_module(m: Module, p: Project) -> str:
+def _panel_module(m: Module, p: Project, pattern_idx: dict | None = None) -> str:
     cat = m.catalog_number or ""
     if _is_drive(cat):
         category = "Drive / Servo"
@@ -831,6 +1054,20 @@ def _panel_module(m: Module, p: Project) -> str:
     children_str = (", ".join(f"<code>{_e(c.name)}</code>" for c in children)
                     if children else "—")
 
+    # v0.3 Capa C: enriquecer con zona / drive category si pattern_idx existe
+    pattern_rows: list[tuple[str, str]] = []
+    if pattern_idx:
+        zone = pattern_idx["module_to_zone"].get(m.name)
+        if zone:
+            pattern_rows.append(("Zona física", f'<code>{_e(zone.name)}</code> ({_e(zone.kind)})'))
+        drive_kind = pattern_idx["name_to_drive_kind"].get(m.name)
+        if drive_kind:
+            pattern_rows.append(("Drive pattern", f'<code>{_e(drive_kind)}</code>'))
+        safety_pats = pattern_idx["tag_to_safety"].get(m.name, [])
+        if safety_pats:
+            pattern_rows.append(("Safety patterns",
+                                 ", ".join(f'<code>{_e(s)}</code>' for s in safety_pats)))
+
     return (
         f'<div class="panel"><h1>{_e(m.name)}</h1>'
         f'<p class="subtitle">Módulo · {category}</p>'
@@ -846,7 +1083,7 @@ def _panel_module(m: Module, p: Project) -> str:
             ("Nombre explícito", "Sí" if m.has_explicit_name else
              'No <span class="meta">(inferido del catálogo)</span>'),
             ("Hijos", children_str),
-        ])
+        ] + pattern_rows)
         + '</div>'
     )
 
@@ -1139,6 +1376,12 @@ body {
 .topbar .obs-badge.warn { background: #fef0d6; color: #6b4500; }
 .topbar .obs-badge.info { background: #dbeafe; color: #1e40af; }
 .topbar .obs-badge:hover { filter: brightness(0.95); }
+.topbar .patterns-badge {
+  border: 0; padding: 4px 10px; border-radius: 3px; cursor: pointer;
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+  background: #e5d4f5; color: #5a3995;
+}
+.topbar .patterns-badge:hover { filter: brightness(0.95); }
 .layout { display: flex; height: calc(100vh - 36px); }
 .tree-pane {
   flex: 0 0 380px; min-width: 240px; max-width: 50%;
@@ -1264,6 +1507,16 @@ body {
   font-size: 12px; max-height: 500px;
 }
 .panel details pre code { background: transparent; padding: 0; font-size: 12px; }
+.panel ul.xref-list {
+  list-style: none; padding-left: 0; margin: 4px 0 10px 0;
+  font-size: 12.5px;
+}
+.panel ul.xref-list li {
+  padding: 2px 0; border-bottom: 1px dotted #eaeef2;
+}
+.panel .usage-read  { color: #1f6feb; font-weight: 600; font-family: monospace; }
+.panel .usage-write { color: #b35900; font-weight: 600; font-family: monospace; }
+.panel .usage-both  { color: #6f42c1; font-weight: 600; font-family: monospace; }
 """
 
 
@@ -1354,6 +1607,18 @@ _JS = """
   if (obsBadge) {
     obsBadge.addEventListener('click', function() {
       const html = panels['__observations__::__all__'];
+      if (typeof html === 'string') {
+        detail.innerHTML = html;
+        detail.parentElement.scrollTop = 0;
+        document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+      }
+    });
+  }
+
+  const patternsBadge = document.getElementById('patterns-badge');
+  if (patternsBadge) {
+    patternsBadge.addEventListener('click', function() {
+      const html = panels['__patterns__::__all__'];
       if (typeof html === 'string') {
         detail.innerHTML = html;
         detail.parentElement.scrollTop = 0;

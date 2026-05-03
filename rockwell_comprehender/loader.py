@@ -326,6 +326,40 @@ def _parse_aois(
         return out
 
     for a in aois_elem:
+        # AOI completo protegido — viene como <EncodedData EncodedType="AddOnInstructionDefinition">
+        if a.tag == "EncodedData" and a.attrib.get("EncodedType") == "AddOnInstructionDefinition":
+            name = a.attrib.get("Name", "")
+            if not name:
+                continue
+            seen_names.add(name)
+            vendor = a.attrib.get("Vendor", "")
+            revision = a.attrib.get("Revision", "")
+            out.append(
+                AOIDetail(
+                    name=name,
+                    revision=revision,
+                    description="",
+                    parameters=[],
+                    local_tags=[],
+                    routines={},
+                    protected=True,
+                )
+            )
+            observations.append(
+                Observation(
+                    severity="warning",
+                    category="protected_aoi",
+                    message=(
+                        f"AOI '{name}' está completamente protegido "
+                        f"(Source Protection, vendor='{vendor or '?'}', "
+                        f"revision={revision or '?'}). Solo se conoce el nombre; "
+                        f"parameters y routines no se cargan."
+                    ),
+                    references=[name],
+                )
+            )
+            continue
+
         if a.tag != "AddOnInstructionDefinition":
             continue
 
@@ -380,21 +414,44 @@ def _parse_aois(
                     )
                 )
 
-        # Routines internas del AOI
+        # Routines internas del AOI (incluye detección de routines protegidas)
         routines: dict[str, Routine] = {}
         routines_elem = a.find("Routines")
         if routines_elem is not None:
             for r in routines_elem:
-                if r.tag != "Routine":
-                    continue
-                rname = r.attrib.get("Name", "")
-                routines[rname] = Routine(
-                    name=rname,
-                    program=None,  # AOI, no programa
-                    type=r.attrib.get("Type", ""),
-                    code=_extract_routine_code(r),
-                    description=_get_description(r),
-                )
+                if r.tag == "Routine":
+                    rname = r.attrib.get("Name", "")
+                    routines[rname] = Routine(
+                        name=rname,
+                        program=None,  # AOI, no programa
+                        type=r.attrib.get("Type", ""),
+                        code=_extract_routine_code(r),
+                        description=_get_description(r),
+                    )
+                elif r.tag == "EncodedData" and r.attrib.get("EncodedType") == "Routine":
+                    rname = r.attrib.get("Name", "")
+                    if not rname:
+                        continue
+                    routines[rname] = Routine(
+                        name=rname,
+                        program=None,
+                        type=r.attrib.get("Type", ""),
+                        code="",
+                        description="",
+                        protected=True,
+                    )
+                    observations.append(
+                        Observation(
+                            severity="warning",
+                            category="protected_routine",
+                            message=(
+                                f"Rutina '{rname}' del AOI '{name}' está "
+                                f"protegida (Source Protection); su código "
+                                f"no se carga."
+                            ),
+                            references=[f"AOIs/{name}/Routines/{rname}"],
+                        )
+                    )
 
         out.append(
             AOIDetail(
@@ -532,37 +589,62 @@ def _parse_programs(
             )
         )
 
-        # Routines del programa
+        # Routines del programa (incluye detección de routines protegidas)
         routines_elem = p.find("Routines")
         if routines_elem is not None:
             for r in routines_elem:
-                if r.tag != "Routine":
-                    continue
-                code = _extract_routine_code(r)
-                if not code.strip():
-                    observations.append(
-                        Observation(
-                            severity="info",
-                            category="empty_routine",
-                            message=(
-                                f"Rutina '{r.attrib.get('Name', '?')}' del "
-                                f"programa '{pname}' está vacía o no tiene "
-                                f"código extraíble."
-                            ),
-                            references=[
-                                f"{pname}/{r.attrib.get('Name', '?')}"
-                            ],
+                if r.tag == "Routine":
+                    code = _extract_routine_code(r)
+                    rname = r.attrib.get("Name", "")
+                    if not code.strip():
+                        observations.append(
+                            Observation(
+                                severity="info",
+                                category="empty_routine",
+                                message=(
+                                    f"Rutina '{rname or '?'}' del programa "
+                                    f"'{pname}' está vacía o no tiene código "
+                                    f"extraíble."
+                                ),
+                                references=[f"{pname}/{rname or '?'}"],
+                            )
+                        )
+                    all_routines.append(
+                        Routine(
+                            name=rname,
+                            program=pname,
+                            type=r.attrib.get("Type", ""),
+                            code=code,
+                            description=_get_description(r),
                         )
                     )
-                all_routines.append(
-                    Routine(
-                        name=r.attrib.get("Name", ""),
-                        program=pname,
-                        type=r.attrib.get("Type", ""),
-                        code=code,
-                        description=_get_description(r),
+                elif r.tag == "EncodedData" and r.attrib.get("EncodedType") == "Routine":
+                    rname = r.attrib.get("Name", "")
+                    if not rname:
+                        continue
+                    all_routines.append(
+                        Routine(
+                            name=rname,
+                            program=pname,
+                            type=r.attrib.get("Type", ""),
+                            code="",
+                            description="",
+                            protected=True,
+                        )
                     )
-                )
+                    observations.append(
+                        Observation(
+                            severity="warning",
+                            category="protected_routine",
+                            message=(
+                                f"Rutina '{rname}' del programa '{pname}' está "
+                                f"protegida (Source Protection); su código no "
+                                f"se carga. Común en SafetyProgram (GuardLogix) "
+                                f"o en código de integradores con IP protection."
+                            ),
+                            references=[f"{pname}/{rname}"],
+                        )
+                    )
 
         # Program-scoped tags
         tags_elem = p.find("Tags")
@@ -778,20 +860,20 @@ def _persist(conn: sqlite3.Connection, p: Project) -> None:
         ],
     )
 
-    # Routines (de programas)
+    # Routines (de programas) — v0.2.2: + protected
     cur.executemany(
-        """INSERT OR REPLACE INTO routines VALUES (?,?,?,?,?)""",
+        """INSERT OR REPLACE INTO routines VALUES (?,?,?,?,?,?)""",
         [
-            (r.program, r.name, r.type, r.code, r.description)
+            (r.program, r.name, r.type, r.code, r.description, int(r.protected))
             for r in p.routines
             if r.program is not None
         ],
     )
 
-    # AOIs
+    # AOIs — v0.2.2: + protected
     cur.executemany(
-        """INSERT OR REPLACE INTO aois VALUES (?,?,?)""",
-        [(a.name, a.revision, a.description) for a in p.aois],
+        """INSERT OR REPLACE INTO aois VALUES (?,?,?,?)""",
+        [(a.name, a.revision, a.description, int(a.protected)) for a in p.aois],
     )
     for a in p.aois:
         cur.executemany(
@@ -811,10 +893,11 @@ def _persist(conn: sqlite3.Connection, p: Project) -> None:
                 for pp in a.parameters
             ],
         )
+        # aoi_routines — v0.2.2: + protected
         cur.executemany(
-            """INSERT OR REPLACE INTO aoi_routines VALUES (?,?,?,?,?)""",
+            """INSERT OR REPLACE INTO aoi_routines VALUES (?,?,?,?,?,?)""",
             [
-                (a.name, rname, r.type, r.code, r.description)
+                (a.name, rname, r.type, r.code, r.description, int(r.protected))
                 for rname, r in a.routines.items()
             ],
         )
