@@ -1,0 +1,215 @@
+
+==============================================================================
+CARGA
+==============================================================================
+OK · parque_l5x/CINTA_LAMINADA_M2_2024.L5X
+target=CPU1 · processor=1768-L43 · sw=20.01
+modules=12 · tasks=4 · programs=4 · aois=26 · routines=17 · tags(top)=1027
+
+--- TURNO 1 · MAPA MENTAL + identificar AOIs de empalme -------------------
+
+[Mapa Mental — primeras 60 lineas]
+# Mapa Mental — CPU1
+
+## Identidad
+
+- **Controlador:** `1768-L43` (firmware 20.13)
+- **Studio 5000:** v20.01
+- **Schema L5X:** 1.0
+- **Creado:** Sun Jul 06 14:02:47 2014
+- **Última modificación:** Tue Dec 24 13:11:06 2024
+- **Owner del export:** Windows 用户, hch
+- **Fecha de export:** Sun Dec 21 10:40:53 2025
+
+## Arquitectura física
+
+Topología: **12 módulos** organizados en árbol bajo el chassis local.
+
+### Topología (árbol parent → child)
+
+```
+Local  [1768-L43]
+  └─ ETHERNET  [1768-ENBT/A]
+    └─ NODE_Z1  [1734-AENT/B]
+      └─ (1734-OB8/C)  [1734-OB8/C]
+      └─ (1734-OE2V/C)  [1734-OE2V/C]
+      └─ (1734-IB8/C)  [1734-IB8/C]
+      └─ (1734-IE2V/C)  [1734-IE2V/C]
+  └─ SERCOS  [1768-M04SE]
+    └─ M1  [2094-BC02-M02]
+    └─ M2  [2094-BM01]
+    └─ M3  [2094-BM01]
+    └─ M4  [2094-BM01]
+```
+
+### Resumen por categoría
+
+- **Bridges/scanners:** 3 (1× `1768-L43`, 1× `1768-ENBT/A`, 1× `1768-M04SE`)
+- **Adapters de I/O:** 1 (1× `1734-AENT/B`)
+- **Módulos I/O:** 4 (POINT I/O u otros)
+- **Drives/servos:** 4 (3× `2094-BM01`, 1× `2094-BC02-M02`)
+
+## Arquitectura lógica
+
+### Tasks
+
+- **FastTask** [PERIODIC] (rate=8.0ms, priority=10) → Reject
+- **MainTask** [CONTINUOUS] (priority=10) → MainProgram
+- **Motion** [EVENT] (priority=10) → Axis
+- **Task1000ms** [PERIODIC] (rate=1000.0ms, priority=15) → ReadPar
+
+### Programs y rutinas
+
+- **Axis**: 4 rutinas — 4 RLL (main: `Main`)
+  - `Drive_Rolls`, `Main`, `Master`, `Unwinders`
+- **MainProgram**: 9 rutinas — 8 RLL, 1 ST (main: `MainRoutine`)
+  - `Alarm`, `ChangeSize_Data_MASTER`, `ChangeSize_LenProduct`, `General`, `Glue`, `InitAxis`, `I_O_Interface`, `MainRoutine`, `Motors`
+- **ReadPar**: 3 rutinas — 2 RLL, 1 ST (main: `Main1000ms`)
+  - `I_O_Status`, `Main1000ms`, `ReadPara`
+- **Reject**: 1 rutinas — 1 RLL (main: `RawMat_reject`)
+  - `RawMat_reject`
+
+
+[Search 'Splice' — todas las AOIs candidatas]
+AOIs con 'Splice' en nombre/codigo: ['AHT_CtcSplicer', 'AHT_DancerCorAndNewRadiusComputation', 'AHT_Unwinder', 'CtcDiatecSplicer', 'CtcDiatecSplicerBuffer', 'DancerCorAndNewRadiusComputation', 'FullSpeedSplicer', 'FullSpeedSplicer2']
+
+[Search 'Unwinder' — AOIs candidatas debobinador]
+AOIs con 'Unwinder' en nombre/codigo: []
+
+[Quién INSTANCIA estos AOIs? (filtrar location != AOIs/<self>/...)]
+  AHT_CtcSplicer                             -> INSTANCIADO
+      via AOIs/AHT_Unwinder/Routines/Logic
+  AHT_DancerCorAndNewRadiusComputation       -> NO INVOCADO (codigo muerto candidato)
+  AHT_Unwinder                               -> INSTANCIADO
+      via Programs/Axis/Routines/Unwinders
+  CtcDiatecSplicer                           -> NO INVOCADO (codigo muerto candidato)
+  CtcDiatecSplicerBuffer                     -> NO INVOCADO (codigo muerto candidato)
+  DancerCorAndNewRadiusComputation           -> INSTANCIADO
+      via AOIs/AHT_Unwinder/Routines/Logic
+  FullSpeedSplicer                           -> NO INVOCADO (codigo muerto candidato)
+  FullSpeedSplicer2                          -> NO INVOCADO (codigo muerto candidato)
+
+--- TURNO 3 · LEER AHT_CtcSplicer + AHT_Unwinder + cálculo velocidad inicial 
+
+[AHT_CtcSplicer] params=42 · routines=['EnableInFalse', 'Logic']
+[AHT_Unwinder] params=29 · routines=['Logic']
+[DancerCorAndNewRadiusComputation] params=30 · routines=['Logic']
+  invocado desde: ['AOIs/AHT_Unwinder/Routines/Logic']
+
+[Buscar instrucciones MAJ — comando Move Axis Jog que arranca eje]
+  AOIs/DancerCorAndNewRadiusComputation/Routines/Logic :: …rt)NEQ(LocCorrection,Aux1LocCorrection)[MAJ(Ax,LocMAJ1,Direction,LocCorrection1,Unit…
+  AOIs/AHT_Unwinder/Routines/Logic :: …xAEnabled)XIC(LocAxAStopped)ONS(LocAux5)MAJ(AxA,LocJogRewA,LocRewAxA,100,Units per s…
+  AOIs/AHT_DancerCorAndNewRadiusComputation/Routines/Logic :: …rt)NEQ(LocCorrection,Aux1LocCorrection)[MAJ(Ax,LocMAJ1,Direction,LocCorrection1,Unit…
+  AOIs/AHT_DriveRoll_withDancer/Routines/Logic :: …DN) TON(DancCorr,?,?) ,XIC(DancCorr.DN) MAJ(PhysicalAx,Data.Motion.JogDancer,0,Data.…
+  AOIs/AxisBlock/Routines/Logic :: …(Data.Motion.HmiJogSpeed,LocJogSpeed) ][MAJ(PhysicalAx,Data.Motion.Jog,Data.Motion.H…
+  AOIs/VirtualAxisBlock/Routines/Logic :: …(Data.Motion.HmiJogSpeed,LocJogSpeed) ][MAJ(VirtualAx,Data.Motion.Jog,Data.Motion.Hm…
+
+--- TURNO 4 · TRACE CAUSAL — find_causal_path / trace_back (v0.2) ---------
+
+[search HmiNewDiameter — el input del operador]
+  AOIs/AHT_Unwinder/Routines/Logic :: …TE(LocAxBStopped);  // Rung 10 DIV(Data.HmiNewDiameter,2,LocHmiNewRadius)DIV(Data.HmiMinD
+
+[search ReelRadius — el radio actual del rollo]
+  AOIs/AHT_CtcSplicer/Routines/Logic :: …rSplicer) XIO(SensorPresenceRollA) ]LES(ReelRadiusA,MinRadus)[XIC(StartA) XIC(Loc_SpliceP
+  AOIs/CtcDiatecSplicer/Routines/Logic :: …rSplicer) XIO(SensorPresenceRollA) ]LES(ReelRadiusA,MinRadus)OTE(LocMustBeSpliceA);  // R
+  AOIs/CtcDiatecSplicerBuffer/Routines/Logic :: …rSplicer) XIO(SensorPresenceRollA) ]LES(ReelRadiusA,MinRadus)OTE(LocMustBeSpliceA);  // R
+  AOIs/DancerCorAndNewRadiusComputation/Routines/Logic :: …iusAutocalc) ]CPT(LocCorrection,(((1200-ReelRadius)/Kp1DancerCorreection)*((20-DancerPosi
+  AOIs/FullSpeedSplicer/Routines/Logic :: …rSplicer) XIO(SensorPresenceRollA) ]LES(ReelRadiusA,MinRadus)OTE(LocMustBeSpliceA);  // R
+  AOIs/FullSpeedSplicer2/Routines/Logic :: …rSplicer) XIO(SensorPresenceRollA) ]LES(ReelRadiusA,MinRadus)OTE(LocMustBeSpliceA);  // R
+  AOIs/AHT_Unwinder/Routines/Logic :: …,Data.InputSplice.HmiTimeSpliceEnd,Data.ReelRadiusA,Data.ReelRadiusB,Data.OutputSplice.St
+
+[search LocCorrection — variable del Pre-Start]
+  AOIs/DancerCorAndNewRadiusComputation/Routines/Logic :: …)[GRT(MasterSpeed,0) [XIC(CAMBIO_1) CPT(LocCorrection,MasterSpeed * GainCorrection  * Rat
+  AOIs/AHT_DancerCorAndNewRadiusComputation/Routines/Logic :: …Start)XIC(T1.DN)[GRT(MasterSpeed,0) CPT(LocCorrection,MasterSpeed * GainCorrection  * Rat
+
+[v0.2 · writers_of('Data.ReelRadiusA')]
+  WRITE  loc=AOIs/AHT_Unwinder/Routines/Logic/Rung_13  op=RadiusComputation  operand=Data.ReelRadiusA(tag)
+
+[v0.2 · writers_of('Data.HmiNewDiameter')]
+
+[v0.2 · readers_of('Data.HmiNewDiameter')]
+  READ   loc=AOIs/AHT_Unwinder/Routines/Logic/Rung_10  op=DIV  operand=Data.HmiNewDiameter(tag)
+
+[v0.2 · find_causal_path('Data.ReelRadiusA' <- 'Data.HmiNewDiameter') depth=8]
+  PATH ENCONTRADO · 3 steps:
+   [0] -> LocNewRadius
+        via RadiusComputation en AOIs/AHT_Unwinder/Routines/Logic/Rung_13 (operand=Data.ReelRadiusA/tag)
+   [1] -> LocHmiNewRadius
+        via MOV en AOIs/AHT_Unwinder/Routines/Logic/Rung_20 (operand=LocNewRadius/tag)
+   [2] -> Data.HmiNewDiameter
+        via DIV en AOIs/AHT_Unwinder/Routines/Logic/Rung_10 (operand=LocHmiNewRadius/tag)
+
+[v0.2 · trace_back('Data.ReelRadiusA', depth=4) — árbol antecedentes]
+Data.ReelRadiusA
+  AxA_Velocity  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+    AxA.AverageVelocity  <- via MOV@AOIs/AHT_Unwinder/Routines/Logic/Rung_12
+  DancerPositionA  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+    Unw_Dancer_Pos  <- via AHT_Unwinder@Programs/Axis/Routines/Unwinders/Rung_0
+      dato8  <- via SUB@Programs/Axis/Routines/Unwinders/Rung_0
+        AI_01041  <- via DIV@Programs/Axis/Routines/Unwinders/Rung_0  [TRUNC:depth]
+  Data.GearRatioA  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+    AxA_Velocity  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+      AxA.AverageVelocity  <- via MOV@AOIs/AHT_Unwinder/Routines/Logic/Rung_12
+    DancerPositionA  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+      Unw_Dancer_Pos  <- via AHT_Unwinder@Programs/Axis/Routines/Unwinders/Rung_0
+        dato8  <- via SUB@Programs/Axis/Routines/Unwinders/Rung_0  [TRUNC:depth]
+    Data.HmiEnableRewinderA  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+    Data.HmiFrequencyUpdateRadius  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+    Data.HmiLoadManRadius  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+    Data.OutputSplice.EVSpliceA  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+      AxA.ActualPosition  <- via AHT_CtcSplicer@AOIs/AHT_Unwinder/Routines/Logic/Rung_11
+      AxB.ActualPosition  <- via AHT_CtcSplicer@AOIs/AHT_Unwinder/Routines/Logic/Rung_11
+      AxEnable  <- via AHT_CtcSplicer@AOIs/AHT_Unwinder/Routines/Logic/Rung_11
+        EDA_UNW.Enable_Cond  <- via AHT_Unwinder@Programs/Axis/Routines/Unwinders/Rung_0  [TRUNC:depth]
+      Data.AxAEnabled  <- via AHT_CtcSplicer@AOIs/AHT_Unwinder/Routines/Logic/Rung_11
+        AxA  <- via Servo_Manager@AOIs/AHT_Unwinder/Routines/Logic/Rung_6  [TRUNC:depth]
+        Data.axaenable  <- via Servo_Manager@AOIs/AHT_Unwinder/Routines/Logic/Rung_6  [TRUNC:depth]
+        GroupSincro  <- via Servo_Manager@AOIs/AHT_Unwinder/Routines/Logic/Rung_6  [TRUNC:depth]
+        ResetAxAlarm  <- via Servo_Manager@AOIs/AHT_Unwinder/Routines/Logic/Rung_6  [TRUNC:depth]
+      Data.AxBEnabled  <- via AHT_CtcSplicer@AOIs/AHT_Unwinder/Routines/Logic/Rung_11
+        AxB  <- via Servo_Manager@AOIs/AHT_Unwinder/Routines/Logic/Rung_7  [TRUNC:depth]
+        Data.AxBEnable  <- via Servo_Manager@AOIs/AHT_Unwinder/Routines/Logic/Rung_7  [TRUNC:depth]
+        GroupSincro  <- via Servo_Manager@AOIs/AHT_Unwinder/Routines/Logic/Rung_7  [TRUNC:depth]
+        ResetAxAlarm  <- via Servo_Manager@AOIs/AHT_Unwinder/Routines/Logic/Rung_7  [TRUNC:depth]
+      Data.HmiEnableSensorForSplicer  <- via AHT_CtcSplicer@AOIs/AHT_Unwinder/Routines/Logic/Rung_11
+  Data.HmiEnableRewinderA  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+  Data.HmiFrequencyUpdateRadius  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+  Data.HmiLoadManRadius  <- via RadiusComputation@AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+
+[search 'ReelRadius)' (tag dentro de fórmula) en code]
+
+--- TURNO 6 · SÍNTESIS · hipótesis raíz -----------------------------------
+
+Reconstrucción causal validada por tracer:
+
+  Operador HMI -> Data.HmiNewDiameter
+       (input REAL del operador)
+              v
+  AHT_Unwinder/Logic: DIV(HmiNewDiameter, 2, LocHmiNewRadius)
+                      MOV(LocHmiNewRadius, LocNewRadius)
+              v
+  AHT_Unwinder/Logic: invoca RadiusComputation(InitRadius=LocNewRadius,
+                                                RadiusComputation=Data.ReelRadiusA)
+              v
+  RadiusComputation/Logic Rung 0: en evento de splice
+        MOV(InitRadius, RadiusComputation_actual)  -> escribe Data.ReelRadiusA (InOut)
+              v
+  AHT_Unwinder/Logic: invoca DancerCorAndNewRadiusComputation(ReelRadius=Data.ReelRadiusA)
+              v
+  DancerCor.../Logic Rung 4 (Pre-Start):
+        CPT(LocCorrection, ((1200 - ReelRadius)/Kp1) * ((20 - DancerPos)/2) / 2)
+              v
+  DancerCor.../Logic Rung 9: MAJ(Ax, ..., LocCorrection1, ...) -> arranca eje
+
+Si HmiNewDiameter < diámetro real -> ReelRadius pequeño -> (1200 - ReelRadius) grande
+  -> LocCorrection inflado -> MAJ arranca eje a velocidad alta -> ENREDO.
+
+Causa raíz: dato HMI cargado por el operador. Mitigaciones recomendadas:
+ 1) Validar rango HmiNewDiameter en HMI antes de aceptar
+ 2) Default = ultimo Data.ReelRadiusA*2 de la corrida previa
+ 3) Clamp del LocCorrection en Pre-Start (LIM)
+ 4) Confirmar que la constante 1200 corresponde al radio max físico del rollo
+ 5) Telemetría: log delta entre HmiNewDiameter cargado y ReelRadius posterior
+
+
+[FIN DEL TEST]

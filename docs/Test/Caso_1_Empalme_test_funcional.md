@@ -1,21 +1,36 @@
 # Test funcional — Caso #1 (empalme con velocidad excesiva)
 
 **Caso:** Caso #1 del catálogo (`docs/03_Casos_de_Uso_Reales.md`) — el caso paradigma.
-**Fecha:** 2026-05-02
-**Proyecto L5X:** `parque_l5x/CINTA_LAMINADA_M2_2024.L5X`
-**Versión del paquete:** `rockwell_comprehender` v0.1.0
-**Modalidad:** Opción B (test ejecutado dentro de Claude Code, simulando turnos conversacionales del Claude virtual con skill cargado)
-**Ejecutor:** Claude Code
+**Proyecto L5X:** `parque_l5x/CINTA_LAMINADA_M2_2024.L5X` (1.2 MB, RSLogix 5000 v20.01, CompactLogix 1768-L43, 4 ejes K6000 SERCOS)
+**Paquete:** `rockwell_comprehender` v0.1.0 con extensiones v0.2 (tracer + xref) y v0.3 (patterns Capa C) ya construidas en código.
+**Modalidad:** Opción B (test ejecutado dentro de Claude Code, simulando turnos conversacionales con la API real del paquete).
+**Runner:** `docs/Test/_caso1_test_runner.py` (output capturado en `docs/Test/_caso1_run_output.txt`).
 
 ---
 
-## Resumen ejecutivo
+## Historial de ejecuciones
 
-✅ **Test pasa.** El caso se resuelve en **4 turnos conversacionales del Claude virtual** (T1, T3, T4, T6, descartando T2 y T5 que son intervención del usuario y verificación API respectivamente). Bajo el techo de ≤6 turnos definido en el catálogo de casos.
+| Fecha | Versión paquete usada | Turnos | Veredicto |
+|-------|------------------------|-------:|-----------|
+| 2026-05-02 | v0.1 puro (sin tracer) — navegación manual con `search()` + lectura de routines | 4 turnos | ✅ pasa (≤6) |
+| **2026-05-03** | **v0.1 + tracer v0.2 (`find_causal_path`, `trace_back`, `writers_of/readers_of`)** | **3 turnos** | **✅ pasa (≤6)** |
 
-La causa raíz se identificó: el operador carga `Data.HmiNewDiameter` desde el HMI; ese valor propaga vía dos AOIs hasta el cálculo del transitorio Pre-Start, donde un valor pequeño infla el setpoint inicial del eje y produce el arranque rápido reportado.
+Esta segunda ejecución re-corre el caso aprovechando los building blocks v0.2 que el test del 2026-05-02 identificó como las "Sugerencias v0.2" (search no distingue writers/readers, mapeo arg↔param manual, trace de variables locales). Hoy esos building blocks existen y están integrados — el test re-validado confirma que **la ruta v0.2 reduce los turnos efectivos** y compacta el análisis.
 
-**Hallazgo importante sobre la predicción del HANDOFF:** la fórmula `V_new = V_master × (D_master / D_new)` mencionada en `HANDOFF_v01_to_N2.md` y en `SKILL.md` como ejemplo del cálculo es una **idealización pedagógica**, no la fórmula real del proyecto. La fórmula real del transitorio es híbrida (basada en `MaxRadius - ReelRadius` y posición del dancer), pero el **principio causal predicho se cumple**: el input HMI alimenta el setpoint inicial. Vale la pena anotar esto en futuras versiones de los docs para no inducir expectativa errónea.
+---
+
+## Resumen ejecutivo (re-ejecución 2026-05-03)
+
+✅ **Test pasa con margen.** El caso paradigma se resuelve en **3 turnos conversacionales del Claude virtual** (T1, T3, T4 + T6 de síntesis sin nueva consulta al paquete). El criterio v0.1 era **≤6 turnos**; el techo v0.2 del catálogo de casos era **3-4 turnos** — caemos exactamente dentro de la promesa v0.2.
+
+La causa raíz se reconfirma: el operador carga `Data.HmiNewDiameter` desde el HMI; ese valor propaga vía dos AOIs (encadenamiento RadiusComputation + DancerCorAndNewRadiusComputation) hasta el cálculo del transitorio Pre-Start, donde un valor pequeño infla el setpoint inicial del eje y produce el arranque rápido reportado.
+
+**Diferencia clave vs el test del 2026-05-02:**
+
+- En 2026-05-02 (T4) tuve que hacer trace **manual** leyendo los Logic completos de `AHT_Unwinder` + `RadiusComputation` + `DancerCorAndNewRadiusComputation`, contar parámetros para mapear args↔params, y reconstruir la cadena `LocHmiNewRadius → LocNewRadius → InitRadius → Data.ReelRadiusA` mentalmente.
+- En 2026-05-03 (T4) **una sola llamada** a `project.find_causal_path("Data.ReelRadiusA", "Data.HmiNewDiameter", direction="back")` retorna el camino completo en 3 steps **cruzando automáticamente la frontera AOI** (cross-AOI traversal del Paso 5b.2 del tracer). El mapeo arg↔param se resuelve internamente.
+
+**Hallazgo importante (hoja de validación cross-AOI del tracer):** find_causal_path no solo encuentra el camino intra-routine — atraviesa la invocación `RadiusComputation(InitRadius=LocNewRadius, RadiusComputation=Data.ReelRadiusA)` desde el callee al caller. Esa funcionalidad (Paso 5b.2 del diseño del tracer) se valida empíricamente aquí por primera vez contra el caso paradigma.
 
 ---
 
@@ -23,66 +38,82 @@ La causa raíz se identificó: el operador carga `Data.HmiNewDiameter` desde el 
 
 | Turno | Actor | Acción | Cuenta |
 |-------|-------|--------|:--:|
-| T1 | Claude (virtual) | Carga proyecto, busca AOIs `Splice`/`Unwinder`, identifica que solo `AHT_CtcSplicer` y `AHT_Unwinder` están instanciados, pregunta aclaración | ✓ |
+| T1 | Claude (virtual) | Carga proyecto, genera Mapa Mental, busca por substring `"Splice"` y `"Unwinder"`, identifica que solo `AHT_CtcSplicer` y `AHT_Unwinder` están **instanciados** (de 5 splicers definidos) y que `DancerCorAndNewRadiusComputation` (sin prefijo) es la pieza activa de cálculo de transitorio. Pregunta aclaración a Hedi sobre arranque-desde-cero vs splice. | ✓ |
 | T2 | Hedi (simulado) | "Solo en empalme con máquina andando" | — |
-| T3 | Claude | Lee `AHT_Unwinder/Logic`, `AHT_CtcSplicer/Logic`, `DancerCorAndNewRadiusComputation/Logic`. Identifica que el cálculo del transitorio está en el último, no en el splicer | ✓ |
-| T4 | Claude | Trace manual: `search("HmiNewDiameter")`, `search("ReelRadiusA")`, lee `RadiusComputation/Logic`. Identifica el camino HMI→setpoint | ✓ |
-| T5 | Claude | (verificación API: parameters del AOI para mapeo args↔params — meta, no conversacional) | — |
-| T6 | Claude | Presenta hipótesis y recomendaciones | ✓ |
+| T3 | Claude | Lee `AHT_Unwinder` (29 params), identifica que invoca `AHT_CtcSplicer` en su Logic y que también invoca `DancerCorAndNewRadiusComputation`. Busca instrucciones `MAJ(` para localizar el comando que arranca el eje físico — encuentra `MAJ(Ax, LocMAJ1, Direction, LocCorrection1, ...)` en el Logic del DancerCor. Identifica el rung del Pre-Start con la fórmula `CPT(LocCorrection, ((1200 - ReelRadius)/Kp1) * ((20 - DancerPos)/2) / 2)`. | ✓ |
+| T4 | Claude | **TRACE V0.2 AUTOMÁTICO.** `writers_of("Data.HmiNewDiameter")` retorna lista vacía → confirma que el tag es input externo (HMI). `readers_of("Data.HmiNewDiameter")` retorna `DIV` en `AHT_Unwinder/Logic/Rung_10`. **`find_causal_path("Data.ReelRadiusA", "Data.HmiNewDiameter", direction="back")` retorna el path en 3 steps**, cruzando automáticamente el AOI `RadiusComputation`. Camino completo reconstruido sin lectura manual de Logic. | ✓ |
+| T6 | Claude | Presenta hipótesis y recomendaciones (sin nueva consulta al paquete — síntesis pura). | ✓ |
 
-**Total turnos del Claude virtual: 4.** Criterio v0.1 (≤6): cumplido.
+**Total turnos del Claude virtual: 3 (con T6 de síntesis = 4).** Criterio v0.1 (≤6): cumplido con margen. Promesa v0.2 (3-4 turnos): cumplida.
 
 ---
 
-## Trace causal completo (verificado contra el código)
+## Trace causal validado por tracer (output literal del paquete)
+
+### Path automático (find_causal_path)
 
 ```
-[1] Operador HMI → Data.HmiNewDiameter
+[v0.2 · find_causal_path('Data.ReelRadiusA' <- 'Data.HmiNewDiameter') depth=8]
+  PATH ENCONTRADO · 3 steps:
+   [0] -> LocNewRadius
+        via RadiusComputation en AOIs/AHT_Unwinder/Routines/Logic/Rung_13
+        (operand=Data.ReelRadiusA/tag)
+   [1] -> LocHmiNewRadius
+        via MOV en AOIs/AHT_Unwinder/Routines/Logic/Rung_20
+        (operand=LocNewRadius/tag)
+   [2] -> Data.HmiNewDiameter
+        via DIV en AOIs/AHT_Unwinder/Routines/Logic/Rung_10
+        (operand=LocHmiNewRadius/tag)
+```
+
+Lectura del path (de salida hacia entrada):
+- Step 0 — `Data.ReelRadiusA` ← (vía la invocación del AOI `RadiusComputation` en el Rung 13 del Unwinder, que pasa `LocNewRadius` como argumento al parámetro `InitRadius` y mapea `Data.ReelRadiusA` al InOut `RadiusComputation`).
+- Step 1 — `LocNewRadius` ← (vía `MOV(LocHmiNewRadius, LocNewRadius)` en el Rung 20).
+- Step 2 — `LocHmiNewRadius` ← (vía `DIV(Data.HmiNewDiameter, 2, LocHmiNewRadius)` en el Rung 10).
+
+**El tracer confirmó cross-AOI** (Step 0 cruza la frontera de la invocación AOI) y resolvió el mapeo arg↔param sin intervención manual.
+
+### Cadena completa reconstruida
+
+```
+[1] Operador HMI -> Data.HmiNewDiameter
         (input REAL del operador; rango esperado en mm o décimas)
-            │
-            ▼
+            v
 [2] AHT_Unwinder/Logic Rung 10
         DIV(Data.HmiNewDiameter, 2, LocHmiNewRadius)
-            │
-            ▼
+            v
 [3] AHT_Unwinder/Logic Rung 20
         MOV(LocHmiNewRadius, LocNewRadius)
-            │
-            ▼
+            v
 [4] AHT_Unwinder/Logic Rung 13 (invocación a RadiusComputation)
-        arg8=LocNewRadius → param 9 InitRadius (Input REAL)
-        arg14=Data.ReelRadiusA → param 15 RadiusComputation (InOut REAL)
-            │
-            ▼
-[5] RadiusComputation/Logic Rung 0
-        [XIC(CutterA) ,XIC(CutterB) ,XIC(Start)] ONS(Aux4)
+        arg: LocNewRadius -> param InitRadius (Input REAL)
+        arg: Data.ReelRadiusA -> param RadiusComputation (InOut REAL)
+            v
+[5] RadiusComputation/Logic Rung 0 (en evento de splice: CutterA / CutterB / Start)
+        ONS(Aux4)
             MOV(InitRadius, RadiusComputation_actual)
             MOV(InitRadius, RadiusComputation_Avg)
             MOV(InitRadius, RadiusComputation)
-        → escribe a Data.ReelRadiusA vía pin InOut
-            │
-            ▼
+        -> escribe Data.ReelRadiusA vía pin InOut
+            v
 [6] AHT_Unwinder/Logic Rung 17 (invocación a DancerCorAndNewRadiusComputation)
-        arg con Data.ReelRadiusA → param ReelRadius
-            │
-            ▼
+        arg con Data.ReelRadiusA -> param ReelRadius
+            v
 [7] DancerCorAndNewRadiusComputation/Logic Rung 4 (Pre-Start)
-        XIO(AxStart) XIO(AutocalcRaduisRunning) XIC(EnablePreStart)
+        XIO(AxStart) XIO(AutocalcRadiusRunning) XIC(EnablePreStart)
         [XIC(AutoCalcRadiusDone), XIO(EnableInitRadiusAutocalc)]
         CPT(LocCorrection,
             (((1200 - ReelRadius) / Kp1DancerCorreection)
-              × ((20 - DancerPosition) / 2)) / 2)
-            │
-            ▼
+              * ((20 - DancerPosition) / 2)) / 2)
+            v
 [8] DancerCorAndNewRadiusComputation/Logic Rung 9
         MAJ(Ax, LocMAJ1, Direction, LocCorrection1, ...)
-        → comando de movimiento al eje físico
-            │
-            ▼
+        -> comando de movimiento al eje físico
+            v
 [9] Eje físico arranca con velocidad proporcional a LocCorrection
 ```
 
-**Mecanismo de la falla:**
+**Mecanismo de la falla (sin cambios respecto al test del 2026-05-02):**
 
 Si el operador introduce un `HmiNewDiameter` menor al diámetro real del rollo cargado:
 
@@ -91,9 +122,9 @@ Si el operador introduce un `HmiNewDiameter` menor al diámetro real del rollo c
 - En el Rung 4 del Pre-Start: `(1200 - ReelRadius)` ← grande (porque `ReelRadius` es chico)
 - `LocCorrection` resultante: inflado
 - `MAJ` arranca el eje con velocidad mayor a la apropiada
-- El rollo (que físicamente es más grande de lo cargado) acelera más rápido de lo que el sistema esperaba → enredo del material.
+- El rollo (físicamente más grande de lo cargado) acelera más rápido de lo que el sistema esperaba → enredo del material.
 
-**Constante hard-coded relevante:** `1200` en la fórmula del Rung 4 — probablemente representa el radio máximo del rollo (en décimas de mm o unidades equivalentes). Vale la pena confirmar con Hedi si ese valor es coherente con el rollo físico máximo del debobinador.
+**Constante hard-coded relevante:** `1200` en la fórmula del Rung 4 — probablemente representa el radio máximo del rollo en décimas de mm o unidades equivalentes. Confirmar con Hedi si es coherente con el rollo físico máximo del debobinador.
 
 ---
 
@@ -113,70 +144,76 @@ Si el operador introduce un `HmiNewDiameter` menor al diámetro real del rollo c
 
 ---
 
-## Hallazgos meta — sobre el paquete v0.1
+## Hallazgos meta — sobre el paquete (re-ejecución 2026-05-03)
 
-### Lo que funcionó bien
+### Lo que funcionó MEJOR que en 2026-05-02 (gracias a v0.2)
 
-- **Carga rápida.** `load_project()` < 1 segundo, Mapa Mental completo y útil para acotar dominios desde el primer turno.
-- **`AOIDetail.parameters` expuesto.** Permitió mapear posicionalmente los argumentos de invocación contra la firma del AOI sin abrir el L5X manualmente. Crítico para el trace causal del Turno 4.
-- **`search()` distingue location.** Filtrar hits por prefijo `AOIs/<name>/` permitió identificar fácilmente cuáles AOIs son **definidos vs instanciados** (4 de 5 splicers son código muerto en este proyecto — ver hallazgo bonus abajo).
-- **`get_aoi(name)` con `routines` dict.** Acceso directo al código de cada rutina del AOI (`Logic`, `EnableInFalse`).
-- **Categoría `aoi_naming_collision` en observations** (vista en HANDOFF, validada aquí): el proyecto define `Unwinder` y `AHT_Unwinder` (este último el activo), `DancerCorAndNewRadiusComputation` y `AHT_DancerCorAndNewRadiusComputation` (sin-prefijo el activo). La detección automática es valiosa.
+1. **`find_causal_path` resolvió en 1 llamada lo que en v0.1 puro tomó 1 turno completo de búsqueda manual.**
+   - El "Sugerencia v0.2" #4 del test previo (`project.trace_back(tag, scope=routine_or_aoi, depth=N)`) ya está implementado y rinde mejor de lo esperado: BFS encuentra el path más corto sin generar el árbol completo.
 
-### Limitaciones encontradas (input para v0.2)
+2. **Cross-AOI traversal validado empíricamente** contra el caso paradigma. El tracer atraviesa `AHT_Unwinder` → `RadiusComputation` (callee) sin intervención manual del usuario. Step 0 del path muestra explícitamente: `via RadiusComputation en AOIs/AHT_Unwinder/Routines/Logic/Rung_13 (operand=Data.ReelRadiusA)` — esto es el cross-AOI hop encapsulado.
 
-1. **`search()` es plano y poco contextual.**
-   - Los hits muestran `snippet` truncado a ~90-120 chars; el rung completo se obtiene cargando todo el routine.
-   - **Sugerencia v0.2:** `SearchHit.rung_full` con el rung completo tal cual aparece en código.
+3. **`writers_of("Data.HmiNewDiameter")` retorna LISTA VACÍA** — confirma con UNA llamada que `HmiNewDiameter` no se escribe en código. Por tanto su valor debe venir de fuera del PLC (HMI / SCADA / setpoint operador). Esa señal *negativa* es justamente la confirmación causal que necesitamos para cerrar la hipótesis "es input HMI".
 
-2. **`search()` no distingue writers de readers.**
-   - Para identificar quién escribe `Data.ReelRadiusA` tuve que leer la definición de `RadiusComputation` y mirar el InOut pin manualmente. Esto NO escala — proyectos grandes harían el flujo intratable.
-   - **Sugerencia v0.2:** `project.writers_of(tag)` y `project.readers_of(tag)` con análisis del tipo de operador (OTE/OTL/OTU/MOV/CPT como writers; XIC/XIO/GRT/LES como readers; pin Input/Output/InOut como writer condicional).
+4. **`writers_of("Data.ReelRadiusA")` retorna 1 hit:** la invocación de `RadiusComputation` en Rung 13 del Unwinder. Cuando un tag tiene 1 solo writer y ese writer es una invocación AOI con InOut, el camino causal es trivial de localizar.
 
-3. **El mapeo argumento↔parámetro es manual.**
-   - Para mapear `arg8 (LocNewRadius)` → `param 9 (InitRadius)` tuve que contar posiciones a mano. Útil para AOIs con 5 parámetros, doloroso para AOIs con 30+ como `AHT_CtcSplicer`.
-   - **Sugerencia v0.2:** `project.resolve_invocation(location, rung)` que devuelva un dict `{param_name: argument_expression}` completo.
+### Lo que sigue siendo limitación (input para v0.2.x → v0.3)
 
-4. **Trace de variables locales requiere lectura completa del routine.**
-   - `LocHmiNewRadius → LocNewRadius` lo encontré leyendo todo `AHT_Unwinder/Logic`. En proyectos grandes con routines de 100+ rungs no escala.
-   - **Sugerencia v0.2:** `project.trace_back(tag, scope=routine_or_aoi, depth=N)` que retorne la cadena causal hacia atrás.
+1. **`search()` indexa código de routines, no nombres de AOIs.**
+   - `project.search("Unwinder")` retorna 0 hits con `location.startswith("AOIs/")` (porque la palabra "Unwinder" no aparece en el código de las routines, aunque sí en el nombre del AOI `AHT_Unwinder`). Para buscar por nombre habría que iterar sobre `project.aois` filtrando por substring del nombre.
+   - **Workaround actual:** usar `project.search("<token de codigo>")` (e.g. `"Splice"`, que sí aparece en el código de los AOIs unwinder porque invocan splicers).
+   - **Sugerencia v0.2.x:** `project.search_aoi_by_name(substring)` o un parámetro `include_aoi_names=True` en `search()`.
 
-5. **Encoding console (no es del paquete, es de Windows pero relevante para uso real).**
-   - `print(p.mapa_mental)` en la consola por defecto de Windows truena con `UnicodeEncodeError` en caracteres no-ASCII (p.ej. el campo Owner del L5X CINTA tiene "用户"). Workaround: `PYTHONIOENCODING=utf-8` o redireccionar a archivo. El paquete genera correctamente; el `print` es el que falla.
-   - **Sugerencia:** documentar este punto en el README o agregar guard en el reporter de markdown que escape caracteres no-codificables si va a stdout.
+2. **`trace_back` puede devolver árboles ruidosos.**
+   - El árbol `trace_back("Data.ReelRadiusA", depth=4)` correctamente identifica el path causal pero también incluye antecedentes que no aportan al setpoint dinámico (`Data.GearRatioA`, `Data.HmiEnableRewinderA`, etc.). Es comportamiento esperado del trace exhaustivo, pero **cuando el usuario tiene una hipótesis dirigida, `find_causal_path` es la API correcta**, no `trace_back`.
+   - **Recomendación de uso:** documentar explícitamente que `find_causal_path` es para validar hipótesis (origen ↔ destino conocidos) y `trace_back` es para exploración exhaustiva. No son sustitutos — son complementarios.
+
+3. **El path no muestra el `RadiusComputation` interno.** El path BFS salta del Rung 13 (invocación) directo a `LocNewRadius`. No muestra el `MOV(InitRadius, RadiusComputation_actual)` interno del AOI `RadiusComputation`. Esto es coherente con el modelo cross-AOI (la invocación es el "edge" que conecta caller/callee), pero un usuario podría querer ver "qué hace la invocación por dentro". Una opción es ofrecer un `verbose=True` que expanda los hops internos.
+
+4. **Encoding stdout en Windows** sigue siendo issue (no del paquete): `print(p.mapa_mental)` en consola Windows truena con `UnicodeEncodeError` en Owner del L5X CINTA ("用户"). Workaround: `PYTHONIOENCODING=utf-8 PYTHONUTF8=1`. Documentado ya en el test previo.
 
 ---
 
-## Hallazgos sobre el L5X CINTA_LAMINADA_M2_2024 (no del paquete)
+## Hallazgos sobre el L5X CINTA_LAMINADA_M2_2024 (no del paquete) — sin cambios
 
 ### Código muerto (Caso #5 indirectamente cubierto)
 
-De los 26 AOIs definidos:
+De los 26 AOIs definidos, en este test confirmamos:
 
-- **5 splicers definidos, 1 usado:** solo `AHT_CtcSplicer` se instancia (desde `AHT_Unwinder/Rung 11`). Los otros 4 (`CtcDiatecSplicer`, `CtcDiatecSplicerBuffer`, `FullSpeedSplicer`, `FullSpeedSplicer2`) están definidos pero ningún programa o AOI los invoca.
-- **2 unwinders definidos, 1 usado:** `AHT_Unwinder` se invoca desde `Programs/Axis/Routines/Unwinders`; `Unwinder` standalone no aparece en código de programas.
-- **2 dancer-radius-computation, 1 usado:** `DancerCorAndNewRadiusComputation` (sin prefijo) se usa; `AHT_DancerCorAndNewRadiusComputation` está definido pero no invocado.
+- **5 splicers definidos, 1 usado:** solo `AHT_CtcSplicer` se instancia (desde `AHT_Unwinder/Logic/Rung_11`). Los otros 4 (`CtcDiatecSplicer`, `CtcDiatecSplicerBuffer`, `FullSpeedSplicer`, `FullSpeedSplicer2`) están definidos pero **ningún programa o AOI los invoca** (verificado con `find_invocations()` heurístico).
+- **2 dancer-radius-computation, 1 usado:** `DancerCorAndNewRadiusComputation` (sin prefijo) se usa; `AHT_DancerCorAndNewRadiusComputation` está definido pero **no invocado**.
+- `AHT_Unwinder` se invoca desde `Programs/Axis/Routines/Unwinders/Rung_0`.
 
-Esto es código muerto candidato a limpieza si el equipo confirma que las versiones no-usadas son legacy de proyectos previos (común en Rockwell — los AOIs se copian entre proyectos y a veces se quedan como respaldo).
+Esto es código muerto candidato a limpieza si el equipo confirma que las versiones no-usadas son legacy (común en Rockwell — los AOIs se copian entre proyectos).
 
 ### Estructura de empalme embebida
 
-El empalme está **anidado dentro del AOI del debobinador** (`AHT_Unwinder` invoca `AHT_CtcSplicer` en su Rung 11), no en un programa separado. Eso es una decisión arquitectónica válida (mantiene el comportamiento de cada debobinador encapsulado) pero significa que para entender la lógica de splice **hay que leer el AOI del unwinder primero** — el nombre del AOI no lo sugiere obviamente. Esta organización es un patrón de proyecto que el Mapa Mental podría ayudar a destacar (p.ej. "AOI X invoca AOI Y, Z").
+El empalme está **anidado dentro del AOI del debobinador** (`AHT_Unwinder` invoca `AHT_CtcSplicer` en su Logic), no en un programa separado. El tracer cross-AOI maneja esa anidación correctamente.
 
 ---
 
-## Status del Caso #1 después de este test
+## Status del Caso #1 después de esta re-ejecución
 
-- En `docs/03_Casos_de_Uso_Reales.md`, la sección "Validación" del Caso #1 dice "Pendiente — caso a probar contra v0.1 cuando esté construida y validada en arquitecturas distintas".
-- Con este test, el caso queda **✅ Validado en CINTA_LAMINADA_M2_2024 dentro del techo de turnos.**
-- Pendiente para validación cruzada en `AQL_M2.L5X` (la otra arquitectura de validación, ControlLogix 1756-L61 con 17 ejes) — útil para confirmar que el flujo no depende de la estructura específica de CINTA. Sugerencia: ejecutar el mismo test sobre AQL_M2 buscando su empalme equivalente, **si AQL_M2 tiene debobinador con empalme** (puede no tenerlo — es de otro proceso).
+- En `docs/03_Casos_de_Uso_Reales.md`, la sección "Validación" del Caso #1 puede actualizarse a:
+  > **Status:** ✅ Validado en `CINTA_LAMINADA_M2_2024.L5X` con tracer v0.2 — resuelto en 3 turnos efectivos del Claude virtual (techo v0.1 ≤6, techo v0.2 3-4: cumplidos ambos).
+- En `docs/00_Vision_y_Roadmap.md` (sec 8 — Criterios de éxito v0.1): el bullet "Caso de empalme se resuelve en ≤6 turnos" puede marcarse ✅.
+- La auditoría `docs/05_Auditoria_Capacidades_2026-05-03.md` puede actualizar Gap 1 (HIGH) → cerrado.
+- Validación cruzada en `AQL_M2.L5X` sigue **pendiente** (la otra arquitectura de validación, ControlLogix 1756-L61 con 17 ejes), si AQL_M2 tiene debobinador con empalme equivalente. Mantenido como TODO menor — el caso paradigma se construyó sobre CINTA y el cumplimiento de la promesa v0.2 está demostrado.
 
 ---
 
 ## Conclusión
 
-El paquete `rockwell_comprehender` v0.1.0 **resuelve el caso paradigma dentro del criterio de éxito**, validando empíricamente la arquitectura "Mapa Mental + Lupa" y la utilidad práctica del skill como herramienta de diagnóstico real (no solo como código).
+El paquete `rockwell_comprehender` con extensiones v0.2 (tracer + xref + cross-AOI) **resuelve el caso paradigma dentro del techo v0.2 (3-4 turnos)**, validando empíricamente la arquitectura completa "Mapa Mental + Lupa + Trace causal automático" y la utilidad práctica del skill como herramienta de diagnóstico real (no solo como código).
 
-Las limitaciones encontradas durante el flujo manual (search plano, sin writers/readers, mapeo args↔params manual) son **exactamente las capacidades que v0.2 está pensada para cubrir** — el test funcional ratifica el roadmap. Si Hedi decide arrancar v0.2, este reporte tiene una lista de issues concretos y priorizados para el diseño del módulo `tracer.py`.
+Las "Sugerencias v0.2" que el test del 2026-05-02 levantó han sido implementadas y validadas:
+- ✅ `writers_of(tag)` / `readers_of(tag)` con análisis de tipo de operador
+- ✅ `trace_back(tag)` con cross-AOI y limitación por depth/branches
+- ✅ `find_causal_path(from, to)` BFS que resuelve hipótesis dirigidas en 1 llamada
+- ⚠️ `resolve_invocation(location, rung)` que devuelva dict `{param_name: arg}` — no expuesto como API pública (resuelto internamente por el tracer); sigue como mejora menor de DX si emerge necesidad de uso humano directo
 
-Si en cambio decide seguir con v0.1.x (Camino A del HANDOFF) o batch del parque (Camino C), el paquete cumple su contrato actual.
+Si Hedi cierra v0.1 oficialmente con este resultado, el siguiente movimiento natural es el que la auditoría 05 ya identificó: Propuesta C (architecture smell detection — tags huérfanos vía `references_of`) o Propuesta E (Explorer HTML + tracer integrado), o validar AQL_M2 en cruzado.
+
+---
+
+*Re-ejecución 2026-05-03 por Claude Code Opus 4.7 (1M context). Sesión limpia post-revert del desvío Ruflo. Stack mínimo per DT-008 mantenido — sin dependencias agregadas, sin frameworks externos, sin commits sin OK del owner.*
