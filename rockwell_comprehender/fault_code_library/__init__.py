@@ -285,14 +285,336 @@ _K5700_NODE_FLT_06 = FaultCode(
 )
 
 
+_K5700_FLT_S07 = FaultCode(
+    code="FLT S07",
+    name="Motor Thermal Overload Factory Limit",
+    family="Kinetix 5700",
+    severity="Major",
+    description=(
+        "El cálculo interno del thermal model del motor indica que la "
+        "temperatura excedió el factory limit. Diferente de FLT S05 "
+        "(que es del thermistor físico): este es el modelo I²T calculado "
+        "por el drive."
+    ),
+    cause=(
+        "El commanded motion profile requiere RMS current continuo que "
+        "genera más calor que la capacidad física del motor. Típicamente "
+        "duty cycles muy agresivos, dimensionamiento insuficiente del motor, "
+        "o moves repetitivos sin tiempo de cooling."
+    ),
+    recovery=(
+        "1. Cambiar el commanded motion profile para reducir velocidad o "
+        "aumentar tiempo del move (baja el RMS current). "
+        "2. Verificar que el motor esté correctamente dimensionado para la carga. "
+        "3. Esperar que el motor se enfríe (timer del thermal model). "
+        "4. MAFR + MSO."
+    ),
+    related_parameters=["MotorCapacity", "MotorThermalOverloadFactoryLimit"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="I²T model — diferente del thermistor S05. Si ambos disparan, el problema es físico (el motor SÍ está caliente). Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_FLT_S11 = FaultCode(
+    code="FLT S11",
+    name="Inverter Overtemperature Factory Limit",
+    family="Kinetix 5700",
+    severity="Major",
+    description=(
+        "Temperatura física medida DENTRO del inverter excede el factory "
+        "limit. Diferente de FLT S13 (que es el thermal MODEL del inverter): "
+        "este es el sensor físico real del drive."
+    ),
+    cause=(
+        "Commanded motion demanding, ambient temperature alta del gabinete, "
+        "filtros de aire obstruidos, ventilación inadecuada, o falla del "
+        "fan interno del drive."
+    ),
+    recovery=(
+        "1. Cambiar el command profile (reducir speed o aumentar tiempo del move). "
+        "2. Reducir ambient temperature del gabinete (verificar AC, abrir si es seguro). "
+        "3. Verificar que el airflow al inverter NO esté obstruido. "
+        "4. Verificar limpieza de filtros / ventilas. "
+        "5. Esperar enfriamiento + MAFR + MSO."
+    ),
+    related_parameters=["InverterCapacity", "DriveOvertempFault"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="Sensor físico — diferente del thermal model S13. Si ambos disparan, el inverter SÍ está físicamente caliente. Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_FLT_S33 = FaultCode(
+    code="FLT S33",
+    name="Bus Undervoltage Factory Limit",
+    family="Kinetix 5700",
+    severity="Major",
+    description=(
+        "El nivel de DC bus voltage medido es menor que el límite mínimo "
+        "configurado de fábrica. Indica problema de alimentación AC o pérdida "
+        "de potencia del bus."
+    ),
+    cause=(
+        "AC input voltage bajo en alguna fase, line drops o sags en la "
+        "facility power, falla externa de potencia, o problema en el módulo "
+        "de power supply (DC bus power supply)."
+    ),
+    recovery=(
+        "1. Verificar AC input voltage en TODAS las fases con multímetro. "
+        "2. Monitorear la facility power por faults o line drops "
+        "(¿hay otros equipos disparando breakers?). "
+        "3. Si el input es inestable, instalar UPS en la AC input. "
+        "4. Verificar continuidad y dimensionamiento del cableado AC. "
+        "5. MAFR + MSO una vez restaurada la alimentación."
+    ),
+    related_parameters=["DCBusVoltage", "BusUnderVoltageLimit"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="Diagnostic crítico: si dispara repetidamente, hay problema de power quality del facility (no del drive). Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_FLT_S35 = FaultCode(
+    code="FLT S35",
+    name="Bus Overvoltage Factory Limit",
+    family="Kinetix 5700",
+    severity="Major",
+    description=(
+        "El nivel de DC bus voltage medido es MAYOR que el factory limit "
+        "máximo. Típicamente indica energía regenerativa que el bus no puede "
+        "disipar."
+    ),
+    cause=(
+        "Energía regenerativa excesiva del motor (decel agresiva, cargas "
+        "overhauling como ejes verticales bajando), shunt resistance "
+        "abierta o desconectada, falta de capacidad de disipación en el bus."
+    ),
+    recovery=(
+        "1. Cambiar el motion profile para reducir energía regenerativa "
+        "(decel rates más bajos, S-Curve en vez de Trapezoidal). "
+        "2. Desconectar el shunt connector y MEDIR la shunt resistance "
+        "(debe estar continua, no abierta). "
+        "3. Si shunt está abierta: reemplazar power supply o agregar shunt "
+        "module externo. "
+        "4. Considerar Active Shunt Module para más capacidad de disipación. "
+        "5. MAFR + MSO."
+    ),
+    related_parameters=["DCBusVoltage", "BusOverVoltageLimit"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="Frecuente en máquinas con cargas overhauling (vertical axes, web rewinders frenando). Si hay multi-axis con shared bus, una decel agresiva de UN eje puede disparar el fault de OTROS. Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_SAFE_FLT_09 = FaultCode(
+    code="SAFE FLT 09",
+    name="GuardStop Input Fault",
+    family="Kinetix 5700",
+    severity="Major",
+    description=(
+        "Los hardwired safety inputs (S1 y S2 del STO) presentan estados "
+        "diferentes por más de 1.0 segundo, o hay issues con el wiring "
+        "safety y la alimentación +24V. Los diagnostics internos detectaron "
+        "STO function mismatch."
+    ),
+    cause=(
+        "Discrepancy entre canales A y B del STO (un canal ON, otro OFF), "
+        "wiring del safety con falla intermitente, +24V no presente o "
+        "inestable, conector STO suelto, o falla interna del drive en los "
+        "circuitos safety."
+    ),
+    recovery=(
+        "1. Verificar safety wiring en ambos canales (continuidad, conexiones firmes). "
+        "2. Confirmar que el STO connector esté correctamente seated. "
+        "3. Verificar que +24V esté presente en ambos canales con multímetro. "
+        "4. Verificar el estado sincronizado de ambos safety inputs. "
+        "5. Clear el error y EJECUTAR un proof test de safety. "
+        "6. Si el error persiste tras todo lo anterior: drive con falla "
+        "interna safety — RETORNAR a Rockwell (no se puede reparar en campo)."
+    ),
+    related_parameters=["GuardStopInputFault", "GuardStopInputStatus"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="Categoría SAFE FLT (no FLT S regular) — falls del subsistema safety. El proof test (paso 5) es REQUERIDO certificación SIL/PLe — documentar la ejecución. Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_INHIBIT_S02 = FaultCode(
+    code="INHIBIT S02",
+    name="Motor Not Configured",
+    family="Kinetix 5700",
+    severity="Inhibit",
+    description=(
+        "Start inhibit que previene que el drive se habilite porque el "
+        "motor asociado no fue configurado correctamente. NO es un fault "
+        "(el drive nunca llegó a operar) — es un inhibit en init."
+    ),
+    cause=(
+        "Los motor configuration parameters no se establecieron o "
+        "downloaded al controller. Típicamente: nuevo axis sin config, "
+        "MotorCatalogNumber vacío o incorrecto, o cambio de motor sin "
+        "actualizar la config en Logix Designer."
+    ),
+    recovery=(
+        "1. Abrir Logix Designer y verificar Axis Properties → Motor tab. "
+        "2. Verificar que MotorCatalogNumber esté correcto y aplicado al axis. "
+        "3. Si se cambió el motor físico: actualizar el catalog number, "
+        "re-comisionar (autotune + hookup test). "
+        "4. Download al controller. "
+        "5. INHIBIT desaparece automáticamente al detectar config válida."
+    ),
+    related_parameters=["MotorCatalogNumber", "AxisConfigState"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="Categoría INHIBIT (no FLT) — no requiere MAFR, se limpia solo al corregir config. Common en commissioning de nuevos axes. Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_FLT_S54 = FaultCode(
+    code="FLT S54",
+    name="Position Error Fault",
+    family="Kinetix 5700",
+    severity="Major",
+    description=(
+        "El position error del position control loop excedió el valor "
+        "establecido en el parámetro Position Error Tolerance por más tiempo "
+        "que el Position Error Tolerance Time. El axis position real está "
+        "lagging demasiado del commanded — el drive ejecuta protective stop."
+    ),
+    cause=(
+        "Position loop mal tuneado, motor/drive subdimensionado para la "
+        "aplicación, sistema mecánico fuera de spec o atascado, o problemas "
+        "con motor power wiring."
+    ),
+    recovery=(
+        "1. Verificar position loop tuning (autotune o manual). "
+        "2. Aumentar feedforward gain (compensa fricción/inercia). "
+        "3. Verificar dimensionamiento drive+motor vs requerimiento real. "
+        "4. Inspeccionar mecánica (atascos, alineamiento, lubricación). "
+        "5. Verificar motor power wiring (continuidad, sin cortos). "
+        "6. Si el sistema funciona pero margen es justo: aumentar "
+        "PositionErrorTolerance y/o PositionErrorToleranceTime."
+    ),
+    related_parameters=["PositionErrorTolerance", "PositionErrorToleranceTime"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="El más común diagnostico de motion 'algo está mal mecánicamente' o 'tuning mal'. Si dispara durante decel: feedforward bajo. Durante steady-state: fricción alta o load excesivo. Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_INHIBIT_S01 = FaultCode(
+    code="INHIBIT S01",
+    name="Enable Input Inhibit",
+    family="Kinetix 5700",
+    severity="Inhibit",
+    description=(
+        "Cuando Drive Enable Input Checking está habilitado, el drive "
+        "triggers este start inhibit cuando detecta que el hardware enable "
+        "input físico está inactivo. Previene que el drive transicione a "
+        "torque-producing state si falta el permissive."
+    ),
+    cause=(
+        "Permissive físico (hardware enable) perdido o desconectado al "
+        "intentar habilitar el axis. Wiring del input con falla, terminales "
+        "flojos, o lógica de control que no está aplicando el enable."
+    ),
+    recovery=(
+        "1. Confirmar que el digital input asignado al enable function esté ACTIVE. "
+        "2. Verificar wiring y terminales del hardware enable input en el drive. "
+        "3. Verificar digital input assignments en la software config (¿está apuntando al input correcto?). "
+        "4. Verificar la lógica que aplica el enable (HMI, permissives, etc.)."
+    ),
+    related_parameters=["DriveEnableInputChecking", "EnableInput"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="INHIBIT (no fault) — el drive nunca llegó a operar. Common al startup tras paro de planta. Si dispara repetidamente: lógica del enable mal escrita o input físico con problema intermitente. Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_FLT_S49 = FaultCode(
+    code="FLT S49",
+    name="Brake Slip Fault",
+    family="Kinetix 5700",
+    severity="Major",
+    description=(
+        "El displacement del motor excedió la brake slip tolerance permitida "
+        "mientras el mechanical holding brake estaba engaged. El drive "
+        "detectó que el brake falló en mantener el eje estacionario."
+    ),
+    cause=(
+        "Fuerzas mecánicas externas excediendo el rated holding torque del "
+        "brake del motor (cargas verticales, overhauling, vibración). "
+        "Wear mecánico de las pastillas del brake con el tiempo. "
+        "Comando de engage del brake antes de que motor esté en 0 rpm "
+        "(brake slip durante deceleración residual)."
+    ),
+    recovery=(
+        "1. Verificar integridad mecánica del sistema y que la load aplicada "
+        "no exceda el rated brake-holding torque del motor. "
+        "2. Verificar que BrakeSlipTolerance esté correctamente configurado "
+        "para la aplicación. "
+        "3. Modificar el control logic para asegurar deceleración a 0 rpm "
+        "ANTES de engage del brake. "
+        "4. Inspección física del brake (wear pads, fricción, alineamiento)."
+    ),
+    related_parameters=["BrakeSlipTolerance", "MechanicalBrakeEngageDelay"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="⚠️ Datos parcialmente EXTRAPOLADOS — NotebookLM marcó causes y recovery como 'inferred from general motion control principles, please verify'. Description y nombre sí son del manual 2198-UM002. Re-validar contra fuente oficial antes de usar para decisiones críticas. Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+_K5700_NODE_FLT_05 = FaultCode(
+    code="NODE FLT 05",
+    name="Clock Skew Fault",
+    family="Kinetix 5700",
+    severity="Major",
+    description=(
+        "El internal time del Logix controller y el time del drive system "
+        "no matchean. La time coordination precisa es requerida para "
+        "Integrated Motion — el drive genera major network fault para "
+        "proteger el sistema de movement uncoordinated."
+    ),
+    cause=(
+        "Ethernet network congestion severa, poor network topology, "
+        "Ethernet switches dropping PTP (Precision Time Protocol) packets, "
+        "o cables disconnected/degraded. También: switch no-CIP en el path "
+        "que rompe PTP transparency."
+    ),
+    recovery=(
+        "1. Disconnect y re-connect control power al drive (re-sync PTP). "
+        "2. Verificar operación del Logix controller y del Ethernet switch. "
+        "3. Asegurar que la network topology esté optimizada para CIP Sync "
+        "y PTP traffic (switches Stratix con PTP transparent clock support). "
+        "4. Revisar utilización de la red (Stratix diagnostics, packet loss). "
+        "5. Verificar cables Ethernet (cat 5e mínimo, sin damage)."
+    ),
+    related_parameters=["TimeSynchronization", "PTPPortState"],
+    references=["Rockwell pub 2198-UM002 (Kinetix 5700 Servo Drive User Manual)"],
+    notes="Crítico para CIP Motion. Si dispara frecuentemente, escalar a network engineer — puede haber switches no-PTP-compliant o congestión real. Diferente de NODE FLT 01 (late update) y NODE FLT 06 (lost connection): este es desync de tiempo, no pérdida de paquetes. Curado vía NotebookLM batch (2026-05-03).",
+)
+
+
+# NOTAS sobre faltantes en este batch (NOT FOUND en 2198-UM002):
+# - SW Overtravel (Software Overtravel POSITIVE/NEGATIVE): probablemente
+#   documentado en config attributes del axis (PositiveSWOvertravel /
+#   NegativeSWOvertravel) en lugar de fault code propio. Investigar
+#   manual MOTION-RM003 o axis config docs.
+# - Auxiliary Position Feedback fault: 2198-UM002 cubre solo motor
+#   feedback principal. Aux feedback puede estar en Kinetix 5700 SI
+#   manual variant o configurable en CIP Motion. Investigar separado.
+
+
 ALL_FAULT_CODES: list[FaultCode] = [
     _K5700_FLT_S03,
     _K5700_FLT_S05,
+    _K5700_FLT_S07,
+    _K5700_FLT_S11,
     _K5700_FLT_S13,
+    _K5700_FLT_S33,
+    _K5700_FLT_S35,
     _K5700_FLT_S44,
     _K5700_FLT_S47,
+    _K5700_FLT_S49,
     _K5700_FLT_S50,
+    _K5700_FLT_S54,
+    _K5700_INHIBIT_S01,
+    _K5700_INHIBIT_S02,
+    _K5700_SAFE_FLT_09,
     _K5700_NODE_FLT_01,
+    _K5700_NODE_FLT_05,
     _K5700_NODE_FLT_06,
 ]
 
