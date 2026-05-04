@@ -1,118 +1,78 @@
-# Claude Code — Rockwell Comprehender (Python + RuFlo V3)
+# Claude Code — Rockwell Comprehender
 
 Reglas y contexto operativo para cualquier chat de Claude Code trabajando en este proyecto.
 
-## ⚠️ LECTURA OBLIGATORIA AL INICIO DE CADA SESIÓN
-
-Antes de proponer o ejecutar cualquier trabajo en este repo, **leer**:
-
-1. **[`docs/PLAN_DE_TRABAJO.md`](docs/PLAN_DE_TRABAJO.md)** — fuente de verdad operativa con phases/milestones/tasks ejecutables, scoreboard, política de commit baked-in, anti-deviation rules. **Si dudás de qué hacer, está acá.**
-2. Sección 0 del plan (Scoreboard) → ver % de cada phase, identificar próxima task NO marcada `[x]`.
-3. Sección 2 del plan (Reglas anti-deviation) → 5 preguntas obligatorias antes de empezar.
-
-**Si una tarea propuesta NO está en el plan (alguna phase) y NO es trivial → PARAR, preguntar al owner.** No agregar al plan unilateralmente.
-
-## Política de commits (override del global para este proyecto)
-
-El owner autorizó commits automáticos cuando una task del plan cumple sus acceptance criteria. **NO preguntar al owner por cada commit que sigue el plan.** El mensaje del commit está definido EN la task.
-
-**SÍ requiere confirmación explícita (sin excepción):**
-- Push a remote (`git push`)
-- Cambios fuera del scope de la task actual (deviation)
-- Reverts, rebases, force-push, branch deletes
-- Modificación de archivos sensibles (`settings.json`, `.gitignore`, `pyproject.toml` deps)
-- Operaciones destructivas de filesystem
-
-**Lección dura 2026-05-03:** una sesión completa se desvió ~3 hrs hacia trabajo tangencial (curación de fault codes K5700) que no movía la aguja del objetivo. El plan existe para prevenir esto. Y el patrón "preguntar por cada commit" creaba interrupciones innecesarias — ahora la política está en el plan.
-
 ## Contexto del proyecto
 
-- **Proyecto:** `rockwell-comprehender` — toolkit Python para análisis estático de proyectos Studio 5000 (archivos `.L5X`).
-- **Stack:** Python 3.x, paquete `rockwell_comprehender/` (no JS/Node — ignora cualquier referencia a npm/test/build de origen genérico).
+- **Proyecto:** `rockwell-comprehender` — toolkit Python para comprensión profunda de proyectos Studio 5000 (archivos `.L5X`) con la depth de un ingeniero senior. Visión completa: [docs/00_Vision_y_Roadmap.md](docs/00_Vision_y_Roadmap.md).
+- **Stack:** Python 3.10+ con stdlib (`sqlite3`, `xml.etree`, `dataclasses`) + `openpyxl`. Stack mínimo per **DT-008**.
 - **Estructura real:**
-  - `rockwell_comprehender/` — código fuente del paquete
-  - `parque_l5x/` — fuente de verdad de archivos L5X (algunos grandes están en `.gitignore` por IP de terceros)
-  - `docs/` — documentación e investigación (`docs/Inf Fase 3/`, `docs/Test/` para reportes intermedios)
-  - `reportes_generados/` — outputs (gitignored)
-  - `.claude/`, `.claude-flow/`, `.swarm/`, `ruvector.db`, `.mcp.json`, `daemon.pid` — runtime de Claude Code + RuFlo (gitignored)
+  - `rockwell_comprehender/` — paquete principal (`loader`, `model`, `mapamental`, `navigator`, `tracer`, `patterns`, `tokenizer`, `instruction_library`, `fault_code_library`, `reporters`)
+  - `parque_l5x/` — fuente de verdad de archivos L5X (algunos grandes en `.gitignore` por IP de terceros)
+  - `docs/` — bitácora viva: visión, decisiones técnicas (`01_Decisiones_Tecnicas.md`), arquitectura, casos, hallazgos, backlog
+  - `reportes_generados/` — outputs de los reporters (gitignored)
 
-## Capacidades activas en este proyecto
+## Lectura obligatoria al inicio de cada sesión
 
-Cuatro habilidades desbloqueadas para sesiones en este directorio:
+Antes de proponer o ejecutar cualquier trabajo:
 
-1. **NotebookLM skill** — query a Google NotebookLM (cuenta Pro Softys) para Q&A sobre 6 manuales Rockwell (Logix 5000, Kinetix 5700, motion EtherNet/IP / SERCOS / Analog). Doc: [docs/Inf Fase 3/NotebookLM_Skill_Instrucciones_Operativas.md](docs/Inf%20Fase%203/NotebookLM_Skill_Instrucciones_Operativas.md).
-2. **RuFlo MCP** (Fase 2 / full init) — ~241 herramientas `mcp__ruflo__*` deferred, 98 agent definitions en `.claude/agents/`, 33 skills, 10 commands, hooks activos, AgentDB vectorial. Doc: [docs/Inf Fase 3/Ruflo_MCP_Instrucciones_Operativas.md](docs/Inf%20Fase%203/Ruflo_MCP_Instrucciones_Operativas.md).
-3. **Agent Teams** (nativo experimental Claude Code) — `TeamCreate`/`SendMessage`/`TeamDelete` para teammates persistentes con comunicación bidireccional + plan approval + worktrees aislados. Habilitado via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` en settings.json. Doc: [docs/Inf Fase 3/Agent_Teams_Instrucciones_Operativas.md](docs/Inf%20Fase%203/Agent_Teams_Instrucciones_Operativas.md).
-4. **Memoria persistente** — `C:\Users\LENOVO\.claude\projects\c--Master-Project-rockwell-comprehender\memory\` se carga automáticamente y se importa a AgentDB vía hook `auto-memory-hook.mjs import` en SessionStart.
+1. [docs/00_Vision_y_Roadmap.md](docs/00_Vision_y_Roadmap.md) — visión, niveles N1/N2/N3, criterios de éxito
+2. [docs/01_Decisiones_Tecnicas.md](docs/01_Decisiones_Tecnicas.md) — DT-001 a DT-010 (lectura completa, son ley del proyecto)
+3. [docs/HANDOFF_v01_to_N2.md](docs/HANDOFF_v01_to_N2.md) — estado al cierre de v0.1 + antipatrones documentados
+4. [docs/Backlog.md](docs/Backlog.md) — items técnicos abiertos
+5. La auditoría más reciente en `docs/05_*.md` (si existe) — estado actual de capacidades
 
-## Lecciones operativas críticas (no reaprender por las malas)
+## Capacidades activas
 
-- **NotebookLM es estrictamente serial.** Su skill usa Patchright con un único perfil de browser → 2+ queries concurrentes corrompen el state y rompen auth. Para batch: 1 subagent que itera con `delay 2-3s` entre llamadas. **NUNCA** spawnees N subagents concurrentes contra NotebookLM.
-- **Ruflo no ejecuta — coordina.** `agent_spawn` registra metadata en AgentDB pero no corre código. El ejecutor real es el **Task tool nativo de Claude Code** (o `claude -p` externo). Ruflo aporta tracking + persistencia + memoria semántica encima.
-- **Patrón ortogonal correcto:** para paralelización real, Task tool sobre tareas que **no comparten recurso** (ej. analizar 4 L5X distintos). Encima, registrar en Ruflo (`task_create` × N) solo para tracking.
-- **Reportes/tests intermedios** → `docs/Test/` (no en raíz).
-- **Nunca commitear sin confirmación explícita previa del usuario.** Regla absoluta — incluso si el cambio parece trivial.
+Tres habilidades disponibles en sesiones de este directorio:
 
-## Discovery de tools (deferred)
+1. **Paquete `rockwell_comprehender` v0.1+** — el deliverable real del proyecto. Carga L5X, genera Mapa Mental, búsqueda en código, lupa puntual, reporters MD/Excel/Mermaid. Validado contra 2 L5X reales (CINTA, AQL).
+2. **NotebookLM skill** — query a Google NotebookLM (cuenta Pro Softys) para Q&A autoritativo sobre 6 manuales Rockwell. Vive en `~/.claude/skills/notebooklm/`, fuera del paquete. Doc operativa: [docs/Inf Fase 3/NotebookLM_Skill_Instrucciones_Operativas.md](docs/Inf%20Fase%203/NotebookLM_Skill_Instrucciones_Operativas.md).
+3. **Memoria persistente del proyecto** — `~/.claude/projects/c--Master-Project-rockwell-comprehender/memory/` se carga automáticamente. Contexto de continuidad entre sesiones.
 
-Las 241 tools de ruflo aparecen en system-reminders por nombre pero su schema NO está cargado. Antes de invocar, cargar:
+## Reglas absolutas
 
-```
-ToolSearch("+ruflo")                                           → primeras N tools
-ToolSearch("swarm")                                            → swarm_init/status/health/shutdown
-ToolSearch("memory_search")                                    → memory_search, memory_search_unified, memory_retrieve
-ToolSearch("hive-mind")                                        → consensus + worker spawn
-ToolSearch("select:mcp__ruflo__<name1>,mcp__ruflo__<name2>")   → carga directa por nombre
-```
+- **Nunca commit sin confirmación explícita previa del usuario.** Regla absoluta del owner. Se aplica a cualquier `git commit/push/merge/rebase/reset`. No hay excepciones por "cambio trivial" ni por "task del plan". Read-only git (`status`, `log`, `diff`, `show`, `blame`) sí puede correr libre.
+- **Nunca agregar dependencias al `pyproject.toml` sin validación empírica** contra al menos 2 L5X reales (HANDOFF antipatrón #1; razón: aprendizaje DT-010 con `l5x` library).
+- **Nunca declarar algo "validado" en un solo caso.** Mínimo 2 L5X de arquitectura distinta (HANDOFF antipatrón #2).
+- **Nunca crear stubs vacíos para funcionalidad futura** (DT-009). El código en disco refleja lo implementado en la versión actual; documentación arquitectónica describe la visión completa.
+- **Nunca inventar tags / AOIs / rutinas.** Si no aparece en `project.search()`, responder "no encuentro X" sin variantes alucinatorias.
+- **Nunca instalar infraestructura especulativa** que viole DT-003 / DT-008 (sin embeddings vectoriales, sin frameworks ML, sin servidores externos, sin MCP servers pesados, sin Studio5000-AI-Assistant style stack). Lección dura 2026-05-03 documentada.
 
-## Concurrencia y batching
+## Lecciones operativas críticas
 
-- **1 mensaje = todas las operaciones relacionadas.** Si lanzas N tool calls independientes, mételos en un solo mensaje con N `<function_calls>` en paralelo.
-- Batchea Bash, Read, Edit, Write cuando sean independientes — no las hagas secuenciales sin necesidad.
-- **Excepción NotebookLM:** las queries van serializadas estrictas (ver lección crítica arriba).
+- **NotebookLM es estrictamente serial.** Su skill usa Patchright con un único perfil de browser → 2+ queries concurrentes corrompen el state y rompen auth. Para batch: 1 subagent que itera con `delay 2-3s` entre llamadas.
+- **Reportes/tests intermedios → `docs/Test/`** (no en raíz).
+- **Documentación como subproducto.** Cada decisión técnica se anota inmediatamente en `01_Decisiones_Tecnicas.md` con justificación. Una decisión sin razón documentada es una decisión que se va a cuestionar después sin contexto.
+- **Validación contra archivos reales > diseño en abstracto.** Cada componente nuevo se ejercita contra CINTA + AQL antes de declararlo funcional.
 
-## Swarm orchestration (cuando aplica)
+## Filosofía del proyecto
 
-- Topology default recomendada: `hierarchical` o `hierarchical-mesh` para 5-15 agentes; `mesh` para 3-5 con paridad.
-- Strategy `specialized` para roles bien diferenciados (anti-drift).
-- **Después de spawn de agentes vía Task tool, NO hagas polling.** Trust the agents to return — revisa todos los results juntos al final.
-- Ruflo registra el swarm en `.claude-flow/` para persistencia y retomabilidad — útil si el chat crashea a mitad.
+(condensado de [docs/00_Vision_y_Roadmap.md](docs/00_Vision_y_Roadmap.md) sec 4)
 
-## Agentes disponibles vía Task tool
+1. **Construcción gradual.** No comprometer stack pesado antes de validar necesidad.
+2. **Cada decisión documentada** en bitácora viva con justificación.
+3. **Validación contra casos reales** del parque, no demos sintéticos.
+4. **Reuso pragmático.** Aprovechar lo maduro (`l5x`-style libraries solo si demuestran valor empírico — DT-010 mostró que stdlib basta).
+5. **Honestidad técnica.** Decir lo que no funciona, lo que falta, lo que tiene riesgo. Sin sobreventa.
+6. **Arquitectura limpia desde día uno.** Paquete instalable con interfaces claras, no scripts sueltos.
 
-Tras el init full hay **98 agent definitions en 23 categorías** dentro de `.claude/agents/`. Algunos types útiles:
-- **Core:** `coder`, `reviewer`, `tester`, `planner`, `researcher`
-- **Specialized:** `code-analyzer`, `system-architect`, `performance-engineer`, `memory-specialist`, `security-architect`, `security-auditor`
-- **Coordination:** `hierarchical-coordinator`, `mesh-coordinator`, `adaptive-coordinator`
-- **GitHub:** `pr-manager`, `code-review-swarm`, `issue-tracker`, `release-manager`
-- **SPARC:** `sparc-coord`, `sparc-coder`, `specification`, `pseudocode`, `architecture`, `refinement`
-- **Test:** `tdd-london-swarm`, `production-validator`
+## Casos de uso prioritarios
 
-Para listado completo: `Glob ".claude/agents/**/*.md"`. Cualquier string sirve como `subagent_type` custom; los listados arriba traen prompts especializados.
+(de [docs/03_Casos_de_Uso_Reales.md](docs/03_Casos_de_Uso_Reales.md))
 
-## Memory bridge (Claude ↔ AgentDB)
-
-- Tras SessionStart, el hook `auto-memory-hook.mjs import` debería sincronizar `~/.claude/projects/.../memory/*.md` con AgentDB.
-- Si `memory_bridge_status` reporta `not-synced`, ejecutar manualmente: `mcp__ruflo__memory_import_claude({allProjects: true})`.
-- Búsqueda semántica cross-project: `mcp__ruflo__memory_search_unified`.
+| # | Caso | Estado |
+|---|------|--------|
+| 1 | **Empalme con velocidad excesiva** (CASO PARADIGMA) | 🟡 Test funcional pendiente — ÚNICO criterio v0.1 abierto |
+| 2 | Auditoría rápida de proyecto desconocido | ✅ v0.1 |
+| 3 | Comparación entre proyectos | ⚠️ Manual en v0.1, automático en v0.2 |
+| 4 | Plan migración K6000→K5700 | ✅ v0.1 (BoM en Excel) |
+| 5 | Detección código muerto | ⚠️ Parcial v0.1, completo v0.2 |
+| 6 | Documentación técnica TDR | ✅ v0.1 |
 
 ## Seguridad
 
-- **Nunca** hardcodear credentials, API keys, secrets en código fuente.
-- **Nunca** commitear `.env` o cualquier archivo con secrets.
-- **Nunca** usar flags `--no-verify`, `--no-gpg-sign`, etc. salvo petición explícita del usuario.
+- Nunca hardcodear credentials, API keys, secrets en código fuente.
+- Nunca commitear `.env` o cualquier archivo con secrets.
+- Nunca usar flags `--no-verify`, `--no-gpg-sign`, etc. salvo petición explícita del usuario.
 - Validar entrada de usuario en boundaries del sistema; sanitizar paths para prevenir directory traversal.
-
-## Operaciones git
-
-- **Confirmación explícita SIEMPRE antes de commit/push/merge/rebase/reset.** El usuario ha establecido esta regla como absoluta. No hay excepciones por "cambio trivial".
-- Read-only git (status, log, diff, show, blame) puede correr sin pedir permiso.
-- Backups generados por agentes (`*.bak.*`) están gitignorados — no se versionan.
-
-## Referencias rápidas
-
-- **Doc operativa NotebookLM:** [docs/Inf Fase 3/NotebookLM_Skill_Instrucciones_Operativas.md](docs/Inf%20Fase%203/NotebookLM_Skill_Instrucciones_Operativas.md)
-- **Doc operativa Ruflo MCP:** [docs/Inf Fase 3/Ruflo_MCP_Instrucciones_Operativas.md](docs/Inf%20Fase%203/Ruflo_MCP_Instrucciones_Operativas.md)
-- **Investigación skills Studio 5000:** [docs/Inf Fase 3/Skills_Claude_Studio5000_Investigacion.md](docs/Inf%20Fase%203/Skills_Claude_Studio5000_Investigacion.md)
-- **CAPABILITIES de RuFlo:** [.claude-flow/CAPABILITIES.md](.claude-flow/CAPABILITIES.md)
-- **Memoria persistente del proyecto:** `C:\Users\LENOVO\.claude\projects\c--Master-Project-rockwell-comprehender\memory\`

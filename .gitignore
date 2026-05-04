@@ -36,6 +36,17 @@ env/
 # Claude Code (config local de la herramienta)
 .claude/
 
+# Backups locales (no versionar)
+*.bak.*
+
+# Ruflo / claude-flow runtime (defensivo — NO debería existir per DT-008).
+# Si accidentalmente reaparece, estas entradas evitan que contamine git.
+.claude-flow/
+.swarm/
+ruvector.db
+.mcp.json
+daemon.pid
+
 # Project-specific
 reportes_generados/
 *.sqlite

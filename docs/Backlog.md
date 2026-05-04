@@ -10,13 +10,12 @@ Issues identificados durante validación + áreas de mejora detectadas, prioriza
 
 **Síntoma:** Patterns Capa C de `rockwell_comprehender/patterns.py` detecta **43 zonas** en CPPIM (Amantrini Studio v33), **1-2 zonas** en CINTA y AQL (Diatec legacy + Diatec moderno).
 
-**Implicación:** Si el toolkit se aplica a PLCs Diatec legacy de la migración K6000→K5700 (la mayoría de los casos reales del proyecto Pañalera N2), las heurísticas no detectan la estructura. Output útil queda atrofiado para el caso de uso principal.
+**Implicación:** Si el toolkit se aplica a PLCs Diatec legacy de la migración K6000→K5700 (la mayoría de los casos reales del proyecto), las heurísticas no detectan la estructura. Output útil queda atrofiado para el caso de uso principal.
 
 **Material para investigar:**
 - `docs/Análisis/L5X_baseline/report_cinta.md` (Diatec legacy, 12 AOIs zombie)
 - `docs/Análisis/L5X_baseline/report_aql.md` (Diatec moderno)
 - `docs/Análisis/L5X_baseline/report_cppim.md` (Amantrini, ProtectedRoutine + raC_*)
-- `docs/Test/Test_L5X_Paralelo_Ruflo/run2/report_*.md` (versiones refinadas con prior knowledge)
 
 **Acción sugerida:** Ampliar heurísticas de `patterns.py` con signatures Diatec legacy. Investigar qué tokens/estructuras distinguen Diatec legacy vs Diatec moderno vs Amantrini. Posiblemente refactor de Capa C a sistema de heurísticas pluggable por OEM.
 
@@ -26,52 +25,7 @@ Issues identificados durante validación + áreas de mejora detectadas, prioriza
 
 ---
 
-## 2. Intelligence layer Ruflo: 4 stores fragmentados (bug upstream)
-
-**Detectado:** Test L5X paralelo Run #2, 2026-05-03.
-
-**Síntoma:** `mcp__ruflo__hooks_intelligence_pattern-store` retorna `success: true` pero el pattern NO aparece en:
-- `mcp__ruflo__memory_bridge_status.intelligence` → reporta `patternsLearned: 0`
-- `mcp__ruflo__hooks_intelligence_pattern-search` (HNSW) → retorna `0 results`
-- `mcp__ruflo__memory_search_unified` → no encuentra los patterns guardados
-- `mcp__ruflo__memory_bridge_status.agentdb.totalEntries` → sin cambio
-
-**Lo que SÍ refleja:** `mcp__ruflo__hooks_intelligence_stats.sona` con count correcto (6 patterns en Run #2).
-
-**Implicación:** El pattern queda guardado pero **no es search-able semánticamente** vía `memory_search_unified`. La pipeline RETRIEVE no opera sobre el sona-store. Esto degrada la propuesta de valor de Ruflo: la idea de "patterns aprendidos disponibles para próximas tareas similares" se rompe porque no hay indexación HNSW.
-
-**Acción sugerida:**
-1. Reportar como issue upstream a `https://github.com/ruvnet/ruflo/issues`. Datos reproducibles: en Run #2 con 6 `pattern-store` calls successful, sona reporta 6 patterns pero `pattern-search` retorna 0 con cualquier query.
-2. **Workaround interno:** si querés un pattern search-able vía HNSW, guardarlo también con `mcp__ruflo__memory_store` explícito (que escribe en namespace que sí indexa). Eso duplica esfuerzo pero garantiza retrievability.
-
-**Priority:** **low** — feature degraded, no bloquea uso. Workaround disponible.
-
-**Owner:** TBD (después de reportar upstream, esperar respuesta del mantenedor)
-
----
-
-## 3. EWC++ nominal pero no operativo
-
-**Detectado:** Test L5X paralelo Run #2, 2026-05-03.
-
-**Síntoma:** `mcp__ruflo__hooks_intelligence_learn({consolidate: true})` retorna:
-- `consolidation: true` ✅
-- `ewc.consolidations: 0` ❌
-- `fisherUpdates: false` ❌
-
-**Implicación:** El catastrophic forgetting protection que la doc de Ruflo promete (EWC++ — Elastic Weight Consolidation) no está computando los Fisher updates. La feature está nominalmente activa pero **no operativa** — los flags de status no reflejan cómputo real.
-
-**Impacto en el proyecto:** muy bajo. Solo afecta long-running multi-task scenarios donde catastrophic forgetting sería un problema. En `rockwell-comprehender` no hemos visto evidencia de que importe.
-
-**Acción sugerida:** No actuar ahora. Ignorar las flags de EWC hasta que se confirme cómputo real. Reportar upstream junto con #2 como bug related.
-
-**Priority:** **very low** — informativo, no bloqueante.
-
-**Owner:** TBD
-
----
-
-## 4. PDF Extractor pipeline para curación de instrucciones (deferred)
+## 2. PDF Extractor pipeline para curación de instrucciones (deferred)
 
 **Detectado:** Sesión 2026-05-03, tras validar workflow NotebookLM batch query.
 
@@ -95,13 +49,13 @@ Issues identificados durante validación + áreas de mejora detectadas, prioriza
 4. Una vez validado: paralelizable, offline, reproducible, sin dependencia NotebookLM.
 
 **Triggers para retomar (cualquiera de estos justifica la inversión ~2-4 hrs):**
-- ✅ Library escala a 25+ entries totales (compounding empieza a importar)
-- ✅ Library scope se expande de "parque actual" a "todo Rockwell motion+safety+general"
-- ✅ Sustitución silenciosa NotebookLM se vuelve crónica (>10% de queries)
-- ✅ Browser Patchright se cae 2+ veces consecutivas en una sesión
-- ✅ Necesidad de integrar curación en CI/CD del repo (auto-actualización cuando aparezca nueva pub Rockwell)
-- ✅ Distribución del toolkit a otros usuarios sin acceso a la cuenta NotebookLM Pro Softys
-- ✅ Necesidad de procesar PDFs propios que NO podemos subir a NotebookLM (NDAs / IP cliente)
+- Library escala a 25+ entries totales (compounding empieza a importar)
+- Library scope se expande de "parque actual" a "todo Rockwell motion+safety+general"
+- Sustitución silenciosa NotebookLM se vuelve crónica (>10% de queries)
+- Browser Patchright se cae 2+ veces consecutivas en una sesión
+- Necesidad de integrar curación en CI/CD del repo (auto-actualización cuando aparezca nueva pub Rockwell)
+- Distribución del toolkit a otros usuarios sin acceso a la cuenta NotebookLM Pro Softys
+- Necesidad de procesar PDFs propios que NO podemos subir a NotebookLM (NDAs / IP cliente)
 
 **Análisis costo/beneficio actual (2026-05-03):**
 - Para scope ~30 instr (parque actual): NotebookLM gana (~30 min vs 2.5+ hrs build C).
@@ -120,3 +74,9 @@ Issues identificados durante validación + áreas de mejora detectadas, prioriza
 - Cuando un issue se cierra: mover a sección "Cerrados" con fecha de cierre + commit/PR/decisión.
 - Issues que requieren múltiples sub-tareas se rompen en un sub-backlog dentro de la misma entry.
 - No es sustituto de un tracker formal (Linear, GitHub Issues). Es captura ligera para que los hallazgos no se enterren en chat history.
+
+---
+
+## Cerrados
+
+_(vacío hasta que se cierre el primero)_
