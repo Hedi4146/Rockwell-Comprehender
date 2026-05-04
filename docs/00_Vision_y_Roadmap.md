@@ -153,9 +153,11 @@ Si el sistema resuelve este caso bien, está logrado.
 ## Criterios de éxito por hito
 
 **v0.1 logrado cuando:**
-- Cargo un L5X arbitrario del parque y produzco Mapa Mental coherente sin intervención
-- Respondo preguntas estructurales sobre el proyecto sin fallar
-- El caso de empalme se resuelve en ≤6 turnos de conversación
+- ✅ Cargo un L5X arbitrario del parque y produzco Mapa Mental coherente sin intervención
+- ✅ Respondo preguntas estructurales sobre el proyecto sin fallar
+- ✅ El caso de empalme se resuelve en ≤6 turnos de conversación (validado 2026-05-03 — 3 turnos efectivos con tracer v0.2)
+
+**Status:** ✅ v0.1 oficialmente cerrado (2026-05-03).
 
 **v0.2 logrado cuando:**
 - "¿De dónde viene el valor de X?" se responde en 1 turno con trace completo

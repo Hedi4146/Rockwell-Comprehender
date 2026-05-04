@@ -8,13 +8,12 @@
 
 ## TL;DR
 
-**Estado global: ~80% de las capacidades del Vision están construidas y operativas.** Eso es ~13 puntos arriba del baseline pre-plan (~67%) que el Vision sec 12 estimaba.
+Estado global: **~83%** de las capacidades del Vision construidas, operativas, y validadas empíricamente. Caso empalme cerrado 2026-05-03 (3 turnos efectivos).
 
 **Lo que falta, en orden de impacto:**
-1. **Test funcional del Caso #1 (empalme)** — único criterio v0.1 abierto. Sin esto NO podemos declarar v0.1 cerrado.
-2. **Cobertura general logix en `instruction_library`** — hoy 100% motion (17 entries) pero 0% scaffolding RLL (XIC/MOV/TON/EQU/etc.). Limita interpretación de código en ladder estándar.
-3. **Composición motion (patterns nivel-2)** — átomos curados pero composiciones tipo "MAJ→MAS encadenado = control de empalme estilo Diatec" no detectables.
-4. **Validación empírica del tracer (v0.2 implementado pero no probado contra caso real)** — `writers_of/readers_of/trace_back/find_causal_path` están construidos pero el caso paradigma no los ha ejercido.
+1. **Cobertura general logix en `instruction_library`** — hoy 100% motion (17 entries) pero 0% scaffolding RLL (XIC/MOV/TON/EQU/etc.). Limita interpretación de código en ladder estándar.
+2. **Composición motion (patterns nivel-2)** — átomos curados pero composiciones tipo "MAJ→MAS encadenado = control de empalme estilo Diatec" no detectables.
+3. **Validación cruzada del tracer en AQL_M2** (TODO menor).
 
 **Recomendación de próximo paso (UNO solo):** ejecutar el test funcional del caso empalme contra CINTA. Eso valida 3 capacidades a la vez (mapa mental, búsqueda, tracer) y cierra v0.1.
 
@@ -71,7 +70,7 @@ dependencies = ["openpyxl"]  # única dependencia más allá de stdlib
 | #5 | **Trazar dependencias** | 75% | **90%** | `tracer.py` implementa: `writers_of`, `readers_of`, `references_of`, `trace_back` (BFS hacia atrás), `trace_forward`, `find_causal_path`. Tokenizer RLL + ST. **Construido pero no validado contra caso paradigma todavía** — gap de validación, no de implementación |
 | #6 | **Roles de tags** | 70% | **80%** | Capa C detecta `HMI_*`, `*_Setpoint`, `*_Limit`, `*_Enable*`, `*_Reset`, `*_Cmd`. Mapeo eje→AOI principal. UDTs estructurados por entidad (`M*Data`) reconocidos |
 | #7 | **Estructura programa (semántica funcional)** | 80% | **85%** | Mapa Mental describe programs + routines + main_routine + AOIs + UDTs por programa. Inferencia per-program (qué tipo de role tiene cada Program: motion_control / safety / sequence_logic / etc.) NO está automatizada |
-| #8 | **Síntesis diagnóstica end-to-end (caso empalme)** | 50% | **70%** (probable) | TODOS los building blocks existen: mapa mental, search, get_aoi, tracer.find_causal_path, instruction_library para entender los operadores. **Sin test empírico, el % es estimación.** ESTE es el criterio v0.1 abierto |
+| #8 | **Síntesis diagnóstica end-to-end (caso empalme)** | 50% | **85%** (validado) | Validado empíricamente 2026-05-03 contra CINTA — 3 turnos efectivos. Cross-AOI traversal de find_causal_path funcional. Pendiente solo: validación cruzada en AQL_M2 (TODO menor) |
 
 ### (auxiliar) Migration K6000→K5700
 
@@ -83,8 +82,7 @@ dependencies = ["openpyxl"]  # única dependencia más allá de stdlib
 ### Promedios
 
 - **Pre-plan estimate:** ~67%
-- **Actual (sin Phase 5):** **~80%**
-- **Con caso empalme cerrado:** ~83%
+- **Actual (sin Phase 5):** **~83%** (caso empalme cerrado 2026-05-03; v0.1 oficialmente cumplido)
 
 Avance real desde pre-plan: **+13 puntos**, mayoría concentrada en capacidades #5 (trace), #3 (instructions), #2 (dominios).
 
@@ -136,13 +134,17 @@ Antes de v0.2, decir "tag X no se usa" requería búsqueda manual. Ahora con `pr
 
 ## 5. Gaps identificados — priorizados
 
-### Gap 1 (HIGH) — Test funcional del caso empalme NO ejecutado
+### Gap 1 (CERRADO 2026-05-03) — Test funcional del caso empalme ✅
 
-**Impacto:** sin esto no podemos afirmar empíricamente que el toolkit cumple su propósito. Todos los building blocks existen. La incógnita es **cuántos turnos** + **qué fricción aparece**.
+**Status:** ✅ Cerrado. Test ejecutado contra `CINTA_LAMINADA_M2_2024.L5X` el 2026-05-03 — resuelto en **3 turnos efectivos** del Claude virtual (criterio ≤6 cumplido con margen).
 
-**Costo:** 1-2 hrs (1 sesión dedicada a simular la conversación contra CINTA, contar turnos, anotar gaps).
+**Hito técnico:** cross-AOI traversal de `find_causal_path` validado empíricamente por primera vez contra caso paradigma.
 
-**Output:** doc en `docs/Test/Caso_1_Empalme_test_funcional.md` con turn-by-turn + veredicto + gaps revelados.
+**Output entregado:** `docs/Test/Caso_1_Empalme_test_funcional.md` (turn log + veredicto + gaps menores como input para v0.2.x).
+
+**Gaps menores revelados (NO bloqueantes — input para v0.2.x):**
+- `search()` no indexa nombres de AOIs (workaround: substring de código)
+- `trace_back` puede ser ruidoso para hipótesis dirigidas (uso correcto: `find_causal_path` para hipótesis dirigidas, `trace_back` para exploración exhaustiva)
 
 ### Gap 2 (HIGH) — Cobertura general logix RLL en `instruction_library`
 
@@ -267,28 +269,15 @@ Esta sección es **propositiva** — capacidades NO en el Vision original que me
 
 ---
 
-## 7. Recomendación de próximo paso
+## 7. Próximo paso (post-cierre v0.1) — decisión del owner
 
-**UNO solo. No diez.**
+v0.1 cerrado oficialmente con el test del 2026-05-03. Las 3 propuestas con mejor ROI per sec 6 (sin orden estricto, decisión del owner con cabeza fresca):
 
-### Recomendación: Test funcional del Caso #1 (empalme) contra `CINTA_LAMINADA_M2_2024.L5X`
+- **Propuesta C** — Architecture smell detection (tags huérfanos vía `references_of`). Cierra Caso #5 con ~2-3 hrs. ROI alto.
+- **Propuesta E** — Explorer HTML + tracer integrado. Convierte el Explorer (1741 LOC ya construidos) en herramienta diagnóstica visual para técnicos. ROI muy alto, ~2-3 hrs.
+- **Validación cruzada AQL_M2** — confirma robustez del tracer en arquitectura ControlLogix 1756-L61 con 17 ejes. ROI medio (sanity check).
 
-**Por qué:**
-1. Es el **único criterio v0.1 abierto** del Vision. Cierra una promesa pendiente desde hace semanas.
-2. Ejercita **3 capacidades clave** simultáneamente: mapa mental (capacidad #1, #2, #7), búsqueda + lupa (capacidad #3), tracer (capacidad #5, #8).
-3. **Genera datos empíricos** sobre cuántos turnos toma resolver el caso paradigma — sin esto las % de la sec 2 son estimación.
-4. **Identifica los gaps reales** que merecen siguiente inversión, en lugar de adivinar.
-
-**Cómo:**
-- Una sesión dedicada (~1-2 hrs).
-- Simular la conversación: "Hedi reporta síntoma → Claude carga proyecto → navega capa por capa → llega a hipótesis".
-- Documentar turn-by-turn en `docs/Test/Caso_1_Empalme_test_funcional.md` (que ya existe — actualizar).
-- Output: veredicto (≤6 turnos / >6 turnos) + lista de gaps específicos revelados.
-
-**Después del test, los siguientes pasos se autorientan:**
-- Si pasa con margen → cerrar v0.1 oficialmente. Próximo: Propuesta C (architecture smells) o Propuesta E (Explorer + tracer).
-- Si pasa apretado → identificar los 1-2 gaps que estiraron el conteo, atacar.
-- Si no pasa → diagnosticar específicamente qué del paquete falló (probable: composición motion, capacidad #4).
+Owner decide cuál atacar primero.
 
 ---
 

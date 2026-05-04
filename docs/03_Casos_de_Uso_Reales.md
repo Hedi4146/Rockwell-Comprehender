@@ -99,7 +99,11 @@ Claude: Sí, la causa más probable es input HMI incorrecto. Mientras el
 
 ### Validación
 
-**Status:** Pendiente — caso a probar contra v0.1 cuando esté construida y validada en arquitecturas distintas.
+**Status:** ✅ Validado contra `CINTA_LAMINADA_M2_2024.L5X` (RSLogix 5000 v20.01, CompactLogix 1768-L43) el 2026-05-03 con tracer v0.2 — resuelto en **3 turnos efectivos** del Claude virtual (criterio v0.1 ≤6 cumplido con margen, promesa v0.2 3-4 turnos cumplida exacta).
+
+Detalle completo en [docs/Test/Caso_1_Empalme_test_funcional.md](../Test/Caso_1_Empalme_test_funcional.md). Hito técnico: validación empírica del cross-AOI traversal de `find_causal_path` por primera vez contra el caso paradigma.
+
+Validación cruzada en `AQL_M2.L5X` queda **pendiente** como TODO menor.
 
 ---
 
