@@ -15,7 +15,7 @@ Estado global: **~83%** de las capacidades del Vision construidas, operativas, y
 2. **Composición motion (patterns nivel-2)** — átomos curados pero composiciones tipo "MAJ→MAS encadenado = control de empalme estilo Diatec" no detectables.
 3. **Validación cruzada del tracer en AQL_M2** (TODO menor).
 
-**Recomendación de próximo paso (UNO solo):** ejecutar el test funcional del caso empalme contra CINTA. Eso valida 3 capacidades a la vez (mapa mental, búsqueda, tracer) y cierra v0.1.
+**Próximo paso:** decisión del owner entre Propuestas C/E o validación AQL_M2 (ver sec 7). v0.1 cerrado el 2026-05-03.
 
 ---
 
@@ -67,7 +67,7 @@ dependencies = ["openpyxl"]  # única dependencia más allá de stdlib
 | #2 | **Localizar por dominio funcional** | 70% | **80%** | `patterns.py` Capa C detecta zonas (UWM01, MDP01, etc.), categorías de drives, dual-channel safety (CROUT/DCS_*), roles HMI. `mapamental` infiere función de ejes vía tag/AOI naming |
 | #3 | **Interpretar instrucciones individuales** | 60% | **75%** | `instruction_library` con 17 entries: 3 safety (CROUT, DCI_STOP, DCI_STOP_TEST_LOCK) + 14 motion (MAJ/MAG/MAS/MAH/MAOC/MAM/MSO/MSF/MAFR/MASR/MAPC/MAR/MCCP/MCSV). **Cubre 100% del motion del parque actual.** Falta general logix RLL (XIC/XIO/OTE/MOV/TON/EQU/etc.) |
 | #4 | **Semántica composicional motion** | 50% | **55%** | Átomos curados (cada motion instr individual), pero **composiciones no**. Ejemplo: "MAJ + MAS encadenado = transición controlada" no es detectable. Plan v2 (revertido) Phase 3 apuntaba a 75% |
-| #5 | **Trazar dependencias** | 75% | **90%** | `tracer.py` implementa: `writers_of`, `readers_of`, `references_of`, `trace_back` (BFS hacia atrás), `trace_forward`, `find_causal_path`. Tokenizer RLL + ST. **Construido pero no validado contra caso paradigma todavía** — gap de validación, no de implementación |
+| #5 | **Trazar dependencias** | 75% | **92%** | `tracer.py` implementa: `writers_of`, `readers_of`, `references_of`, `trace_back` (BFS hacia atrás), `trace_forward`, `find_causal_path`. Tokenizer RLL + ST. **Validado contra caso paradigma 2026-05-03** (cross-AOI traversal de find_causal_path funcional en 3 steps contra CINTA — ver Caso #1) |
 | #6 | **Roles de tags** | 70% | **80%** | Capa C detecta `HMI_*`, `*_Setpoint`, `*_Limit`, `*_Enable*`, `*_Reset`, `*_Cmd`. Mapeo eje→AOI principal. UDTs estructurados por entidad (`M*Data`) reconocidos |
 | #7 | **Estructura programa (semántica funcional)** | 80% | **85%** | Mapa Mental describe programs + routines + main_routine + AOIs + UDTs por programa. Inferencia per-program (qué tipo de role tiene cada Program: motion_control / safety / sequence_logic / etc.) NO está automatizada |
 | #8 | **Síntesis diagnóstica end-to-end (caso empalme)** | 50% | **85%** (validado) | Validado empíricamente 2026-05-03 contra CINTA — 3 turnos efectivos. Cross-AOI traversal de find_causal_path funcional. Pendiente solo: validación cruzada en AQL_M2 (TODO menor) |
@@ -92,7 +92,7 @@ Avance real desde pre-plan: **+13 puntos**, mayoría concentrada en capacidades 
 
 | # | Caso | v0.1 esperado | **Estado actual** |
 |---|------|---------------|-------------------|
-| 1 | **Empalme con velocidad excesiva** (CASO PARADIGMA) | 5-7 turnos manual | 🟡 **NO PROBADO** — único criterio v0.1 abierto |
+| 1 | **Empalme con velocidad excesiva** (CASO PARADIGMA) | 5-7 turnos manual | ✅ Validado 2026-05-03 contra CINTA — 3 turnos efectivos (criterio v0.1 ≤6 cumplido con margen, promesa v0.2 3-4 cumplida exacta) |
 | 2 | Auditoría rápida proyecto desconocido | <30s | ✅ Logrado: Mapa Mental en <1s contra CINTA + AQL + CPPIM |
 | 3 | Comparación entre proyectos | Manual guiado | ⚠️ Manual disponible (carga 2 `Project` paralelos). Diff automático no existe |
 | 4 | Plan migración K6000→K5700 | BoM | ✅ Logrado: hoja `Axes` Excel multi-sheet con motion_module + catálogo + canal + función |
