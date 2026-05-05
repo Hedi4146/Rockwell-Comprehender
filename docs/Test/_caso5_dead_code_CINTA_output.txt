@@ -1,0 +1,87 @@
+==============================================================================
+Caso #5 — Detección de código muerto
+L5X: parque_l5x/CINTA_LAMINADA_M2_2024.L5X
+Target: CPU1  ·  Processor: 1768-L43  ·  SW: v20.01
+Inventario: programs=4  routines=17  aois=26  tags(controller)=209
+==============================================================================
+
+## 1. AOIs definidas pero NO invocadas
+
+  - AHT_DancerCorAndNewRadiusComputation
+  - AHT_DriveFault_Decoding
+  - AHT_Enable_Reject
+  - AHT_ON_OFF_CounterValve
+  - AHT_Reject_Block
+  - AHT_SyncroAxis
+  - AxisBlock
+  - CtcDiatecSplicer
+  - CtcDiatecSplicerBuffer
+  - FullSpeedSplicer
+  - FullSpeedSplicer2
+  - Unwinder
+
+  TOTAL: 12 AOIs no invocadas de 26 definidas
+
+## 2. Routines no llamadas (no main/fault, sin JSR target)
+
+(ninguna)
+
+## 3. Tags controller-scoped huérfanos (sin refs en código)
+
+  - AuxCam                                             : DINT
+  - AuxCamData                                         : OUTPUT_CAM
+  - CompAuxCam                                         : OUTPUT_COMPENSATION
+  - EnableAuxCam                                       : DINT
+  - HMIProductLength_Modif                             : REAL
+  - HMI_FaultCode_M01                                  : REAL
+  - HMI_Fault_Code                                     : REAL
+  - HMI_Fault_Coding                                   : DINT
+  - HMI_Fault_bit                                      : DINT
+  - HMI_Motor_Number                                   : INT
+  - HMI_Polarity_M4_2                                  : DINT
+  - HMI_Polarity_M4_3                                  : SINT
+  - HmiManualEnabled                                   : BOOL
+  - HmiOldSize                                         : DINT
+  - HmiProductLength                                   : REAL
+  - HmiProductLengthJunior                             : REAL
+  - HmiProductLengthMaxi                               : REAL
+  - HmiProductLengthMidi                               : REAL
+  - HmiProductLengthMini                               : REAL
+  - HmiSizeConfirm                                     : BOOL
+  - HmiSizeSelector                                    : DINT
+  - LimitGlueValve                                     : BOOL
+  - M1Data                                             : Data
+  - M1_FaultCode                                       : BOOL
+  - M2Data                                             : Data
+  - M2_FaultCode                                       : BOOL
+  - M3HmiOfsetLengthJunior                             : REAL
+  - M3HmiOfsetLengthMaxi                               : REAL
+  - M3HmiOfsetLengthMidi                               : REAL
+  - M3_FaultCode                                       : BOOL
+  - M4HmiOfsetLengthJunior                             : REAL
+  - M4HmiOfsetLengthMaxi                               : REAL
+  - M4HmiOfsetLengthMidi                               : REAL
+  - M4HmiOfsetLengthMini                               : REAL
+  - M4_FaultCode                                       : BOOL
+  - MDOC1                                              : MOTION_INSTRUCTION
+  - Motor_Number                                       : INT
+  - OFF                                                : BOOL
+  - ON                                                 : BOOL
+  - SAVE_SIZE_ON                                       : BOOL
+  - SpeedMachine_PPM                                   : DINT
+  - TIMER_ACQL                                         : TIMER
+  - Timer_step1                                        : TIMER
+  - Timer_step2                                        : TIMER
+  - UNW_NW                                             : Unwinder
+  - VirtualMRP                                         : MOTION_INSTRUCTION
+  - aux35                                              : BOOL
+  - aux36                                              : BOOL
+  - aux37                                              : BOOL
+  - aux38                                              : BOOL
+  ... y 5 más
+
+  TOTAL: 55 huérfanos de 201 tags analizados (de 209 controller; 8 excluidos por filtros)
+
+==============================================================================
+FIN
+==============================================================================

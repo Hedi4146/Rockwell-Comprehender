@@ -1,0 +1,83 @@
+==============================================================================
+Caso #5 — Detección de código muerto
+L5X: parque_l5x/AQL_M2.L5X
+Target: CPU_AQL_M2  ·  Processor: 1756-L61  ·  SW: v20.01
+Inventario: programs=7  routines=29  aois=24  tags(controller)=775
+==============================================================================
+
+## 1. AOIs definidas pero NO invocadas
+
+  - AxisBlock
+  - Axis_Faults_CIP
+  - Axis_ObjectCIP
+  - Radius_Computation
+
+  TOTAL: 4 AOIs no invocadas de 24 definidas
+
+## 2. Routines no llamadas (no main/fault, sin JSR target)
+
+  - Axis/R001_A_Corte_AQL
+  - Axis/R001_B_Estampador_AQL
+  - Axis/R002_Corte_WB
+
+  TOTAL: 3 routines no alcanzables de 29 routines de program
+
+## 3. Tags controller-scoped huérfanos (sin refs en código)
+
+  - AuxCamData                                         : OUTPUT_CAM
+  - CompAuxCam                                         : OUTPUT_COMPENSATION
+  - EnableAuxCam                                       : DINT
+  - Error_M4                                           : REAL
+  - HmiTempM1                                          : INT
+  - HmiTempM10                                         : INT
+  - HmiTempM11                                         : INT
+  - HmiTempM12                                         : INT
+  - HmiTempM13                                         : INT
+  - HmiTempM14                                         : INT
+  - HmiTempM15                                         : INT
+  - HmiTempM16                                         : INT
+  - HmiTempM2                                          : INT
+  - HmiTempM3                                          : INT
+  - HmiTempM4                                          : INT
+  - HmiTempM5                                          : INT
+  - HmiTempM6                                          : INT
+  - HmiTempM7                                          : INT
+  - HmiTempM8                                          : INT
+  - HmiTempM9                                          : INT
+  - Homing_Direction_M4                                : DINT
+  - Homing_Direction_M9                                : DINT
+  - Homing_Speed_M4                                    : DINT
+  - Homing_Speed_M5                                    : DINT
+  - Homing_Speed_M9                                    : DINT
+  - I                                                  : INT
+  - MAM_HOME_M4                                        : MOTION_INSTRUCTION
+  - MAM_HOME_M5                                        : MOTION_INSTRUCTION
+  - MAM_HOME_M9                                        : MOTION_INSTRUCTION
+  - MDOC1                                              : MOTION_INSTRUCTION
+  - Manual_Cull                                        : BOOL
+  - Mx_HMI_ActualPosition                              : REAL
+  - Mx_HMI_DeltaPos                                    : REAL
+  - N44                                                : DINT
+  - OFF                                                : BOOL
+  - ON                                                 : BOOL
+  - Reject_Flag_20                                     : BOOL
+  - S04N74_DeltaPos_Size_L                             : REAL
+  - S04N74_DeltaPos_Size_M                             : REAL
+  - S04N74_DeltaPos_Size_S                             : REAL
+  - S04N74_DeltaPos_Size_XL                            : REAL
+  - S04N75_DeltaPos_Size_L                             : DINT
+  - S04N75_DeltaPos_Size_M                             : DINT
+  - S04N75_DeltaPos_Size_S                             : DINT
+  - S04N75_DeltaPos_Size_XL                            : DINT
+  - S04N79_DeltaPos_Size_L                             : DINT
+  - S04N79_DeltaPos_Size_M                             : DINT
+  - S04N79_DeltaPos_Size_S                             : DINT
+  - S04N79_DeltaPos_Size_XL                            : DINT
+  - Start_Homing_M4                                    : BOOL
+  ... y 5 más
+
+  TOTAL: 55 huérfanos de 735 tags analizados (de 775 controller; 40 excluidos por filtros)
+
+==============================================================================
+FIN
+==============================================================================

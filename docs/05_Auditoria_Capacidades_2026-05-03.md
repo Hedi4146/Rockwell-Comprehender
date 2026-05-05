@@ -96,12 +96,14 @@ Avance real desde pre-plan: **+13 puntos**, mayoría concentrada en capacidades 
 | 2 | Auditoría rápida proyecto desconocido | <30s | ✅ Logrado: Mapa Mental en <1s contra CINTA + AQL + CPPIM |
 | 3 | Comparación entre proyectos | Manual guiado | ⚠️ Manual disponible (carga 2 `Project` paralelos). Diff automático no existe |
 | 4 | Plan migración K6000→K5700 | BoM | ✅ Logrado: hoja `Axes` Excel multi-sheet con motion_module + catálogo + canal + función |
-| 5 | Detección código muerto | Manual con queries | ⚠️ Parcial: AOIs duplicadas detectadas automáticamente (`aoi_naming_collision`). Tags huérfanos / routines vacías / AOIs no invocadas: ahora **factibles** vía `tracer.references_of()` (no lo intentamos aún) |
+| 5 | Detección código muerto | Manual con queries | ✅ Cerrado 2026-05-03: docs/Test/_caso5_dead_code.py detecta tags huérfanos + AOIs no invocadas + routines no llamadas usando project.references_of() del tracer v0.2. Validado contra CINTA + AQL. Reporte: docs/Análisis/Caso_5_Dead_Code_Report.md |
 | 6 | Documentación técnica TDR | MD generado | ✅ Logrado: `to_markdown()` produce reporte ~200-500 KB completo |
 
 ### Caso #5 — oportunidad mediante tracer
 
 Antes de v0.2, decir "tag X no se usa" requería búsqueda manual. Ahora con `project.references_of(tag)` retorna lista vacía → tag huérfano. Lo mismo para AOIs no invocadas. **Es una capacidad gratis de v0.2 que no se ha conectado al caso #5 todavía**. ~30 min de trabajo cierra esta brecha.
+
+**Status 2026-05-03: ✅ cerrado.** Script operativo en docs/Test/_caso5_dead_code.py.
 
 ---
 

@@ -217,7 +217,7 @@ Validación cruzada en `AQL_M2.L5X` queda **pendiente** como TODO menor.
 
 ### Validación
 
-**Status:** Parcialmente logrado en v0.1. Las AOIs duplicadas se detectan automáticamente (categoría `aoi_naming_collision` en `project.observations`). Detección completa de código muerto requiere v0.2.
+**Status:** ✅ Validado 2026-05-03 contra CINTA + AQL — script docs/Test/_caso5_dead_code.py detecta las 3 categorías clásicas de código muerto. Reporte completo en docs/Análisis/Caso_5_Dead_Code_Report.md.
 
 ---
 
