@@ -271,15 +271,243 @@ Esta sección es **propositiva** — capacidades NO en el Vision original que me
 
 ---
 
-## 7. Próximo paso (post-cierre v0.1) — decisión del owner
+## 7. Plan ejecutable post-v0.1 — 5 sprints, 12 subtareas trazables
 
-v0.1 cerrado oficialmente con el test del 2026-05-03. Las 3 propuestas con mejor ROI per sec 6 (sin orden estricto, decisión del owner con cabeza fresca):
+> **Reorganizado 2026-05-05:** el plan original (10 tasks en Fases A/B/C/D) se reagrupa en 5 sprints temáticos. Los IDs originales (C.3, A.1, A.1.1…, A.2, A.3, B.1, B.2, C.1, C.2, D.1, D.2) se conservan para trazabilidad histórica. Subtarea = unidad de commit; sprint = unidad de cierre con entregable verificable.
+>
+> **Chat ejecutor:** ejecutás la próxima subtarea `[ ]` desbloqueada del sprint activo. NO re-decidir prioridades ni saltar de sprint. Hallazgos fuera del plan → 7.4 Discovered.
+>
+> **Owner:** confirmás OKs de commit subtarea-por-subtarea. Al cerrar la última subtarea de un sprint, valido cierre del sprint y recalculo el scoreboard.
 
-- **Propuesta C** — Architecture smell detection (tags huérfanos vía `references_of`). Cierra Caso #5 con ~2-3 hrs. ROI alto.
-- **Propuesta E** — Explorer HTML + tracer integrado. Convierte el Explorer (1741 LOC ya construidos) en herramienta diagnóstica visual para técnicos. ROI muy alto, ~2-3 hrs.
-- **Validación cruzada AQL_M2** — confirma robustez del tracer en arquitectura ControlLogix 1756-L61 con 17 ejes. ROI medio (sanity check).
+### 7.0 Scoreboard
 
-Owner decide cuál atacar primero.
+```
+SPRINT 1 · Foundation              [█░░░] 1/4 subtasks  (~2.5 hr)   ← activo
+SPRINT 2 · Universalidad           [░░]   0/2           (~3-4 hr)
+SPRINT 3 · Validación cruzada      [░░]   0/2           (~3 hr)
+SPRINT 4 · Asesor proactivo        [░░]   0/2           (~5-6 hr)   paralelizable post-S1
+SPRINT 5 · Visual operativo        [░░]   0/2           (~4-5 hr)
+SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
+
+GLOBAL                             [█░░░░░░░░░░░]  8% (1/12)  ~18-21 hr total
+```
+
+> Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
+
+### 7.1 Reglas operativas (no negociables)
+
+1. Una subtarea = uno o más commits relacionados; `[x]` cuando todos sus acceptance pasan.
+2. `[ ]` pending → `[~]` in progress (al empezar) → `[x]` done (al cerrar).
+3. NO empezar subtarea con dependencias `[ ]`.
+4. NO commit sin OK explícito del owner. La estructura por sprints NO anula esta regla — es por commit, cada vez.
+5. Hallazgos fuera del plan → 7.4 Discovered, NO ejecutar unilateral.
+6. **Cierre formal de sprint:** al marcar `[x]` la última subtarea del sprint, agregar fila resumen en Done Log (7.3) con outcome del sprint completo + recalcular scoreboard.
+7. **No saltar sprints** salvo paralelización explícita autorizada por owner (Sprint 4 puede correr en paralelo con Sprints 2/3 si owner lo decide).
+8. **Bloqueo durante subtarea** → marcar `[~]` con nota del bloqueo, parar, reportar al owner.
+9. DTs vigentes (DT-001 a DT-010); lección 2026-05-03 vigente (no instalar infra especulativa).
+
+### 7.2 Sprints y subtareas
+
+---
+
+#### SPRINT 1 · Foundation — cobertura xref ST + RLL stdlib
+
+- **Objetivo:** que el tracer y la `instruction_library` cubran el caso base de un proyecto Rockwell promedio (RLL + ST + instrucciones logic core).
+- **Dependencias externas:** ninguna. Sprint activo desde 2026-05-05.
+- **Estimación total:** ~2.5 hr (4 commits separados).
+- **Entregable de cierre:** un L5X arbitrario que mezcla RLL+ST se instrumenta completo en xref; instruction_library reconoce ≥31 entries (17 motion previas + 14 logic/data/timer/comparator nuevas).
+- **Criterio de cumplimiento (sprint cerrado):** acceptance de las 4 subtareas pasan + audit en Done Log con resumen consolidado.
+
+**`[x]` C.3 — fix(tracer): `build_xref` procesa código ST además de RLL** · ~30-45 min · cerrada 2026-05-05 (commit `c251d18`)
+- Dependencias: ninguna
+- Contexto: reformulada 2026-05-05 tras hallazgo en sec 7.4 (descubierto durante intento de ejecución del enunciado original). Investigación empírica reveló que (a) backing tags AOI YA se instrumentan correctamente — verificado con `AHT_Unwinder(UNW_TAPE, ...)`; (b) el gap real es que `build_xref` filtra `r.type != "RLL"` (tracer.py L444 y L453), por lo que ignora todo código ST. Por eso `M1Data`/`M2Data`/`M3Data`/`M4Data` aparecen como huérfanos en el reporte Caso_5 — falsos positivos por ST no procesado, no por backing tags AOI no cubiertos.
+- Output: patch a `tracer.py` (`build_xref` + helper `_xref_rows_from_st_routine` o equivalente, reusando `tokenize_st` ya existente en `tokenizer/st_tokenizer.py`).
+- Acceptance:
+  1. `project.references_of("M1Data")` en CINTA retorna ≥1 hit en `Programs/MainProgram/Routines/InitAxis` (asignación `M1Data.Input.AxPar.HmiRollDiameter := 1`).
+  2. No regresión: `references_of("UNW_TAPE")` en CINTA sigue retornando ≥1 hit (backing tag de la invocación `AHT_Unwinder` en `Programs/Axis/Routines/Unwinders/Rung_0`).
+  3. Smoke contra AQL_M2 (HANDOFF antipatrón #2 — validar 2 L5X): `references_of` sobre cualquier tag con asignación ST en AQL retorna ≥1 hit; conteo total de rows en xref aumenta ≥0 vs antes (al menos no rompe).
+- Commit: `fix(tracer): build_xref procesa código ST — cierra falso positivo M*Data en Caso #5`
+- Constraints: sin dependencias nuevas (DT-008); reusar `st_tokenizer` existente; mantener tag_root indexing para tags estructurados; idempotencia de `build_xref` preservada (drop+recreate xref).
+
+**`[ ]` A.1.1 — feat(library): batch 5 logic base (XIC/XIO/OTE/OTL/OTU)** · ~30 min
+- Dependencias: ninguna (paralelizable con C.3 pero recomiendo serial para mantener foco)
+- Output: 5 nuevas `InstructionMetadata` en `rockwell_comprehender/instruction_library/__init__.py` siguiendo patrón motion (ver MAJ/MAS/MAH como referencia).
+- Acceptance: `len(list_instructions(category="logic")) ≥ 5`; smoke por instrucción `get_instruction_metadata("XIC") is not None` válido.
+- Curación: NotebookLM serial estricto — query template en Apéndice B. Una query por instrucción, delay 2-3s entre llamadas.
+- Commit: `feat(library): batch 5 logic base (XIC/XIO/OTE/OTL/OTU)`
+
+**`[ ]` A.1.2 — feat(library): batch 5 data+timer (MOV/COP/CPS/TON/ONS)** · ~30 min
+- Dependencias: A.1.1 `[x]` (orden por categoría, no técnica)
+- Output: 5 entries adicionales (MOV, COP, CPS — data movement; TON, ONS — timer).
+- Acceptance: smoke por instrucción válido; total instruction_library ≥27 entries tras este commit.
+- Curación: NotebookLM serial — Apéndice B.
+- Commit: `feat(library): batch 5 data+timer (MOV/COP/CPS/TON/ONS)`
+
+**`[ ]` A.1.3 — feat(library): batch 4 comparators (EQU/NEQ/GRT/LES)** · ~25 min
+- Dependencias: A.1.2 `[x]`
+- Output: 4 entries comparators.
+- Acceptance: total instruction_library ≥31 entries; smoke válido por instrucción.
+- Curación: NotebookLM serial — Apéndice B.
+- Commit: `feat(library): batch 4 comparators (EQU/NEQ/GRT/LES)`
+
+---
+
+#### SPRINT 2 · Universalidad — ST coverage + dominio síntoma→código
+
+- **Objetivo:** cerrar formalmente criterio v0.3 (lexicón síntoma→código) y completar cobertura ST de la instruction_library.
+- **Dependencias:** Sprint 1 cerrado.
+- **Estimación total:** ~3-4 hr (2 commits).
+- **Entregable de cierre:** `project.identify_domain("problema en empalme")` en CINTA retorna AOIs candidatos correctos con confidence ≥0.7. Criterio v0.3 del Vision sec 8 marcado ✅ en `docs/00_Vision_y_Roadmap.md`.
+
+**`[ ]` A.2 — feat(library): cobertura ST mínima** · ~1 hr
+- Dependencias: A.1.3 `[x]`
+- Output: 6-8 entries para constructos ST comunes (IF, CASE, FOR, WHILE, REPEAT, asignación `:=`, function-style call) + audit en `docs/Test/_st_coverage_audit.md`.
+- Acceptance: cobertura ≥80% de constructos detectados en el parque (medido por audit); smoke contra `st_tokenizer` no rompe.
+- Curación: NotebookLM serial — Apéndice B (template adaptado a constructos ST).
+- Commit: `feat(library): cobertura ST básica — N constructos`
+
+**`[ ]` A.3 — feat(domain): lexicón síntoma→código (criterio v0.3)** · ~2-3 hr
+- Dependencias: A.1.3 `[x]`
+- Output: módulo nuevo `rockwell_comprehender/domain_lexicon.py` con `identify_domain(project, query: str) -> list[DomainHit]`. Heurísticas: regex sobre tag/AOI/routine names + tabla síntomas→keywords.
+- Acceptance: `project.identify_domain("problema en empalme")` en CINTA retorna `AHT_CtcSplicer + AHT_Unwinder + DancerCorAndNewRadiusComputation` con confidence ≥0.7. Tras cierre, marcar criterio v0.3 ✅ en `docs/00_Vision_y_Roadmap.md` sec 8.
+- Commit: `feat(domain): lexicón síntoma→código — cierra criterio v0.3`
+- Constraints: sin dependencias nuevas; usar `re` + estructuras del modelo.
+
+---
+
+#### SPRINT 3 · Validación cruzada — regresión contra parque
+
+- **Objetivo:** demostrar empíricamente que el toolkit generaliza a 3 L5X de arquitecturas distintas (CINTA Diatec v20.01, AQL Diatec v20.12, CPPIM Amantrini v33).
+- **Dependencias:** Sprint 2 cerrado.
+- **Estimación total:** ~3 hr (2 commits).
+- **Entregable de cierre:** los 6 casos del catálogo ejercitados contra los 3 L5X con veredicto explícito (✅/⚠️/❌) por caso×proyecto. Cierra antipatrón #2 del HANDOFF (mínimo 2 L5X validados) — ahora con margen de 3.
+
+**`[ ]` B.1 — test(empalme): validación cruzada contra AQL_M2** · ~1 hr
+- Dependencias: A.1.3 `[x]`, A.3 `[x]`
+- Output: parametrizar `_caso1_test_runner.py` por L5X; sección "Re-ejecución contra AQL_M2" en `docs/Test/Caso_1_Empalme_test_funcional.md`.
+- Acceptance: veredicto explícito (✅ generaliza / ⚠️ falla en X / ❌ rompe). Si AQL no tiene empalme análogo: validar `find_causal_path` cross-AOI contra otro flujo causal del proyecto (ej. tensión, sincronización).
+- Commit: `test(empalme): validación cruzada contra AQL_M2`
+
+**`[ ]` B.2 — test(cppim): casos 1-6 contra Amantrini v33** · ~2 hr
+- Dependencias: B.1 `[x]`
+- Output: `docs/Análisis/CPPIM_caso_audit.md` con resultado por caso.
+- Acceptance: casos 2/4/5/6 ejecutan sin error contra CPPIM_BD800_1.L5X; gaps Amantrini específicos (raC libraries, ProtectedRoutine) documentados; degradación de loader vs CINTA documentada.
+- Commit: `test(cppim): validación casos 1-6 contra Amantrini v33`
+
+---
+
+#### SPRINT 4 · Asesor proactivo — smell detection (paralelizable post-Sprint 1)
+
+- **Objetivo:** convertir el toolkit de "responde lo que pregunto" a "sugiere lo que debo revisar".
+- **Dependencias:** Sprint 1 cerrado. **Independiente de Sprints 2/3** — owner puede autorizar paralelización.
+- **Estimación total:** ~5-6 hr (2 commits).
+- **Entregable de cierre:** `project.detect_smells()` retorna ≥15 reglas activadas, sin falsos positivos sistemáticos, contra los 3 L5X.
+
+**`[ ]` C.1 — feat(smells): architecture smell detector** · ~2-3 hr
+- Dependencias: A.1.3 `[x]` (necesita reconocer operadores para razonar OTL/OTU pairing)
+- Output: módulo `rockwell_comprehender/smells.py` con `detect_smells(project)` y 5 reglas iniciales:
+  1. OTL/OTU sin pareja (latch sin unlatch o viceversa)
+  2. AOIs con >30 parameters (smell de god-object)
+  3. Routines vacías (`code` vacío o solo NOP/AFI)
+  4. Programs sin task asignado
+  5. Tags scope mismatch (controller-scope cuando podría ser program-local)
+- Acceptance: smoke contra CINTA+AQL detecta ≥3 smells reales sin falsos positivos por regla; reporte `docs/Análisis/<L5X>_smells.md` legible.
+- Commit: `feat(smells): architecture smell detector — 5 reglas iniciales`
+
+**`[ ]` C.2 — feat(smells): best practices auditor** · ~3 hr
+- Dependencias: C.1 `[x]`
+- Output: extensión de `smells.py` con ≥10 reglas curadas vía NotebookLM (mejores prácticas Rockwell):
+  - UDTs vs tags planos
+  - Naming conventions (PascalCase para AOIs, snake/camel para tags)
+  - Scope correcto por uso
+  - Motion error handling (uso de motion_status sin chequeo de error)
+  - etc. (curación NotebookLM define lista final)
+- Acceptance: smoke válido contra los 3 L5X.
+- Commit: `feat(smells): best practices auditor — 10+ reglas Rockwell`
+
+---
+
+#### SPRINT 5 · Visual operativo — Explorer + TDR
+
+- **Objetivo:** entregar herramientas de campo usables por técnicos no-Hedi (Explorer interactivo + TDR ejecutivo).
+- **Dependencias:** Sprint 2 cerrado (necesita A.3 / lexicón para enriquecer Explorer y TDR).
+- **Estimación total:** ~4-5 hr (2 commits).
+- **Entregable de cierre:** HTMLs de los 3 L5X navegables por terceros sin curva de aprendizaje; PDF del TDR exportable; cierra Vision criterio Nivel 3 parcial ("otro ingeniero usa la herramienta sin curva significativa").
+
+**`[ ]` D.1 — feat(explorer): tracer integrado en panel del tag (Propuesta E)** · ~2-3 hr
+- Dependencias: A.3 `[x]`
+- Output: modificación de `reporters/html_explorer.py` para que el panel del tag (doc 06 sec 5.3.7) llame `find_causal_path` y muestre trace embebido.
+- Acceptance: HTMLs de CINTA+AQL: click en tag → muestra writers_of; click en "trace back" → path BFS hasta inputs externos.
+- Commit: `feat(explorer): tracer v0.2 integrado en panel del tag (cierra spec doc 06 v0.2)`
+- Constraints: sin librerías JS externas; CSS+JS inline (doc 06 sec 4).
+
+**`[ ]` D.2 — feat(reporter): TDR HTML ejecutivo** · ~2 hr
+- Dependencias: D.1 `[x]`
+- Output: `reporters/tdr_html.py` — combina mapa mental + smells + cadenas causales + recomendaciones del asesor en un único HTML ejecutivo.
+- Acceptance: TDR generado contra CINTA+AQL es coherente, navegable, exportable a PDF (Print to PDF del browser).
+- Commit: `feat(reporter): TDR HTML ejecutivo`
+
+---
+
+#### SPRINT 6 · Postponed — emergente N2→N3 (FASE E original)
+
+> NO construir hasta cumplir Vision sec 7 *"Futuro Nivel 3 — solo si el uso valida la inversión"*. Triggers documentados; sin trabajo activo.
+
+- **E.1** Cross-project pattern recognition (trigger: corpus ≥5 L5X de máquinas distintas analizadas).
+- **E.2** Migration support library K6000↔K5700 (trigger: caso real activo de migración hardware/firmware en calendario del owner — ej. Pañalera N2 confirmada).
+- **E.3** Best-practices benchmark cross-parque (trigger: parque entero analizado y consolidado).
+
+### 7.3 Done Log (append-only)
+
+| Fecha cierre | Task ID | Commit hash | Outcome (1 línea) |
+|--------------|---------|-------------|-------------------|
+| 2026-05-05 | C.3 (Sprint 1) | `c251d18` | `build_xref` procesa código ST; CINTA xref +38 rows operator=`:=`; M*Data dejan de ser falsos positivos en Caso #5; backing tags AOI sin regresión; AQL_M2 5/5 ST roots validados |
+
+### 7.4 Discovered (fuera del plan, append-only)
+
+| Fecha | Hallazgo | Decisión owner |
+|-------|----------|----------------|
+| 2026-05-05 | **C.3 — acceptance criteria no se sostiene contra CINTA real.** Empíricamente: (a) backing tags de invocaciones AOI **YA se instrumentan correctamente** como `kind=tag, usage=write` en xref (verificado con `AHT_Unwinder(UNW_TAPE, ...)` en Programs/Axis/Routines/Unwinders/Rung_0 — UNW_TAPE aparece en xref). (b) El invoke `AHT_Unwinder` en CINTA Rung_0 **NO recibe M1Data como argumento**; pasa `UNW_TAPE`, `M1`, `M2` (no `M1Data`). (c) `M1Data` SÍ aparece en código pero solo en routine ST `Programs/MainProgram/Routines/InitAxis` (asignaciones tipo `M1Data.Input.AxPar.HmiRollDiameter := 1`). **Gap real identificado:** `build_xref` filtra `r.type != "RLL"` (tracer.py L444, L453), por lo que NO procesa código ST. Esto es el verdadero motivo de que `references_of("M1Data")` retorne 0 hits, no los backing tags AOI. | **2026-05-05 — Resuelto:** C.3 reformulada en sec 7.2 (camino a: apuntar al gap real "build_xref procesa ST"). Acceptance ajustada a la asignación ST real en `Programs/MainProgram/Routines/InitAxis` + no-regresión sobre backing tags AOI. Caveat #1 del Caso_5 report quedará obsoleto al cerrar C.3. |
+
+### 7.5 Cómo retomar en sesión nueva (chat ejecutor)
+
+1. Abrir esta auditoría sec 7.0 (scoreboard) — identificar **sprint activo** (el de menor índice con subtareas `[ ]` o `[~]`).
+2. Dentro del sprint activo: identificar próxima subtarea `[ ]` desbloqueada (todas sus dependencias `[x]`).
+3. Si encontrás `[~]` (in progress de sesión previa): leer la nota de bloqueo en el ítem; decidir si continuar la subtarea o, si está realmente bloqueada, reportar al owner antes de cambiar.
+4. Marcar la subtarea elegida `[~]`.
+5. Ejecutar siguiendo los acceptance criteria + constraints. NotebookLM queries por Apéndice B (serial estricto).
+6. Al cerrar: pedir OK explícito del owner para commit. Tras OK aceptado y commit hecho: marcar `[x]`, agregar fila al Done Log (7.3), recalcular scoreboard.
+7. **Si la subtarea cerrada es la última del sprint:** validar entregable de cierre del sprint, agregar fila resumen en Done Log (7.3) marcando "SPRINT N cerrado" con outcome consolidado, recalcular scoreboard global.
+8. Hallazgos fuera del plan → fila en Discovered (7.4), NO ejecutar unilateral.
+9. NO saltar de sprint salvo paralelización autorizada por owner (Sprint 4 puede correr en paralelo con Sprints 2/3 si lo decide).
+
+### Apéndice B — Pattern de query NotebookLM (para A.1, A.2, C.2)
+
+Skill operativa, auth Google Pro Softys válida, notebook activo `studio-5000---logix-&-kinetix-motion-reference`.
+
+```powershell
+$env:PYTHONUTF8="1"; $env:PYTHONIOENCODING="utf-8"
+cd "$env:USERPROFILE\.claude\skills\notebooklm"
+python scripts/run.py ask_question.py --question "..."
+```
+
+Plantilla de query (validada con las 17 motion entries actuales):
+
+```
+Para la instrucción <NAME> de Studio 5000 (publicación 1756-RM003), proporcioname:
+1. nombre completo (e.g., "Examine If Closed")
+2. categoría (logic | data movement | timer | comparator | math | safety | motion)
+3. resumen 1-line
+4. lista de pins/operandos: nombre, dirección (input/output/inout/config), datatype, descripción semántica, required (sí/no)
+5. config attributes si aplica
+6. modos de fallo conocidos
+7. referencias bibliográficas (publication + sección)
+8. notas operativas relevantes (gotchas, mejores prácticas)
+
+Devolveme la respuesta en formato estructurado fácil de parsear.
+```
+
+Tras query: editar `rockwell_comprehender/instruction_library/__init__.py` con `InstructionMetadata` siguiendo patrón motion (ver MAJ/MAS/MAH). Smoke test: `from rockwell_comprehender.instruction_library import get_instruction_metadata; assert get_instruction_metadata("<NAME>") is not None`.
 
 ---
 
