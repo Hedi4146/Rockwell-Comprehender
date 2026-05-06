@@ -1,0 +1,49 @@
+﻿==============================================================================
+B.2 AUDIT CPPIM - parque_l5x/CPPIM_BD800_1.L5X
+==============================================================================
+
+CARGA OK target=CPPIM_BD800_1 sw=33.01 proc=1756-L83ES
+  modules=410 aois=28 programs=7 routines=53 tags=2460 udts=45
+
+[CASO 1: Empalme]
+  0.70  aoi       AOI_UnwinderControl
+  0.65  aoi       DancerControl
+  0.60  routine   FluffSplicer
+  0.60  program   Unwinder
+  0.50  routine   Unwinder
+  splice/ctc AOIs: ninguno
+  unwinder AOIs: ['AOI_UnwinderControl']
+  dancer AOIs: ['DancerControl']
+
+[CASO 2: Mapa Mental]
+  Mapa Mental: 35648 chars, 644 lineas
+
+[CASO 4: BoM K6000 -> K5700]
+  K6000 (2094): 0
+  K5700 (2198): 76
+    MDP001_Converter1: 2198-P208
+    MDP001_SD01: 2198-D057-ERS3
+    MDP001_SD02: 2198-D032-ERS3
+    MDP001_SD03: 2198-D020-ERS3
+    MDP001_SD04: 2198-D020-ERS3
+    MDP001_SD05: 2198-D020-ERS3
+    MDP001_SD06: 2198-D020-ERS3
+    MDP002_Converter1: 2198-P208
+
+[CASO 5: Codigo muerto]
+  Tags controller: 1768, analyzable: 1428
+  Sample 100: orphans=27, errors=0
+
+[CASO 6: TDR Markdown]
+  FAIL: TypeError: to_markdown() missing 1 required positional argument: 'output_path'
+
+[Gaps Amantrini]
+  raC_* libraries: 5
+    raC_Tec_NetModbusTCPClient_BuildReqStr
+    raC_Tec_NetModbusTCPClient_ChkWrReply
+    raC_Tec_NetModbusTCPClient_RespStrBit
+    raC_Tec_NetModbusTCPClient_RespStrWord
+    raC_Opr_NetModbusTCPClient
+  AOIs con routine sin codigo (Protected potential): 0
+
+B.2 AUDIT COMPLETO
