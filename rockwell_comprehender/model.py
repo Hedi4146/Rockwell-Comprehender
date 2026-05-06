@@ -475,6 +475,26 @@ class Project:
         from .motion_patterns import detect_motion_patterns as _detect
         return _detect(self)
 
+    def classify_tag(self, tag) -> object:
+        """Clasifica un tag en su rol semántico (v0.5)."""
+        from .tag_dictionary import classify_tag as _cl
+        return _cl(tag)
+
+    def tag_dictionary(self, scope: str | None = None) -> list:
+        """Diccionario completo de tags con rol semántico (v0.5)."""
+        from .tag_dictionary import tag_dictionary as _td
+        return _td(self, scope)
+
+    def classify_program(self, program) -> object:
+        """Infiere el rol funcional de un program (v0.5)."""
+        from .program_inference import classify_program as _cp
+        return _cp(self, program)
+
+    def program_inference(self) -> list:
+        """Inferencia funcional para todos los programs (v0.5)."""
+        from .program_inference import program_inference as _pi
+        return _pi(self)
+
     def _ensure_xref_built(self) -> None:
         """Construye el xref la primera vez que se necesita."""
         if self._xref_built:

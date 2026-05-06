@@ -1,0 +1,552 @@
+# Project Diff — CPU1 → CPU_AQL_M2
+
+Diff CPU1 → CPU_AQL_M2: modules: +41/-9/~2 | aois: +13/-15/~4 | udts: +19/-0/~0 | programs: +3/-0/~0 | routines: +23/-11/~0 | tags: +201/-163/~0 | tasks: +1/-1/~0
+
+## Modules (+41 / -9 / ~2)
+
+### Added (41)
+- `ANALOG_DEBO_TNT` — catalog=1794-IE4XOE2/B
+- `Anillo_SynchLink_Consumido` — catalog=1756-EN2TR
+- `Anillo_SynchLink_Producido` — catalog=1756-EN2TR
+- `Cnet` — catalog=1756-CNB/E
+- `DEBO_TNT` — catalog=1794-AENT
+- `DInPut_7` — catalog=1756-IB32/B
+- `Dinput` — catalog=1756-IB32/B
+- `Ethernet` — catalog=1756-ENBT/A
+- `Local:port1(1756-OB16E)` — catalog=1756-OB16E
+- `M10_508U1` — catalog=2094-BM01
+- `M11_510U1` — catalog=2094-BM01
+- `M12_509U1` — catalog=2094-BM01
+- `M13_511U1` — catalog=2094-BMP5
+- `M14_512U1` — catalog=2094-BM01
+- `M15_513U1` — catalog=2094-BM01
+- `M16_514U1` — catalog=2094-BM02
+- `M1_501U1` — catalog=2094-BC02-M02
+- `M2_502U1` — catalog=2094-BM02
+- `M3_504U1` — catalog=2094-BM01
+- `M4_503U1` — catalog=2094-BM02
+- `M5_505U1` — catalog=2094-BMP5
+- `M6_506U1` — catalog=2094-BMP5
+- `M7_507U1` — catalog=2094-BM02
+- `M8_508U1` — catalog=2094-BM02
+- `M9_507U1` — catalog=2094-BC02-M02
+- `MODULO_0_DI_DEBO_TNT` — catalog=1794-IB16/A
+- `MODULO_1_DO_DEBO_TNT` — catalog=1794-OB16/A
+- `NODE_Z1:port1(1734-IB8/C)#1` — catalog=1734-IB8/C
+- `NODE_Z1:port1(1734-IB8/C)#2` — catalog=1734-IB8/C
+- `NODE_Z1:port1(1734-IB8/C)#3` — catalog=1734-IB8/C
+- `NODE_Z1:port1(1734-IB8/C)#4` — catalog=1734-IB8/C
+- `NODE_Z1:port1(1734-OB8/C)#1` — catalog=1734-OB8/C
+- `NODE_Z1:port1(1734-OB8/C)#2` — catalog=1734-OB8/C
+- `NODE_Z3` — catalog=1734-ACNR/A
+- `NODE_Z3:port1(1734-IB8/C)#1` — catalog=1734-IB8/C
+- `NODE_Z3:port1(1734-IB8/C)#2` — catalog=1734-IB8/C
+- `NODE_Z3:port1(1734-IE2V/C)` — catalog=1734-IE2V/C
+- `NODE_Z3:port1(1734-OB8/C)#1` — catalog=1734-OB8/C
+- `NODE_Z3:port1(1734-OB8/C)#2` — catalog=1734-OB8/C
+- `Sercos` — catalog=1756-M16SE
+- `Side_Panel_M2` — catalog=1756-L61
+
+### Removed (9)
+- `ETHERNET` — catalog=1768-ENBT/A
+- `M1` — catalog=2094-BC02-M02
+- `M2` — catalog=2094-BM01
+- `M3` — catalog=2094-BM01
+- `M4` — catalog=2094-BM01
+- `NODE_Z1:port1(1734-IB8/C)` — catalog=1734-IB8/C
+- `NODE_Z1:port1(1734-OB8/C)` — catalog=1734-OB8/C
+- `NODE_Z1:port1(1734-OE2V/C)` — catalog=1734-OE2V/C
+- `SERCOS` — catalog=1768-M04SE
+
+### Changed (2)
+- `Local` — catalog: 1768-L43 → 1756-L61
+- `NODE_Z1` — catalog: 1734-AENT/B → 1734-ACNR/A
+
+## AOIs (+13 / -15 / ~4)
+
+### Added (13)
+- `AxisBlockVM` — 18 params
+- `AxisConsumeCIPSync_AOI` — 35 params
+- `Axis_Faults_CIP` — 9 params
+- `Axis_Faults_Sercos` — 9 params
+- `Axis_ObjectCIP` — 15 params
+- `Axis_Object_Sercos` — 15 params
+- `Blink` — 5 params
+- `C_U_Reg` — 10 params
+- `Dancer_Tension_Servo` — 20 params
+- `Full_Speed_Splicer` — 28 params
+- `Radius_Computation` — 11 params
+- `RejectFun` — 13 params
+- `RejectFunctionLonger` — 10 params
+
+### Removed (15)
+- `AHT_CtcSplicer` — 42 params
+- `AHT_DancerCorAndNewRadiusComputation` — 30 params
+- `AHT_DriveFaultBit_Decoding` — 4 params
+- `AHT_DriveFault_Decoding` — 12 params
+- `AHT_DriveRoll_withDancer` — 18 params
+- `AHT_DriveRoll_withoutDancer` — 18 params
+- `AHT_Enable_DriveAxis` — 7 params
+- `AHT_Enable_Reject` — 5 params
+- `AHT_MotionAxisError` — 7 params
+- `AHT_ON_OFF_CounterValve` — 10 params
+- `AHT_RackAxisFault` — 12 params
+- `AHT_RackSercosFault` — 12 params
+- `AHT_Reject_Block` — 11 params
+- `AHT_SyncroAxis` — 18 params
+- `AHT_Unwinder` — 29 params
+
+### Changed (4)
+- `CtcDiatecSplicerBuffer` — params: 48 → 50
+- `DancerCorAndNewRadiusComputation` — params: 30 → 29
+- `RadiusComputation` — params: 20 → 24
+- `Unwinder` — params: 2 → 29
+
+## UDTs (+19 / -0 / ~0)
+
+### Added (19)
+- `Arreglo_Master`
+- `AxOutput`
+- `CamSize`
+- `Cull_Register`
+- `DateTime_Get_Data`
+- `DateTime_Type`
+- `End_Turn`
+- `LengthSize`
+- `OffsetSize`
+- `Position_Size`
+- `RejectSize`
+- `Size`
+- `UDT_CIPSyncProduceConsumeAxis`
+- `UDT_ConsumeHistory`
+- `UDT_Unwinder`
+- `tension_date`
+- `udt_MAG`
+- `udt_MAJ`
+- `udt_MAS`
+
+## Programs (+3 / -0 / ~0)
+
+### Added (3)
+- `ConsumeAxisAOI`
+- `Debo_Tela`
+- `Reject1`
+
+## Routines (+23 / -11 / ~0)
+
+### Added (23)
+- `Axis/Ax`
+- `Axis/R001_A_Corte_AQL`
+- `Axis/R001_B_Estampador_AQL`
+- `Axis/R002_Corte_WB`
+- `ConsumeAxisAOI/Main`
+- `Debo_Tela/R00_Main`
+- `Debo_Tela/R01_Local`
+- `Debo_Tela/R02_Alarm`
+- `Debo_Tela/R03_Mapeo`
+- `Debo_Tela/R05_TNT_Dancer`
+- `Debo_Tela/R08_TNT_Unwinder`
+- `Debo_Tela/SLC`
+- `MainProgram/ChangeSize_1`
+- `MainProgram/Interface`
+- `MainProgram/Lubrication`
+- `MainProgram/Phaser`
+- `MainProgram/ReadFastPar`
+- `MainProgram/Read_Temp`
+- `MainProgram/Register`
+- `MainProgram/WriteOutput`
+- `Reject/Cull_Msg`
+- `Reject/Reject_Control1`
+- `Reject1/Reject`
+
+### Removed (11)
+- `Axis/Drive_Rolls`
+- `Axis/Main`
+- `Axis/Master`
+- `Axis/Unwinders`
+- `MainProgram/ChangeSize_Data_MASTER`
+- `MainProgram/ChangeSize_LenProduct`
+- `MainProgram/Glue`
+- `MainProgram/I_O_Interface`
+- `ReadPar/I_O_Status`
+- `ReadPar/Main1000ms`
+- `Reject/RawMat_reject`
+
+## Tags (controller scope) (+201 / -163 / ~0)
+
+### Added (201)
+- `AB_M10`
+- `AB_M13`
+- `AB_M14`
+- `AB_M15`
+- `AB_M3`
+- `AB_M4`
+- `AB_M5`
+- `AB_M6`
+- `AB_M9`
+- `ACQL_Unw_Data`
+- `ADD_ON_SAP`
+- `AJUSTAR_CAMARA`
+- `ANVIL_AQL`
+- `ANVIL_CINTA_FRONTAL`
+- `ANVIL_CORTE_FINAL`
+- `ANVIL_CORTE_OREJAS`
+- `ANVIL_MOLINO`
+- `ANVIL_WAIST_BAND`
+- `AOI_AxisConsumeCIPSync`
+- `AQL_LOW_DIAM`
+- `AQL_L_low_l`
+- `AQL_R_low_l`
+- `Accum_Reject_Counter`
+- `AcqlSpliceRejData`
+- `Air_Blast`
+- `Air_Blast_Timer`
+- `AxisFault1`
+- `Axis_CSTAid`
+- `BALIZA_ROJA_DIATEC`
+- `BALIZA_VERDE_DIATEC`
+- `BIT12`
+- `BIT2`
+- `BIT3`
+- `BITJP`
+- `Bit_Down_Time_Actual`
+- `Bit_Down_Time_Actual_2`
+- `Bit_Retention_C_AQL`
+- `Bit_Retention_C_WB`
+- `Bit_Retention_E_AQL`
+- `Blink_1`
+- `Blink_2`
+- `Blink_3`
+- `Branch`
+- `Broken_Web_TNT`
+- `CAMARA_LINE_SCAN`
+- `CAMARA_LINE_SCAN_TEST`
+- `CINTAS_VARILLAS`
+- `CINTA_TWIN`
+- `CLOCK_TON2`
+- `CLR_Cull_Reg`
+- `CMD_Home_M4`
+- `CMD_Home_M5`
+- `CMD_Home_M9`
+- `CONTADOR_CINTA`
+- `COUNTER_1`
+- `CPU_RUN_OK`
+- `CR30_AQL_FLT_TMR`
+- `CTU1`
+- `CTU10`
+- `CTU11`
+- `CTU13`
+- `CTU14`
+- `CTU15`
+- `CTU16`
+- `CTU17`
+- `CTU18`
+- `CTU19`
+- `CTU2`
+- `CTU3`
+- `CTU4`
+- `CTU5`
+- `CTU6`
+- `CTU8`
+- `CTU9`
+- `CTU_5`
+- `CTU_ANVIL_1`
+- `CTU_ANVIL_12`
+- `CTU_ANVIL_13`
+- `CTU_ANVIL_2`
+- `CTU_ANVIL_3`
+- `CTU_ANVIL_4`
+- `CTU_ANVIL_5`
+- `CTU_ANVIL_6`
+- `CTU_I4_20`
+- `CTU_MOD_ADHES_FIJACION_DR`
+- `CTU_MOD_ADHES_FIJACION_OP`
+- `CTU_MOD_ADHES_LB_DR`
+- `CTU_MOD_ADHES_LB_OP`
+- `CTU_MOD_ADHES_LP_DR`
+- `CTU_MOD_ADHES_LP_OP`
+- `CTU_MOD_ADHES_TD_DR`
+- `CTU_MOD_ADHES_TD_OP`
+- `CTU_SENSOR_BANDA_AQL`
+- `C_Pi`
+- `Change_TLP`
+- `Clock10Hz`
+- `Clock2Hz`
+- `Clutch_Trinquete`
+- `Cmd_Disable`
+- `Cmd_Enable`
+- `Cmd_Reset`
+- `Cmd_ServoSelect`
+- `Cmd_Stop`
+- `Cmd_Unwind`
+- `Confir_Running`
+- `ConsumedAxisData_AQL`
+- `ControlNet_Node_Z1_Status`
+- `ControlNet_Node_Z3_Status`
+- `ControlNet_Status`
+- `ControllerTime`
+- `ConvConstant_M15`
+- `ConvConstant_M7`
+- `ConvConstant_M8`
+- `Counter_Reset`
+- `Cull_Msg`
+- `Cull_On`
+- `Cull_Reg`
+- `Cull_Shift_Timing`
+- `Cut_Register_0`
+- `Cut_Register_1`
+- `Cut_Register_10`
+- `Cut_Register_11`
+- `Cut_Register_12`
+- `Cut_Register_13`
+- `Cut_Register_14`
+- `Cut_Register_15`
+- `Cut_Register_16`
+- `Cut_Register_17`
+- `Cut_Register_2`
+- `Cut_Register_3`
+- `Cut_Register_4`
+- `Cut_Register_5`
+- `Cut_Register_6`
+- `Cut_Register_7`
+- `Cut_Register_8`
+- `Cut_Register_9`
+- `Cut_Unid_Reg`
+- `DATOS`
+- `DELAY_RUPTURA_TNT`
+- `Dancer_Actual_Position`
+- `Debo_TNT_Direction`
+- `Delay_start`
+- `Down_Time_Actual`
+- `Down_Time_Last`
+- `Down_Time_Total`
+- `Down_Time_Total_Minutes`
+- `Down_Time_Total_Occur`
+- `DriveResolution_M15`
+- `Drive_Resolution_M7`
+- `Drive_Resolution_M8`
+- `Drives_Ok`
+- `ETE`
+- `E_STOP_CR30_AQL_TMR`
+- `Enable`
+- `EnableAcqlUnwinder`
+- `EnableAxis_M10`
+- `EnableAxis_M13`
+- `EnableAxis_M14`
+- `EnableAxis_M15`
+- `EnableAxis_M3`
+- `EnableAxis_M4`
+- `EnableAxis_M5`
+- `EnableAxis_M6`
+- `EnableAxis_M9`
+- `EnableWaistBand`
+- `EnableWaistBandUnwinder`
+- `Enable_Start_Stop_Folding_Cam`
+- `Error_Home_M4`
+- `Error_Home_M5`
+- `Error_Home_M9`
+- `Error_M4`
+- `FLOATT_CTU_ANVIL_1`
+- `FLOATT_CTU_ANVIL_12`
+- `FLOATT_CTU_ANVIL_13`
+- `FLOATT_CTU_ANVIL_2`
+- `FLOATT_CTU_ANVIL_3`
+- `FLOATT_CTU_ANVIL_4`
+- `FLOATT_CTU_ANVIL_5`
+- `FLOATT_CTU_ANVIL_6`
+- `FLOAT_CTU_MOD_ADHES_1`
+- `FLOAT_CTU_MOD_ADHES_2`
+- `FLOAT_CTU_MOD_ADHES_FIJACION_FDR`
+- `FLOAT_CTU_MOD_ADHES_FIJACION_OP`
+- `FLOAT_CTU_MOD_ADHES_LB_DR`
+- `FLOAT_CTU_MOD_ADHES_LB_OP`
+- `FLOAT_CTU_MOD_ADHES_LP_DR`
+- `FLOAT_CTU_MOD_ADHES_LP_OP`
+- `FTC_Presencia_WB`
+- `Falla_Sistem_Vision`
+- `Fin_de_turno`
+- `Flag_Fin_Turno`
+- `Format_L`
+- `Format_M`
+- `Format_S`
+- `Format_XL`
+- `Format_XXL`
+- `FractionSecund`
+- `GUARDAS_FROM_SP`
+- `Get_Pulse1`
+- `Green_Start_Light`
+- `(+529 more added not listed)`
+
+### Removed (163)
+- `ABS_Master_Velocity`
+- `AI_01040`
+- `AI_01041`
+- `AXIS_Fault`
+- `AXIS_MotionFault`
+- `Alarm2`
+- `Alarm3`
+- `Belt_Diameter`
+- `By_Pass_Alarm`
+- `CPU_Run`
+- `Clock_Hz`
+- `ConversionConstant1_Master`
+- `DB_M3`
+- `DB_M4`
+- `DFD_M1`
+- `DFD_M2`
+- `DFD_M3`
+- `DFD_M4`
+- `DFD_Master`
+- `DelayMachineStill`
+- `DriveFaultBits_M1`
+- `DriveFaultBits_M2`
+- `DriveFaultBits_M3`
+- `DriveFaultBits_M4`
+- `DriveFaultBits_Master`
+- `EDA_UNW`
+- `Glue_speed_test`
+- `HMIProductLength_Modif`
+- `HMI_ChangeDirection_M1`
+- `HMI_ChangeDirection_M2`
+- `HMI_ChangeDirection_M4`
+- `HMI_DelayGlueValve`
+- `HMI_Enable_M3`
+- `HMI_Enable_M4`
+- `HMI_EncoderFault`
+- `HMI_FaultCode_M01`
+- `HMI_FaultCode_M1`
+- `HMI_FaultCode_M2`
+- `HMI_FaultCode_M3`
+- `HMI_FaultCode_M4`
+- `HMI_FaultCode_Master`
+- `HMI_Fault_Code`
+- `HMI_Fault_Coding`
+- `HMI_Fault_bit`
+- `HMI_Glue_CapTest`
+- `HMI_LimitGlueOn`
+- `HMI_Main_Glue_Switch`
+- `HMI_Man_GlueCylinder`
+- `HMI_MaxSimulatedSpeed`
+- `HMI_MotionFaultCode_M3`
+- `HMI_MotionFaultCode_M4`
+- `HMI_MotionFaultCode_MASTER`
+- `HMI_MotionFaultCode_UNW_TAPE`
+- `HMI_Motor_Number`
+- `HMI_Polarity_M4_2`
+- `HMI_Polarity_M4_3`
+- `HMI_SimulatedSpeedDOWN`
+- `HMI_SimulatedSpeedUP`
+- `HMI_StartTestGlue`
+- `HMI_TapeLength`
+- `HMI_UNW_ActualRadius`
+- `HMI_UNW_Enable`
+- `HmiActualSize`
+- `HmiManualEnabled`
+- `HmiOldSize`
+- `HmiProductLengthJunior`
+- `HmiProductLengthMaxi`
+- `HmiProductLengthMidi`
+- `HmiProductLengthMini`
+- `HmiSizeConfirm`
+- `HmiSizeSelector`
+- `HmiStartSimulation`
+- `I01011`
+- `I01012`
+- `I01016`
+- `I01017`
+- `I01030`
+- `IO_Ready`
+- `LedStatCpu`
+- `LimitGluePump`
+- `LimitGlueSpeed`
+- `LimitGlueValve`
+- `LocSimulatedSpeed`
+- `M1`
+- `M1Data`
+- `M1_Direction`
+- `M1_FaultCode`
+- `M2`
+- `M2Data`
+- `M2_Direction`
+- `M2_FaultCode`
+- `M3`
+- `M3HmiOfsetLengthJunior`
+- `M3HmiOfsetLengthMaxi`
+- `M3HmiOfsetLengthMidi`
+- `M3_FaultCode`
+- `M4`
+- `M4HmiOfsetLengthJunior`
+- `M4HmiOfsetLengthMaxi`
+- `M4HmiOfsetLengthMidi`
+- `M4HmiOfsetLengthMini`
+- `M4_Direction`
+- `M4_FaultCode`
+- `MAE_M3`
+- `MAE_M4`
+- `MAE_UNW_TAPE`
+- `MachineAverageVelocity`
+- `MachineMoving`
+- `MachineSpeed_PPM`
+- `Master`
+- `Motor_Number`
+- `NodeZ1_OK`
+- `O01010`
+- `O01011`
+- `O01012`
+- `O01013`
+- `O01014`
+- `O01015`
+- `O01016`
+- `O01017`
+- `Percen_Of_Max_AccRate`
+- `PositionUnwind1_Master`
+- `RTO_1`
+- `RT_Counter_CAM`
+- `Rack1_SF`
+- `ResetAlarmSignal`
+- `SAVE_SIZE_ON`
+- `SERCOS_Ready`
+- `SercosNet_Ready`
+- `SpeedMachinePPM`
+- `SpeedMachine_PPM`
+- `StartMachineSignal`
+- `StartMotorsSignal`
+- `StopMotorCommand`
+- `TIMER_ACQL`
+- `TONA`
+- `Tape_Length`
+- `Timer_step1`
+- `Timer_step2`
+- `UNW_NW`
+- `UNW_TAPE`
+- `UNW_data`
+- `Unw_Dancer_Pos`
+- `Unwind_ProductLength`
+- `Warning0`
+- `aux35`
+- `aux36`
+- `aux37`
+- `aux38`
+- `aux39`
+- `aux52`
+- `aux53`
+- `machineSpeed_DINT`
+- `max_machine_speed`
+- `out`
+- `rack_1`
+- `rack_2`
+- `ref_test`
+- `start_M3`
+- `test`
+- `test_motors`
+- `test_ssv`
+- `to_Remove`
+
+## Tasks (+1 / -1 / ~0)
+
+### Added (1)
+- `Task500ms`
+
+### Removed (1)
+- `Task1000ms`
+
