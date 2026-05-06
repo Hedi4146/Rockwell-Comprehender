@@ -284,12 +284,12 @@ Esta sección es **propositiva** — capacidades NO en el Vision original que me
 ```
 SPRINT 1 · Foundation              [████] 4/4 subtasks  (~2.5 hr)   CERRADO 2026-05-06
 SPRINT 2 · Universalidad           [██]   2/2           (~3-4 hr)   CERRADO 2026-05-06
-SPRINT 3 · Validación cruzada      [░░]   0/2           (~3 hr)     ← activo
-SPRINT 4 · Asesor proactivo        [░░]   0/2           (~5-6 hr)   paralelizable post-S1
+SPRINT 3 · Validación cruzada      [██]   2/2           (~3 hr)     CERRADO 2026-05-06
+SPRINT 4 · Asesor proactivo        [░░]   0/2           (~5-6 hr)   ← activo
 SPRINT 5 · Visual operativo        [░░]   0/2           (~4-5 hr)
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [██████░░░░░░] 50% (6/12)  ~18-21 hr total
+GLOBAL                             [████████░░░░] 67% (8/12)  ~18-21 hr total
 ```
 
 > Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
@@ -385,13 +385,13 @@ GLOBAL                             [██████░░░░░░] 50% (6
 - **Estimación total:** ~3 hr (2 commits).
 - **Entregable de cierre:** los 6 casos del catálogo ejercitados contra los 3 L5X con veredicto explícito (✅/⚠️/❌) por caso×proyecto. Cierra antipatrón #2 del HANDOFF (mínimo 2 L5X validados) — ahora con margen de 3.
 
-**`[ ]` B.1 — test(empalme): validación cruzada contra AQL_M2** · ~1 hr
+**`[x]` B.1 — test(empalme): validación cruzada contra AQL_M2** · ~1 hr · cerrada 2026-05-06
 - Dependencias: A.1.3 `[x]`, A.3 `[x]`
 - Output: parametrizar `_caso1_test_runner.py` por L5X; sección "Re-ejecución contra AQL_M2" en `docs/Test/Caso_1_Empalme_test_funcional.md`.
 - Acceptance: veredicto explícito (✅ generaliza / ⚠️ falla en X / ❌ rompe). Si AQL no tiene empalme análogo: validar `find_causal_path` cross-AOI contra otro flujo causal del proyecto (ej. tensión, sincronización).
 - Commit: `test(empalme): validación cruzada contra AQL_M2`
 
-**`[ ]` B.2 — test(cppim): casos 1-6 contra Amantrini v33** · ~2 hr
+**`[x]` B.2 — test(cppim): casos 1-6 contra Amantrini v33** · ~2 hr · cerrada 2026-05-06
 - Dependencias: B.1 `[x]`
 - Output: `docs/Análisis/CPPIM_caso_audit.md` con resultado por caso.
 - Acceptance: casos 2/4/5/6 ejecutan sin error contra CPPIM_BD800_1.L5X; gaps Amantrini específicos (raC libraries, ProtectedRoutine) documentados; degradación de loader vs CINTA documentada.
@@ -469,7 +469,10 @@ GLOBAL                             [██████░░░░░░] 50% (6
 | 2026-05-06 | **SPRINT 1 cerrado** | `6622d5d` | Foundation completo (4/4): tracer xref cubre RLL+ST + instruction_library 31 entries. Entregable de cierre cumplido — un L5X mixto se instrumenta completo + ≥31 instrucciones stdlib reconocidas. Sprint Batch Mode activado en sec 7.1 (regla 4 y 6 reformuladas). |
 | 2026-05-06 | A.2 (Sprint 2) | `2a98036` | ST coverage: 7 entries `st_construct` (IF/CASE/FOR/WHILE/REPEAT/ASSIGN/FUNC_CALL) curadas via NotebookLM contra pub 1756-RM003 cap 24. Audit empírico en docs/Test/_st_coverage_audit.md: 5 routines ST en parque (CINTA+AQL), 0 errores tokenize_st, cobertura 7/7 = 100% (acceptance ≥80% cumplido con margen). Catálogo 31→38 entries. |
 | 2026-05-06 | A.3 (Sprint 2) | `a00890d` | `domain_lexicon.py` con `identify_domain(query)`: 30+ síntomas en lexicón (es+en) + related keywords + scoring heurístico. Acceptance contra CINTA cumplido: AHT_CtcSplicer (1.00), AHT_DancerCorAndNewRadiusComputation (0.80), AHT_Unwinder (0.70). Generaliza a AQL_M2. Criterio v0.3 ✅ marcado en Vision sec 8 (1er ítem); 2do ítem técnicamente disponible vía `find_causal_path`. |
-| 2026-05-06 | **SPRINT 2 cerrado** | _(pendiente)_ | Universalidad completo (2/2): cobertura ST en library + lexicón síntoma→código operativo. Criterio v0.3 del Vision alcanzado en su primer ítem. Stack mínimo (DT-008) preservado — solo `re` + estructuras del modelo. |
+| 2026-05-06 | **SPRINT 2 cerrado** | `66506e7` | Universalidad completo (2/2): cobertura ST en library + lexicón síntoma→código operativo. Criterio v0.3 del Vision alcanzado en su primer ítem. Stack mínimo (DT-008) preservado — solo `re` + estructuras del modelo. |
+| 2026-05-06 | B.1 (Sprint 3) | `24e3994` | `_caso1_test_runner.py` parametrizado por L5X (CINTA + AQL via PROJECT_CONFIGS). Veredicto AQL: **PASS - generaliza completamente** (4/4: AOIs core 3/3, identify_domain conf=1.00, writers/readers OK, find_causal_path 3 steps idéntica a CINTA). Cadena causal análoga: HmiNewDiameter → DIV → LocHmiNewRadius → MOV → LocNewRadius → RadiusComputation invoke → ReelRadiusA. Sección "Re-ejecución contra AQL_M2" agregada en Caso_1_Empalme_test_funcional.md. |
+| 2026-05-06 | B.2 (Sprint 3) | `ac00889` | Audit casos 1-6 contra CPPIM_BD800_1 (Amantrini v33, ControlLogix L83ES). 4/6 casos PASS (Mapa Mental 35K chars, Comparación carga paralela OK, Código muerto 27/100 sample sin errores, TDR 1.4 MB). 2/6 N/A por arquitectura (Caso 1 no tiene splice Diatec, Caso 4 ya en K5700). 5 raC_* libraries Modbus TCP detectadas, 0 routines protected en este L5X. Loader: 0 errores parseando 410 modules + 28 AOIs + 53 routines + 2460 tags. Reporte completo en `docs/Análisis/CPPIM_caso_audit.md`. |
+| 2026-05-06 | **SPRINT 3 cerrado** | _(pendiente)_ | Validación cruzada completa (2/2): toolkit validado en 3 L5X de arquitectura distinta (CINTA Diatec custom, AQL Diatec legacy, CPPIM Amantrini moderno). HANDOFF antipatrón #2 cerrado con margen amplio. Caso paradigma del empalme validado en 2/3 (los Diatec); Amantrini requiere caso paradigma propio (input v0.4). |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 
