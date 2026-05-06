@@ -138,6 +138,12 @@ OPERATOR_TABLE: dict[str, OperatorProfile] = {
     # ── CPT (caso especial: arg 1 es expresión, sub-parsea) ───────
     "CPT":  OperatorProfile("CPT",  writes=(0,), cpt_expr_pos=1),
 
+    # ── Structured Text assignment (lhs := rhs) ───────────────────
+    # Emitido por tokenize_st como Instruction(operator=":=", operands=[lhs, rhs]).
+    # lhs = write; rhs es operand kind="literal" cuya text contiene la
+    # expresión completa — sub-parsea igual que CPT para extraer tags read.
+    ":=":   OperatorProfile(":=",   writes=(0,), cpt_expr_pos=1),
+
     # ── Move / Logic on data ──────────────────────────────────────
     "MOV":  OperatorProfile("MOV",  reads=(0,), writes=(1,)),
     "MVM":  OperatorProfile("MVM",  reads=(0, 1), writes=(2,)),
@@ -396,6 +402,22 @@ def _extract_tags_from_expression(expr: str) -> list[str]:
 import sqlite3 as _sqlite3  # noqa: E402  (import al final por organización)
 from .model import init_db as _init_db  # noqa: E402
 from .tokenizer import tokenize_rll as _tokenize_rll  # noqa: E402
+from .tokenizer.st_tokenizer import tokenize_st as _tokenize_st  # noqa: E402
+
+
+def _routine_rungs(code: str, routine_type: str) -> list:
+    """Devuelve los rungs/líneas tokenizados según el tipo de routine.
+
+    Tanto RLL como ST devuelven `list[Rung]` con la misma estructura
+    (Instruction con operator + operands), por lo que el caller puede
+    iterarlos uniformemente. Routines de otros tipos (FBD, SFC) devuelven
+    lista vacía — no instrumentadas en xref hasta que aparezca caso real.
+    """
+    if routine_type == "RLL":
+        return _tokenize_rll(code)
+    if routine_type == "ST":
+        return _tokenize_st(code)
+    return []
 
 
 def build_xref(project: Project, conn: Optional[_sqlite3.Connection] = None) -> int:
@@ -439,21 +461,21 @@ def build_xref(project: Project, conn: Optional[_sqlite3.Connection] = None) -> 
     aoi_idx = {a.name: a for a in project.aois}
     rows: list[tuple] = []
 
-    # Routines de programas
+    # Routines de programas (RLL + ST)
     for r in project.routines:
-        if not r.code or r.type != "RLL":
+        if not r.code:
             continue
-        for rung in _tokenize_rll(r.code):
+        for rung in _routine_rungs(r.code, r.type):
             loc = f"Programs/{r.program}/Routines/{r.name}/Rung_{rung.number}"
             for inst_idx, inst in enumerate(rung.instructions):
                 rows.extend(_xref_rows_from_instruction(inst, loc, inst_idx, project, aoi_idx))
 
-    # Routines de AOIs
+    # Routines de AOIs (RLL + ST)
     for a in project.aois:
         for rname, r in a.routines.items():
-            if not r.code or r.type != "RLL":
+            if not r.code:
                 continue
-            for rung in _tokenize_rll(r.code):
+            for rung in _routine_rungs(r.code, r.type):
                 loc = f"AOIs/{a.name}/Routines/{rname}/Rung_{rung.number}"
                 for inst_idx, inst in enumerate(rung.instructions):
                     rows.extend(_xref_rows_from_instruction(inst, loc, inst_idx, project, aoi_idx))
