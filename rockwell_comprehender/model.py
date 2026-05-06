@@ -433,6 +433,20 @@ class Project:
         from .instruction_library import get_instruction_metadata as _get
         return _get(name)
 
+    def identify_domain(self, query: str) -> list:
+        """Identifica AOIs/routines/programs relacionados con un síntoma.
+
+        Wrapper de conveniencia para `domain_lexicon.identify_domain`.
+        Implementa el criterio v0.3 del Vision: dado un síntoma en lenguaje
+        natural ("problema en empalme", "falla del unwinder"), retorna
+        list[DomainHit] ordenada por confidence desc.
+
+        Stack mínimo (DT-008): heurística regex + lexicón curado, sin
+        embeddings ni LLM externo.
+        """
+        from .domain_lexicon import identify_domain as _identify
+        return _identify(self, query)
+
     def _ensure_xref_built(self) -> None:
         """Construye el xref la primera vez que se necesita."""
         if self._xref_built:

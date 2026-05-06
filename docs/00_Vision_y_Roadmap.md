@@ -164,8 +164,8 @@ Si el sistema resuelve este caso bien, está logrado.
 - Detecto al menos 3 patrones de dependencia útiles automáticamente
 
 **v0.3 logrado cuando:**
-- Sin guía manual, identifico que el caso de empalme involucra dominio "splice + unwinder"
-- Genero la cadena causal en 1-2 turnos con confianza alta
+- ✅ Sin guía manual, identifico que el caso de empalme involucra dominio "splice + unwinder" — **cumplido 2026-05-06 vía `domain_lexicon.identify_domain()`** (Sprint 2 A.3). `project.identify_domain("problema en empalme")` en CINTA retorna `AHT_CtcSplicer` (1.00), `AHT_DancerCorAndNewRadiusComputation` (0.80), `AHT_Unwinder` (0.70) en top hits. Generaliza a AQL_M2 (HANDOFF antipatrón #2 cumplido).
+- ⚠️ Genero la cadena causal en 1-2 turnos con confianza alta — capacidad técnica disponible (`find_causal_path` cross-AOI del tracer v0.2, validado en Caso #1 empalme 2026-05-03 en 3 turnos efectivos). Pendiente: integrar `identify_domain` + `find_causal_path` en flujo conversacional explícito de "1-2 turnos" — task no en plan actual, candidata a Discovered si owner pide más automatización.
 
 **Nivel 2 logrado cuando:**
 - Ejecuto análisis sobre archivos del parque sin que se suban manualmente
