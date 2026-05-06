@@ -1,0 +1,430 @@
+# Smell report — CPU1
+
+**Total smells:** 130
+
+## Por severidad
+- **high:** 21
+- **medium:** 59
+- **low:** 50
+
+## Por regla (count)
+- `tag_scope_mismatch`: 34
+- `otu_without_otl`: 26
+- `otl_without_otu`: 21
+- `motion_no_error_check`: 16
+- `tag_naming_legacy_lowercase`: 16
+- `aoi_not_invoked`: 12
+- `aoi_too_many_params`: 5
+
+## Detalle
+
+### `otl_without_otu` (high, C.1)
+
+- **tag** `Alarm0.0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.0'
+- **tag** `Alarm0.10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.10'
+- **tag** `Alarm0.11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.11'
+- **tag** `Alarm0.12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.12'
+- **tag** `Alarm0.13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.13'
+- **tag** `Alarm0.14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.14'
+- **tag** `Alarm0.15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.15'
+- **tag** `Alarm0.3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.3'
+- **tag** `Alarm0.4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.4'
+- **tag** `Alarm0.5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.5'
+- **tag** `Alarm0.6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.6'
+- **tag** `Alarm0.7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm0.7'
+- **tag** `Alarm1.0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm1.0'
+- **tag** `Alarm1.2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm1.2'
+- **tag** `Alarm1.3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm1.3'
+- **tag** `Alarm1.4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm1.4'
+- **tag** `Alarm1.5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm1.5'
+- **tag** `Alarm2.0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm2.0'
+- **tag** `Alarm2.1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm2.1'
+- **tag** `Alarm2.2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Alarm2.2'
+- **tag** `Warning0.7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'Warning0.7'
+
+### `aoi_not_invoked` (medium, C.2)
+
+- **aoi** `AHT_DancerCorAndNewRadiusComputation` @ `AOIs/AHT_DancerCorAndNewRadiusComputation`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `AHT_DriveFault_Decoding` @ `AOIs/AHT_DriveFault_Decoding`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `AHT_Enable_Reject` @ `AOIs/AHT_Enable_Reject`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `AHT_ON_OFF_CounterValve` @ `AOIs/AHT_ON_OFF_CounterValve`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `AHT_Reject_Block` @ `AOIs/AHT_Reject_Block`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `AHT_SyncroAxis` @ `AOIs/AHT_SyncroAxis`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `AxisBlock` @ `AOIs/AxisBlock`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `CtcDiatecSplicer` @ `AOIs/CtcDiatecSplicer`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `CtcDiatecSplicerBuffer` @ `AOIs/CtcDiatecSplicerBuffer`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `FullSpeedSplicer` @ `AOIs/FullSpeedSplicer`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `FullSpeedSplicer2` @ `AOIs/FullSpeedSplicer2`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `Unwinder` @ `AOIs/Unwinder`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+
+### `aoi_too_many_params` (medium, C.1)
+
+- **aoi** `AHT_CtcSplicer` @ `AOIs/AHT_CtcSplicer`
+  - AOI con 42 parameters (>30) — smell de god-object. Considerar descomposición funcional.
+  - _evidence:_ 42 parameters total
+- **aoi** `CtcDiatecSplicer` @ `AOIs/CtcDiatecSplicer`
+  - AOI con 38 parameters (>30) — smell de god-object. Considerar descomposición funcional.
+  - _evidence:_ 38 parameters total
+- **aoi** `CtcDiatecSplicerBuffer` @ `AOIs/CtcDiatecSplicerBuffer`
+  - AOI con 48 parameters (>30) — smell de god-object. Considerar descomposición funcional.
+  - _evidence:_ 48 parameters total
+- **aoi** `FullSpeedSplicer` @ `AOIs/FullSpeedSplicer`
+  - AOI con 46 parameters (>30) — smell de god-object. Considerar descomposición funcional.
+  - _evidence:_ 46 parameters total
+- **aoi** `FullSpeedSplicer2` @ `AOIs/FullSpeedSplicer2`
+  - AOI con 43 parameters (>30) — smell de god-object. Considerar descomposición funcional.
+  - _evidence:_ 43 parameters total
+
+### `motion_no_error_check` (medium, C.2)
+
+- **tag** `Asse` @ `(global)`
+  - Motion control tag 'Asse' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `AutoPhMam1` @ `(global)`
+  - Motion control tag 'AutoPhMam1' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Ax` @ `(global)`
+  - Motion control tag 'Ax' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `AxA` @ `(global)`
+  - Motion control tag 'AxA' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `AxB` @ `(global)`
+  - Motion control tag 'AxB' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `LocMAJ1` @ `(global)`
+  - Motion control tag 'LocMAJ1' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `LocMAM` @ `(global)`
+  - Motion control tag 'LocMAM' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `LocMAM1` @ `(global)`
+  - Motion control tag 'LocMAM1' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `LocMAS2` @ `(global)`
+  - Motion control tag 'LocMAS2' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MAFR_AxA` @ `(global)`
+  - Motion control tag 'MAFR_AxA' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MAFR_AxB` @ `(global)`
+  - Motion control tag 'MAFR_AxB' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MamStop` @ `(global)`
+  - Motion control tag 'MamStop' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `PhysicalAx` @ `(global)`
+  - Motion control tag 'PhysicalAx' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `VMaster` @ `(global)`
+  - Motion control tag 'VMaster' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `VirtualAx` @ `(global)`
+  - Motion control tag 'VirtualAx' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Vmaster1` @ `(global)`
+  - Motion control tag 'Vmaster1' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+
+### `otu_without_otl` (medium, C.1)
+
+- **tag** `AutoCalcRadiusDone` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AutoCalcRadiusDone'
+- **tag** `AutocalcRaduisRunning` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AutocalcRaduisRunning'
+- **tag** `BIT.4` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'BIT.4'
+- **tag** `Data.Motion.HmiComputationCam` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Data.Motion.HmiComputationCam'
+- **tag** `EVMandrelA` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'EVMandrelA'
+- **tag** `EVMandrelB` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'EVMandrelB'
+- **tag** `EVPrepareA` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'EVPrepareA'
+- **tag** `EVPrepareB` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'EVPrepareB'
+- **tag** `EnableC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'EnableC'
+- **tag** `HMI_Man_GlueCylinder` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'HMI_Man_GlueCylinder'
+- **tag** `HmiStartMotor` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'HmiStartMotor'
+- **tag** `HmiStartSimulation` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'HmiStartSimulation'
+- **tag** `IP` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'IP'
+- **tag** `LocMustBeSpliceA` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'LocMustBeSpliceA'
+- **tag** `LocMustBeSpliceB` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'LocMustBeSpliceB'
+- **tag** `LocStartEVSpliceA` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'LocStartEVSpliceA'
+- **tag** `LocStartEVSpliceB` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'LocStartEVSpliceB'
+- **tag** `Loc_SplicePreparedA` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Loc_SplicePreparedA'
+- **tag** `Loc_SplicePreparedB` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Loc_SplicePreparedB'
+- **tag** `ReadyForSplice` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ReadyForSplice'
+- **tag** `ReadyforSplice` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ReadyforSplice'
+- **tag** `SplicePrepared` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'SplicePrepared'
+- **tag** `StartC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'StartC'
+- **tag** `StartJogAutoCalc` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'StartJogAutoCalc'
+- **tag** `Virtual1Data.Motion.GearAbsoluteEnableAutoPhase` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Virtual1Data.Motion.GearAbsoluteEnableAutoPhase'
+- **tag** `to_Remove` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'to_Remove'
+
+### `tag_naming_legacy_lowercase` (low, C.2)
+
+- **tag** `aux35` @ `Tags(controller)/aux35`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='aux35', scope=controller
+- **tag** `aux36` @ `Tags(controller)/aux36`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='aux36', scope=controller
+- **tag** `aux37` @ `Tags(controller)/aux37`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='aux37', scope=controller
+- **tag** `aux38` @ `Tags(controller)/aux38`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='aux38', scope=controller
+- **tag** `aux39` @ `Tags(controller)/aux39`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='aux39', scope=controller
+- **tag** `aux52` @ `Tags(controller)/aux52`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='aux52', scope=controller
+- **tag** `aux53` @ `Tags(controller)/aux53`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='aux53', scope=controller
+- **tag** `init` @ `Tags(controller)/init`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='init', scope=controller
+- **tag** `max_machine_speed` @ `Tags(controller)/max_machine_speed`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='max_machine_speed', scope=controller
+- **tag** `out` @ `Tags(controller)/out`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='out', scope=controller
+- **tag** `rack_1` @ `Tags(controller)/rack_1`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='rack_1', scope=controller
+- **tag** `rack_2` @ `Tags(controller)/rack_2`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='rack_2', scope=controller
+- **tag** `ref_test` @ `Tags(controller)/ref_test`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='ref_test', scope=controller
+- **tag** `test` @ `Tags(controller)/test`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='test', scope=controller
+- **tag** `test_motors` @ `Tags(controller)/test_motors`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='test_motors', scope=controller
+- **tag** `test_ssv` @ `Tags(controller)/test_ssv`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='test_ssv', scope=controller
+
+### `tag_scope_mismatch` (low, C.1)
+
+- **tag** `ABS_Master_Velocity` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `AI_01040` @ `controller-scope (only used in Programs/Axis)`
+  - Tag controller-scope solo usado en program 'Axis' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/Axis
+- **tag** `AI_01041` @ `controller-scope (only used in Programs/Axis)`
+  - Tag controller-scope solo usado en program 'Axis' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/Axis
+- **tag** `AXIS_Fault` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `AXIS_MotionFault` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `Alarm0` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 14 hits, all in Programs/MainProgram
+- **tag** `Alarm1` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 8 hits, all in Programs/MainProgram
+- **tag** `Alarm2` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 5 hits, all in Programs/MainProgram
+- **tag** `Alarm3` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `Aux2` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `AuxCamData` @ `controller-scope (only used in Programs/ReadPar)`
+  - Tag controller-scope solo usado en program 'ReadPar' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/ReadPar
+- **tag** `BIT1` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `Belt_Diameter` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 4 hits, all in Programs/MainProgram
+- **tag** `By_Pass_Alarm` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 13 hits, all in Programs/MainProgram
+- **tag** `CPU_Run` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `Clock0_5Hz` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 3 hits, all in Programs/MainProgram
+- **tag** `Clock1Hz` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 3 hits, all in Programs/MainProgram
+- **tag** `ConversionConstant1_Master` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `DFD_M1` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `DFD_M2` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `DFD_M3` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `DFD_M4` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `DFD_Master` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `DelayGrupSynced` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `DelayMachineStill` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `DriveFaultBits_M1` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `DriveFaultBits_M2` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `DriveFaultBits_M3` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `DriveFaultBits_M4` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `DriveFaultBits_Master` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `EDA_UNW` @ `controller-scope (only used in Programs/Axis)`
+  - Tag controller-scope solo usado en program 'Axis' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/Axis
+- **tag** `Glue_speed_test` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `aux52` @ `controller-scope (only used in Programs/Axis)`
+  - Tag controller-scope solo usado en program 'Axis' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/Axis
+- **tag** `aux53` @ `controller-scope (only used in Programs/Axis)`
+  - Tag controller-scope solo usado en program 'Axis' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/Axis

@@ -447,6 +447,19 @@ class Project:
         from .domain_lexicon import identify_domain as _identify
         return _identify(self, query)
 
+    def detect_smells(self) -> list:
+        """Detecta architecture smells y best-practice violations.
+
+        Wrapper de conveniencia para `smells.detect_smells`. Ejecuta C.1
+        (5 reglas estructurales) + C.2 (10+ best practices Rockwell
+        curadas vía NotebookLM) contra el proyecto.
+
+        Returns:
+            list[Smell] ordenada por severidad desc + kind.
+        """
+        from .smells import detect_smells as _detect
+        return _detect(self)
+
     def _ensure_xref_built(self) -> None:
         """Construye el xref la primera vez que se necesita."""
         if self._xref_built:

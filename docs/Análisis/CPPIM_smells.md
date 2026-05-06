@@ -1,0 +1,2313 @@
+# Smell report — CPPIM_BD800_1
+
+**Total smells:** 755
+
+## Por severidad
+- **high:** 535
+- **medium:** 170
+- **low:** 50
+
+## Por regla (count)
+- `otl_without_otu`: 534
+- `motion_no_error_check`: 95
+- `otu_without_otl`: 69
+- `tag_scope_mismatch`: 38
+- `tag_naming_legacy_lowercase`: 7
+- `routine_empty`: 5
+- `aoi_not_invoked`: 4
+- `aoi_too_many_params`: 2
+- `program_unscheduled`: 1
+
+## Detalle
+
+### `otl_without_otu` (high, C.1)
+
+- **tag** `AllWaysOn` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AllWaysOn'
+- **tag** `AltaBlue_Plus_Transactions_0[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_0[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_1[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_1[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_2[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_2[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_3[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_3[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_4[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_4[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_5[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_5[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_6[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_6[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_7[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_7[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_8[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_8[2].Enabled'
+- **tag** `AltaBlue_Plus_Transactions_9[2].Enabled` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AltaBlue_Plus_Transactions_9[2].Enabled'
+- **tag** `AlwaysOn` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'AlwaysOn'
+- **tag** `ErrorStatus[10].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].0'
+- **tag** `ErrorStatus[10].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].1'
+- **tag** `ErrorStatus[10].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].10'
+- **tag** `ErrorStatus[10].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].11'
+- **tag** `ErrorStatus[10].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].12'
+- **tag** `ErrorStatus[10].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].13'
+- **tag** `ErrorStatus[10].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].14'
+- **tag** `ErrorStatus[10].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].15'
+- **tag** `ErrorStatus[10].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].16'
+- **tag** `ErrorStatus[10].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].17'
+- **tag** `ErrorStatus[10].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].18'
+- **tag** `ErrorStatus[10].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].19'
+- **tag** `ErrorStatus[10].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].2'
+- **tag** `ErrorStatus[10].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].20'
+- **tag** `ErrorStatus[10].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].21'
+- **tag** `ErrorStatus[10].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].22'
+- **tag** `ErrorStatus[10].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].23'
+- **tag** `ErrorStatus[10].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].24'
+- **tag** `ErrorStatus[10].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].25'
+- **tag** `ErrorStatus[10].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].26'
+- **tag** `ErrorStatus[10].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].27'
+- **tag** `ErrorStatus[10].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].28'
+- **tag** `ErrorStatus[10].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].29'
+- **tag** `ErrorStatus[10].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].3'
+- **tag** `ErrorStatus[10].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].30'
+- **tag** `ErrorStatus[10].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].31'
+- **tag** `ErrorStatus[10].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].4'
+- **tag** `ErrorStatus[10].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].5'
+- **tag** `ErrorStatus[10].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].6'
+- **tag** `ErrorStatus[10].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].7'
+- **tag** `ErrorStatus[10].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].8'
+- **tag** `ErrorStatus[10].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[10].9'
+- **tag** `ErrorStatus[11].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].0'
+- **tag** `ErrorStatus[11].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].1'
+- **tag** `ErrorStatus[11].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].10'
+- **tag** `ErrorStatus[11].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].11'
+- **tag** `ErrorStatus[11].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].12'
+- **tag** `ErrorStatus[11].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].13'
+- **tag** `ErrorStatus[11].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].14'
+- **tag** `ErrorStatus[11].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].15'
+- **tag** `ErrorStatus[11].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].16'
+- **tag** `ErrorStatus[11].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].17'
+- **tag** `ErrorStatus[11].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].18'
+- **tag** `ErrorStatus[11].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].19'
+- **tag** `ErrorStatus[11].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].2'
+- **tag** `ErrorStatus[11].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].20'
+- **tag** `ErrorStatus[11].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].21'
+- **tag** `ErrorStatus[11].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].22'
+- **tag** `ErrorStatus[11].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].23'
+- **tag** `ErrorStatus[11].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].24'
+- **tag** `ErrorStatus[11].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].25'
+- **tag** `ErrorStatus[11].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].26'
+- **tag** `ErrorStatus[11].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].27'
+- **tag** `ErrorStatus[11].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].28'
+- **tag** `ErrorStatus[11].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].29'
+- **tag** `ErrorStatus[11].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].3'
+- **tag** `ErrorStatus[11].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].30'
+- **tag** `ErrorStatus[11].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].31'
+- **tag** `ErrorStatus[11].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].4'
+- **tag** `ErrorStatus[11].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].5'
+- **tag** `ErrorStatus[11].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].6'
+- **tag** `ErrorStatus[11].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].7'
+- **tag** `ErrorStatus[11].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].8'
+- **tag** `ErrorStatus[11].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[11].9'
+- **tag** `ErrorStatus[12].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].0'
+- **tag** `ErrorStatus[12].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].1'
+- **tag** `ErrorStatus[12].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].10'
+- **tag** `ErrorStatus[12].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].11'
+- **tag** `ErrorStatus[12].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].12'
+- **tag** `ErrorStatus[12].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].13'
+- **tag** `ErrorStatus[12].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].14'
+- **tag** `ErrorStatus[12].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].15'
+- **tag** `ErrorStatus[12].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].16'
+- **tag** `ErrorStatus[12].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].17'
+- **tag** `ErrorStatus[12].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].18'
+- **tag** `ErrorStatus[12].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].19'
+- **tag** `ErrorStatus[12].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].2'
+- **tag** `ErrorStatus[12].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].20'
+- **tag** `ErrorStatus[12].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].21'
+- **tag** `ErrorStatus[12].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].22'
+- **tag** `ErrorStatus[12].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].23'
+- **tag** `ErrorStatus[12].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].24'
+- **tag** `ErrorStatus[12].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].25'
+- **tag** `ErrorStatus[12].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].26'
+- **tag** `ErrorStatus[12].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].27'
+- **tag** `ErrorStatus[12].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].28'
+- **tag** `ErrorStatus[12].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].29'
+- **tag** `ErrorStatus[12].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].3'
+- **tag** `ErrorStatus[12].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].30'
+- **tag** `ErrorStatus[12].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].31'
+- **tag** `ErrorStatus[12].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].4'
+- **tag** `ErrorStatus[12].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].5'
+- **tag** `ErrorStatus[12].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].6'
+- **tag** `ErrorStatus[12].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].7'
+- **tag** `ErrorStatus[12].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].8'
+- **tag** `ErrorStatus[12].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[12].9'
+- **tag** `ErrorStatus[13].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].0'
+- **tag** `ErrorStatus[13].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].1'
+- **tag** `ErrorStatus[13].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].10'
+- **tag** `ErrorStatus[13].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].11'
+- **tag** `ErrorStatus[13].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].12'
+- **tag** `ErrorStatus[13].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].13'
+- **tag** `ErrorStatus[13].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].14'
+- **tag** `ErrorStatus[13].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].15'
+- **tag** `ErrorStatus[13].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].16'
+- **tag** `ErrorStatus[13].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].17'
+- **tag** `ErrorStatus[13].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].18'
+- **tag** `ErrorStatus[13].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].19'
+- **tag** `ErrorStatus[13].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].2'
+- **tag** `ErrorStatus[13].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].20'
+- **tag** `ErrorStatus[13].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].21'
+- **tag** `ErrorStatus[13].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].22'
+- **tag** `ErrorStatus[13].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].23'
+- **tag** `ErrorStatus[13].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].24'
+- **tag** `ErrorStatus[13].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].25'
+- **tag** `ErrorStatus[13].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].26'
+- **tag** `ErrorStatus[13].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].27'
+- **tag** `ErrorStatus[13].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].28'
+- **tag** `ErrorStatus[13].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].29'
+- **tag** `ErrorStatus[13].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].3'
+- **tag** `ErrorStatus[13].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].30'
+- **tag** `ErrorStatus[13].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].31'
+- **tag** `ErrorStatus[13].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].4'
+- **tag** `ErrorStatus[13].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].5'
+- **tag** `ErrorStatus[13].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].6'
+- **tag** `ErrorStatus[13].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].7'
+- **tag** `ErrorStatus[13].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].8'
+- **tag** `ErrorStatus[13].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[13].9'
+- **tag** `ErrorStatus[14].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].0'
+- **tag** `ErrorStatus[14].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].1'
+- **tag** `ErrorStatus[14].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].10'
+- **tag** `ErrorStatus[14].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].11'
+- **tag** `ErrorStatus[14].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].12'
+- **tag** `ErrorStatus[14].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].13'
+- **tag** `ErrorStatus[14].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].14'
+- **tag** `ErrorStatus[14].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].15'
+- **tag** `ErrorStatus[14].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].16'
+- **tag** `ErrorStatus[14].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].17'
+- **tag** `ErrorStatus[14].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].18'
+- **tag** `ErrorStatus[14].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].19'
+- **tag** `ErrorStatus[14].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].2'
+- **tag** `ErrorStatus[14].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].20'
+- **tag** `ErrorStatus[14].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].21'
+- **tag** `ErrorStatus[14].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].22'
+- **tag** `ErrorStatus[14].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].23'
+- **tag** `ErrorStatus[14].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].24'
+- **tag** `ErrorStatus[14].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].25'
+- **tag** `ErrorStatus[14].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].26'
+- **tag** `ErrorStatus[14].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].27'
+- **tag** `ErrorStatus[14].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].28'
+- **tag** `ErrorStatus[14].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].3'
+- **tag** `ErrorStatus[14].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].4'
+- **tag** `ErrorStatus[14].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].5'
+- **tag** `ErrorStatus[14].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].6'
+- **tag** `ErrorStatus[14].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].7'
+- **tag** `ErrorStatus[14].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].8'
+- **tag** `ErrorStatus[14].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[14].9'
+- **tag** `ErrorStatus[15].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].0'
+- **tag** `ErrorStatus[15].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].1'
+- **tag** `ErrorStatus[15].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].10'
+- **tag** `ErrorStatus[15].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].11'
+- **tag** `ErrorStatus[15].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].12'
+- **tag** `ErrorStatus[15].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].13'
+- **tag** `ErrorStatus[15].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].14'
+- **tag** `ErrorStatus[15].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].15'
+- **tag** `ErrorStatus[15].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].16'
+- **tag** `ErrorStatus[15].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].17'
+- **tag** `ErrorStatus[15].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].18'
+- **tag** `ErrorStatus[15].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].19'
+- **tag** `ErrorStatus[15].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].2'
+- **tag** `ErrorStatus[15].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].20'
+- **tag** `ErrorStatus[15].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].21'
+- **tag** `ErrorStatus[15].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].22'
+- **tag** `ErrorStatus[15].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].23'
+- **tag** `ErrorStatus[15].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].24'
+- **tag** `ErrorStatus[15].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].25'
+- **tag** `ErrorStatus[15].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].26'
+- **tag** `ErrorStatus[15].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].27'
+- **tag** `ErrorStatus[15].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].28'
+- **tag** `ErrorStatus[15].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].29'
+- **tag** `ErrorStatus[15].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].3'
+- **tag** `ErrorStatus[15].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].30'
+- **tag** `ErrorStatus[15].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].31'
+- **tag** `ErrorStatus[15].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].4'
+- **tag** `ErrorStatus[15].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].5'
+- **tag** `ErrorStatus[15].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].6'
+- **tag** `ErrorStatus[15].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].7'
+- **tag** `ErrorStatus[15].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].8'
+- **tag** `ErrorStatus[15].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[15].9'
+- **tag** `ErrorStatus[16].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].0'
+- **tag** `ErrorStatus[16].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].1'
+- **tag** `ErrorStatus[16].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].10'
+- **tag** `ErrorStatus[16].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].11'
+- **tag** `ErrorStatus[16].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].12'
+- **tag** `ErrorStatus[16].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].13'
+- **tag** `ErrorStatus[16].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].14'
+- **tag** `ErrorStatus[16].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].15'
+- **tag** `ErrorStatus[16].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].16'
+- **tag** `ErrorStatus[16].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].17'
+- **tag** `ErrorStatus[16].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].18'
+- **tag** `ErrorStatus[16].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].19'
+- **tag** `ErrorStatus[16].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].2'
+- **tag** `ErrorStatus[16].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].20'
+- **tag** `ErrorStatus[16].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].21'
+- **tag** `ErrorStatus[16].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].22'
+- **tag** `ErrorStatus[16].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].23'
+- **tag** `ErrorStatus[16].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].24'
+- **tag** `ErrorStatus[16].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].25'
+- **tag** `ErrorStatus[16].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].26'
+- **tag** `ErrorStatus[16].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].27'
+- **tag** `ErrorStatus[16].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].28'
+- **tag** `ErrorStatus[16].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].29'
+- **tag** `ErrorStatus[16].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].3'
+- **tag** `ErrorStatus[16].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].30'
+- **tag** `ErrorStatus[16].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].31'
+- **tag** `ErrorStatus[16].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].4'
+- **tag** `ErrorStatus[16].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].5'
+- **tag** `ErrorStatus[16].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].6'
+- **tag** `ErrorStatus[16].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].7'
+- **tag** `ErrorStatus[16].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].8'
+- **tag** `ErrorStatus[16].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[16].9'
+- **tag** `ErrorStatus[17].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].0'
+- **tag** `ErrorStatus[17].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].1'
+- **tag** `ErrorStatus[17].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].16'
+- **tag** `ErrorStatus[17].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].17'
+- **tag** `ErrorStatus[17].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].18'
+- **tag** `ErrorStatus[17].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].19'
+- **tag** `ErrorStatus[17].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].20'
+- **tag** `ErrorStatus[17].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].21'
+- **tag** `ErrorStatus[17].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].22'
+- **tag** `ErrorStatus[17].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].23'
+- **tag** `ErrorStatus[17].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].24'
+- **tag** `ErrorStatus[17].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].25'
+- **tag** `ErrorStatus[17].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].26'
+- **tag** `ErrorStatus[17].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].27'
+- **tag** `ErrorStatus[17].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].28'
+- **tag** `ErrorStatus[17].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].29'
+- **tag** `ErrorStatus[17].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].30'
+- **tag** `ErrorStatus[17].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[17].31'
+- **tag** `ErrorStatus[18].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[18].13'
+- **tag** `ErrorStatus[18].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[18].14'
+- **tag** `ErrorStatus[18].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[18].15'
+- **tag** `ErrorStatus[18].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[18].16'
+- **tag** `ErrorStatus[18].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[18].17'
+- **tag** `ErrorStatus[18].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[18].18'
+- **tag** `ErrorStatus[18].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[18].19'
+- **tag** `ErrorStatus[18].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[18].20'
+- **tag** `ErrorStatus[1].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].12'
+- **tag** `ErrorStatus[1].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].13'
+- **tag** `ErrorStatus[1].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].14'
+- **tag** `ErrorStatus[1].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].15'
+- **tag** `ErrorStatus[1].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].16'
+- **tag** `ErrorStatus[1].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].17'
+- **tag** `ErrorStatus[1].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].18'
+- **tag** `ErrorStatus[1].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].19'
+- **tag** `ErrorStatus[1].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].20'
+- **tag** `ErrorStatus[1].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].21'
+- **tag** `ErrorStatus[1].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].22'
+- **tag** `ErrorStatus[1].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].23'
+- **tag** `ErrorStatus[1].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].24'
+- **tag** `ErrorStatus[1].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].25'
+- **tag** `ErrorStatus[1].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].26'
+- **tag** `ErrorStatus[1].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].27'
+- **tag** `ErrorStatus[1].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].28'
+- **tag** `ErrorStatus[1].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[1].29'
+- **tag** `ErrorStatus[2].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].0'
+- **tag** `ErrorStatus[2].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].1'
+- **tag** `ErrorStatus[2].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].10'
+- **tag** `ErrorStatus[2].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].11'
+- **tag** `ErrorStatus[2].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].12'
+- **tag** `ErrorStatus[2].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].13'
+- **tag** `ErrorStatus[2].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].14'
+- **tag** `ErrorStatus[2].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].15'
+- **tag** `ErrorStatus[2].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].16'
+- **tag** `ErrorStatus[2].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].17'
+- **tag** `ErrorStatus[2].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].18'
+- **tag** `ErrorStatus[2].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].19'
+- **tag** `ErrorStatus[2].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].2'
+- **tag** `ErrorStatus[2].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].20'
+- **tag** `ErrorStatus[2].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].21'
+- **tag** `ErrorStatus[2].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].22'
+- **tag** `ErrorStatus[2].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].23'
+- **tag** `ErrorStatus[2].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].24'
+- **tag** `ErrorStatus[2].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].25'
+- **tag** `ErrorStatus[2].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].26'
+- **tag** `ErrorStatus[2].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].27'
+- **tag** `ErrorStatus[2].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].28'
+- **tag** `ErrorStatus[2].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].29'
+- **tag** `ErrorStatus[2].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].3'
+- **tag** `ErrorStatus[2].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].4'
+- **tag** `ErrorStatus[2].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].5'
+- **tag** `ErrorStatus[2].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].6'
+- **tag** `ErrorStatus[2].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].7'
+- **tag** `ErrorStatus[2].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].8'
+- **tag** `ErrorStatus[2].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[2].9'
+- **tag** `ErrorStatus[3].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].0'
+- **tag** `ErrorStatus[3].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].1'
+- **tag** `ErrorStatus[3].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].10'
+- **tag** `ErrorStatus[3].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].11'
+- **tag** `ErrorStatus[3].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].12'
+- **tag** `ErrorStatus[3].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].13'
+- **tag** `ErrorStatus[3].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].14'
+- **tag** `ErrorStatus[3].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].15'
+- **tag** `ErrorStatus[3].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].16'
+- **tag** `ErrorStatus[3].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].17'
+- **tag** `ErrorStatus[3].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].18'
+- **tag** `ErrorStatus[3].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].19'
+- **tag** `ErrorStatus[3].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].2'
+- **tag** `ErrorStatus[3].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].20'
+- **tag** `ErrorStatus[3].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].21'
+- **tag** `ErrorStatus[3].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].22'
+- **tag** `ErrorStatus[3].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].23'
+- **tag** `ErrorStatus[3].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].24'
+- **tag** `ErrorStatus[3].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].25'
+- **tag** `ErrorStatus[3].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].26'
+- **tag** `ErrorStatus[3].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].27'
+- **tag** `ErrorStatus[3].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].28'
+- **tag** `ErrorStatus[3].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].29'
+- **tag** `ErrorStatus[3].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].3'
+- **tag** `ErrorStatus[3].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].30'
+- **tag** `ErrorStatus[3].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].31'
+- **tag** `ErrorStatus[3].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].4'
+- **tag** `ErrorStatus[3].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].5'
+- **tag** `ErrorStatus[3].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].6'
+- **tag** `ErrorStatus[3].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].7'
+- **tag** `ErrorStatus[3].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].8'
+- **tag** `ErrorStatus[3].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[3].9'
+- **tag** `ErrorStatus[4].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].0'
+- **tag** `ErrorStatus[4].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].1'
+- **tag** `ErrorStatus[4].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].10'
+- **tag** `ErrorStatus[4].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].11'
+- **tag** `ErrorStatus[4].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].12'
+- **tag** `ErrorStatus[4].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].13'
+- **tag** `ErrorStatus[4].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].14'
+- **tag** `ErrorStatus[4].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].15'
+- **tag** `ErrorStatus[4].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].16'
+- **tag** `ErrorStatus[4].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].17'
+- **tag** `ErrorStatus[4].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].18'
+- **tag** `ErrorStatus[4].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].19'
+- **tag** `ErrorStatus[4].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].2'
+- **tag** `ErrorStatus[4].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].20'
+- **tag** `ErrorStatus[4].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].21'
+- **tag** `ErrorStatus[4].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].22'
+- **tag** `ErrorStatus[4].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].23'
+- **tag** `ErrorStatus[4].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].24'
+- **tag** `ErrorStatus[4].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].25'
+- **tag** `ErrorStatus[4].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].26'
+- **tag** `ErrorStatus[4].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].27'
+- **tag** `ErrorStatus[4].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].28'
+- **tag** `ErrorStatus[4].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].29'
+- **tag** `ErrorStatus[4].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].3'
+- **tag** `ErrorStatus[4].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].30'
+- **tag** `ErrorStatus[4].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].31'
+- **tag** `ErrorStatus[4].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].4'
+- **tag** `ErrorStatus[4].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].5'
+- **tag** `ErrorStatus[4].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].6'
+- **tag** `ErrorStatus[4].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].7'
+- **tag** `ErrorStatus[4].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].8'
+- **tag** `ErrorStatus[4].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[4].9'
+- **tag** `ErrorStatus[5].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].0'
+- **tag** `ErrorStatus[5].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].1'
+- **tag** `ErrorStatus[5].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].10'
+- **tag** `ErrorStatus[5].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].11'
+- **tag** `ErrorStatus[5].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].12'
+- **tag** `ErrorStatus[5].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].13'
+- **tag** `ErrorStatus[5].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].14'
+- **tag** `ErrorStatus[5].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].15'
+- **tag** `ErrorStatus[5].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].16'
+- **tag** `ErrorStatus[5].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].17'
+- **tag** `ErrorStatus[5].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].18'
+- **tag** `ErrorStatus[5].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].19'
+- **tag** `ErrorStatus[5].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].2'
+- **tag** `ErrorStatus[5].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].20'
+- **tag** `ErrorStatus[5].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].21'
+- **tag** `ErrorStatus[5].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].22'
+- **tag** `ErrorStatus[5].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].23'
+- **tag** `ErrorStatus[5].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].24'
+- **tag** `ErrorStatus[5].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].25'
+- **tag** `ErrorStatus[5].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].26'
+- **tag** `ErrorStatus[5].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].27'
+- **tag** `ErrorStatus[5].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].28'
+- **tag** `ErrorStatus[5].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].29'
+- **tag** `ErrorStatus[5].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].3'
+- **tag** `ErrorStatus[5].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].30'
+- **tag** `ErrorStatus[5].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].31'
+- **tag** `ErrorStatus[5].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].4'
+- **tag** `ErrorStatus[5].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].5'
+- **tag** `ErrorStatus[5].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].6'
+- **tag** `ErrorStatus[5].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].7'
+- **tag** `ErrorStatus[5].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].8'
+- **tag** `ErrorStatus[5].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[5].9'
+- **tag** `ErrorStatus[6].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].0'
+- **tag** `ErrorStatus[6].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].1'
+- **tag** `ErrorStatus[6].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].10'
+- **tag** `ErrorStatus[6].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].11'
+- **tag** `ErrorStatus[6].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].12'
+- **tag** `ErrorStatus[6].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].13'
+- **tag** `ErrorStatus[6].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].14'
+- **tag** `ErrorStatus[6].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].15'
+- **tag** `ErrorStatus[6].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].16'
+- **tag** `ErrorStatus[6].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].17'
+- **tag** `ErrorStatus[6].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].18'
+- **tag** `ErrorStatus[6].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].19'
+- **tag** `ErrorStatus[6].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].2'
+- **tag** `ErrorStatus[6].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].20'
+- **tag** `ErrorStatus[6].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].21'
+- **tag** `ErrorStatus[6].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].22'
+- **tag** `ErrorStatus[6].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].23'
+- **tag** `ErrorStatus[6].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].24'
+- **tag** `ErrorStatus[6].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].25'
+- **tag** `ErrorStatus[6].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].26'
+- **tag** `ErrorStatus[6].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].27'
+- **tag** `ErrorStatus[6].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].28'
+- **tag** `ErrorStatus[6].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].29'
+- **tag** `ErrorStatus[6].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].3'
+- **tag** `ErrorStatus[6].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].30'
+- **tag** `ErrorStatus[6].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].31'
+- **tag** `ErrorStatus[6].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].4'
+- **tag** `ErrorStatus[6].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].5'
+- **tag** `ErrorStatus[6].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].6'
+- **tag** `ErrorStatus[6].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].7'
+- **tag** `ErrorStatus[6].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].8'
+- **tag** `ErrorStatus[6].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[6].9'
+- **tag** `ErrorStatus[7].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].0'
+- **tag** `ErrorStatus[7].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].1'
+- **tag** `ErrorStatus[7].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].10'
+- **tag** `ErrorStatus[7].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].11'
+- **tag** `ErrorStatus[7].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].12'
+- **tag** `ErrorStatus[7].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].13'
+- **tag** `ErrorStatus[7].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].14'
+- **tag** `ErrorStatus[7].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].15'
+- **tag** `ErrorStatus[7].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].16'
+- **tag** `ErrorStatus[7].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].17'
+- **tag** `ErrorStatus[7].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].18'
+- **tag** `ErrorStatus[7].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].19'
+- **tag** `ErrorStatus[7].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].2'
+- **tag** `ErrorStatus[7].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].20'
+- **tag** `ErrorStatus[7].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].21'
+- **tag** `ErrorStatus[7].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].22'
+- **tag** `ErrorStatus[7].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].23'
+- **tag** `ErrorStatus[7].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].24'
+- **tag** `ErrorStatus[7].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].25'
+- **tag** `ErrorStatus[7].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].26'
+- **tag** `ErrorStatus[7].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].27'
+- **tag** `ErrorStatus[7].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].28'
+- **tag** `ErrorStatus[7].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].29'
+- **tag** `ErrorStatus[7].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].3'
+- **tag** `ErrorStatus[7].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].30'
+- **tag** `ErrorStatus[7].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].4'
+- **tag** `ErrorStatus[7].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].5'
+- **tag** `ErrorStatus[7].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].6'
+- **tag** `ErrorStatus[7].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].7'
+- **tag** `ErrorStatus[7].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].8'
+- **tag** `ErrorStatus[7].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[7].9'
+- **tag** `ErrorStatus[8].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].0'
+- **tag** `ErrorStatus[8].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].1'
+- **tag** `ErrorStatus[8].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].10'
+- **tag** `ErrorStatus[8].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].11'
+- **tag** `ErrorStatus[8].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].12'
+- **tag** `ErrorStatus[8].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].13'
+- **tag** `ErrorStatus[8].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].14'
+- **tag** `ErrorStatus[8].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].15'
+- **tag** `ErrorStatus[8].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].2'
+- **tag** `ErrorStatus[8].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].3'
+- **tag** `ErrorStatus[8].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].4'
+- **tag** `ErrorStatus[8].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].5'
+- **tag** `ErrorStatus[8].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].6'
+- **tag** `ErrorStatus[8].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].7'
+- **tag** `ErrorStatus[8].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].8'
+- **tag** `ErrorStatus[8].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[8].9'
+- **tag** `ErrorStatus[9].0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].0'
+- **tag** `ErrorStatus[9].1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].1'
+- **tag** `ErrorStatus[9].10` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].10'
+- **tag** `ErrorStatus[9].11` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].11'
+- **tag** `ErrorStatus[9].12` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].12'
+- **tag** `ErrorStatus[9].13` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].13'
+- **tag** `ErrorStatus[9].14` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].14'
+- **tag** `ErrorStatus[9].15` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].15'
+- **tag** `ErrorStatus[9].16` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].16'
+- **tag** `ErrorStatus[9].17` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].17'
+- **tag** `ErrorStatus[9].18` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].18'
+- **tag** `ErrorStatus[9].19` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].19'
+- **tag** `ErrorStatus[9].2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].2'
+- **tag** `ErrorStatus[9].20` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].20'
+- **tag** `ErrorStatus[9].21` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].21'
+- **tag** `ErrorStatus[9].22` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].22'
+- **tag** `ErrorStatus[9].23` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].23'
+- **tag** `ErrorStatus[9].24` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].24'
+- **tag** `ErrorStatus[9].25` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].25'
+- **tag** `ErrorStatus[9].26` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].26'
+- **tag** `ErrorStatus[9].27` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].27'
+- **tag** `ErrorStatus[9].28` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].28'
+- **tag** `ErrorStatus[9].29` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].29'
+- **tag** `ErrorStatus[9].3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].3'
+- **tag** `ErrorStatus[9].30` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].30'
+- **tag** `ErrorStatus[9].31` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].31'
+- **tag** `ErrorStatus[9].4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].4'
+- **tag** `ErrorStatus[9].5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].5'
+- **tag** `ErrorStatus[9].6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].6'
+- **tag** `ErrorStatus[9].7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].7'
+- **tag** `ErrorStatus[9].8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].8'
+- **tag** `ErrorStatus[9].9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'ErrorStatus[9].9'
+- **tag** `VBP_PumpName_HMI.0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.0'
+- **tag** `VBP_PumpName_HMI.1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.1'
+- **tag** `VBP_PumpName_HMI.2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.2'
+- **tag** `VBP_PumpName_HMI.3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.3'
+- **tag** `VBP_PumpName_HMI.4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.4'
+- **tag** `VBP_PumpName_HMI.5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.5'
+- **tag** `VBP_PumpName_HMI.6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.6'
+- **tag** `VBP_PumpName_HMI.7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.7'
+- **tag** `VBP_PumpName_HMI.8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.8'
+- **tag** `VBP_PumpName_HMI.9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'VBP_PumpName_HMI.9'
+- **tag** `WriteEnabled_0` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_0'
+- **tag** `WriteEnabled_1` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_1'
+- **tag** `WriteEnabled_2` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_2'
+- **tag** `WriteEnabled_3` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_3'
+- **tag** `WriteEnabled_4` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_4'
+- **tag** `WriteEnabled_5` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_5'
+- **tag** `WriteEnabled_6` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_6'
+- **tag** `WriteEnabled_7` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_7'
+- **tag** `WriteEnabled_8` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_8'
+- **tag** `WriteEnabled_9` @ `(global)`
+  - Tag tiene OTL (latch) pero no aparece OTU (unlatch) en ningún rung — bit puede quedar enclavado sin reset.
+  - _evidence:_ OTL detectado, OTU ausente para 'WriteEnabled_9'
+
+### `program_unscheduled` (high, C.1)
+
+- **program** `Fault` @ `Programs/Fault`
+  - Program no asignado a ninguna task — su código nunca se scanea.
+  - _evidence:_ Programs scheduled: ['AltaBluePlusControl', 'MainProgram', 'Reject', 'SafetyProgram', 'TemperatureControl']...
+
+### `aoi_not_invoked` (medium, C.2)
+
+- **aoi** `Byte_Swap` @ `AOIs/Byte_Swap`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `Lubricuting_Pump` @ `AOIs/Lubricuting_Pump`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `RejectMotor` @ `AOIs/RejectMotor`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+- **aoi** `RepositionServoUS` @ `AOIs/RepositionServoUS`
+  - AOI definida pero nunca invocada — código muerto candidato.
+  - _evidence:_ No aparece como operator en xref
+
+### `aoi_too_many_params` (medium, C.1)
+
+- **aoi** `AOI_AxisControl_CIP` @ `AOIs/AOI_AxisControl_CIP`
+  - AOI con 39 parameters (>30) — smell de god-object. Considerar descomposición funcional.
+  - _evidence:_ 39 parameters total
+- **aoi** `AOI_UnwinderControl` @ `AOIs/AOI_UnwinderControl`
+  - AOI con 88 parameters (>30) — smell de god-object. Considerar descomposición funcional.
+  - _evidence:_ 88 parameters total
+
+### `motion_no_error_check` (medium, C.2)
+
+- **tag** `Axis` @ `(global)`
+  - Motion control tag 'Axis' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `AxisJogStop` @ `(global)`
+  - Motion control tag 'AxisJogStop' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Axis_Home` @ `(global)`
+  - Motion control tag 'Axis_Home' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Axis_MAS` @ `(global)`
+  - Motion control tag 'Axis_MAS' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Axis_MSF` @ `(global)`
+  - Motion control tag 'Axis_MSF' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `CompensationCommand1` @ `(global)`
+  - Motion control tag 'CompensationCommand1' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `CompensationCommand2` @ `(global)`
+  - Motion control tag 'CompensationCommand2' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `ControlAxis` @ `(global)`
+  - Motion control tag 'ControlAxis' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_MDP001` @ `(global)`
+  - Motion control tag 'Converter1_MDP001' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_MDP002` @ `(global)`
+  - Motion control tag 'Converter1_MDP002' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_MDP003` @ `(global)`
+  - Motion control tag 'Converter1_MDP003' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_MDP004` @ `(global)`
+  - Motion control tag 'Converter1_MDP004' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_MDP005` @ `(global)`
+  - Motion control tag 'Converter1_MDP005' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_MDP006` @ `(global)`
+  - Motion control tag 'Converter1_MDP006' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_MDP007` @ `(global)`
+  - Motion control tag 'Converter1_MDP007' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_UWM01` @ `(global)`
+  - Motion control tag 'Converter1_UWM01' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_UWM02` @ `(global)`
+  - Motion control tag 'Converter1_UWM02' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_UWM031` @ `(global)`
+  - Motion control tag 'Converter1_UWM031' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_UWM032` @ `(global)`
+  - Motion control tag 'Converter1_UWM032' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_UWM04` @ `(global)`
+  - Motion control tag 'Converter1_UWM04' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter1_UWM05` @ `(global)`
+  - Motion control tag 'Converter1_UWM05' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[0]` @ `(global)`
+  - Motion control tag 'Converter_Reset[0]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[10]` @ `(global)`
+  - Motion control tag 'Converter_Reset[10]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[11]` @ `(global)`
+  - Motion control tag 'Converter_Reset[11]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[12]` @ `(global)`
+  - Motion control tag 'Converter_Reset[12]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[1]` @ `(global)`
+  - Motion control tag 'Converter_Reset[1]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[2]` @ `(global)`
+  - Motion control tag 'Converter_Reset[2]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[3]` @ `(global)`
+  - Motion control tag 'Converter_Reset[3]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[4]` @ `(global)`
+  - Motion control tag 'Converter_Reset[4]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[5]` @ `(global)`
+  - Motion control tag 'Converter_Reset[5]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[6]` @ `(global)`
+  - Motion control tag 'Converter_Reset[6]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[7]` @ `(global)`
+  - Motion control tag 'Converter_Reset[7]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[8]` @ `(global)`
+  - Motion control tag 'Converter_Reset[8]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_Reset[9]` @ `(global)`
+  - Motion control tag 'Converter_Reset[9]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[0]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[0]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[10]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[10]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[11]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[11]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[12]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[12]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[1]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[1]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[2]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[2]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[3]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[3]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[4]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[4]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[5]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[5]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[6]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[6]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[7]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[7]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[8]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[8]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Converter_ShutdownReset[9]` @ `(global)`
+  - Motion control tag 'Converter_ShutdownReset[9]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `HommingJog_MAS` @ `(global)`
+  - Motion control tag 'HommingJog_MAS' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `HommingMove_MAS` @ `(global)`
+  - Motion control tag 'HommingMove_MAS' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Homming_AarmJog_MAS` @ `(global)`
+  - Motion control tag 'Homming_AarmJog_MAS' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Homming_AarmMove_MAS` @ `(global)`
+  - Motion control tag 'Homming_AarmMove_MAS' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Homming_MAJ` @ `(global)`
+  - Motion control tag 'Homming_MAJ' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `LeaveHomming_MAM` @ `(global)`
+  - Motion control tag 'LeaveHomming_MAM' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MAS_BackEarVirtual` @ `(global)`
+  - Motion control tag 'MAS_BackEarVirtual' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MAS_BackEarVirtual_cutunit` @ `(global)`
+  - Motion control tag 'MAS_BackEarVirtual_cutunit' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MAS_FrontEarVirtual` @ `(global)`
+  - Motion control tag 'MAS_FrontEarVirtual' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MAS_WaistbandVirtual` @ `(global)`
+  - Motion control tag 'MAS_WaistbandVirtual' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MI_StopAuto` @ `(global)`
+  - Motion control tag 'MI_StopAuto' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MasterAxis` @ `(global)`
+  - Motion control tag 'MasterAxis' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MasterMotor` @ `(global)`
+  - Motion control tag 'MasterMotor' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MotionAxisFaultReset` @ `(global)`
+  - Motion control tag 'MotionAxisFaultReset' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `MotionAxisShutdownReset` @ `(global)`
+  - Motion control tag 'MotionAxisShutdownReset' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Offset_MAM` @ `(global)`
+  - Motion control tag 'Offset_MAM' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `PhaseControl` @ `(global)`
+  - Motion control tag 'PhaseControl' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Ref_Axis_AV` @ `(global)`
+  - Motion control tag 'Ref_Axis_AV' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Ref_Axis_CD` @ `(global)`
+  - Motion control tag 'Ref_Axis_CD' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Ref_Master_Axis_Vir` @ `(global)`
+  - Motion control tag 'Ref_Master_Axis_Vir' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `RejectMotor` @ `(global)`
+  - Motion control tag 'RejectMotor' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `RejectMotorCAM_Stop` @ `(global)`
+  - Motion control tag 'RejectMotorCAM_Stop' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `RejectMotorMAM` @ `(global)`
+  - Motion control tag 'RejectMotorMAM' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Reposition` @ `(global)`
+  - Motion control tag 'Reposition' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `SD45A_Encoder_motor` @ `(global)`
+  - Motion control tag 'SD45A_Encoder_motor' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `SD49A_Tissue_tension` @ `(global)`
+  - Motion control tag 'SD49A_Tissue_tension' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `SD49B_Backsheet_tension` @ `(global)`
+  - Motion control tag 'SD49B_Backsheet_tension' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `SD53A_PE_film_tension` @ `(global)`
+  - Motion control tag 'SD53A_PE_film_tension' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `SD70A_AQL_tension` @ `(global)`
+  - Motion control tag 'SD70A_AQL_tension' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `SD75A_Top_sheet_tension` @ `(global)`
+  - Motion control tag 'SD75A_Top_sheet_tension' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `SD75B_Cuff_tension` @ `(global)`
+  - Motion control tag 'SD75B_Cuff_tension' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `ServoAxis_MCM_MAM1` @ `(global)`
+  - Motion control tag 'ServoAxis_MCM_MAM1' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `ServoHoming[0]` @ `(global)`
+  - Motion control tag 'ServoHoming[0]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `ServoHoming[10]` @ `(global)`
+  - Motion control tag 'ServoHoming[10]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `ServoHoming[11]` @ `(global)`
+  - Motion control tag 'ServoHoming[11]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `ServoHoming[1]` @ `(global)`
+  - Motion control tag 'ServoHoming[1]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `ServoHoming[2]` @ `(global)`
+  - Motion control tag 'ServoHoming[2]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `ServoHoming[8]` @ `(global)`
+  - Motion control tag 'ServoHoming[8]' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Slave` @ `(global)`
+  - Motion control tag 'Slave' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `StopMaster` @ `(global)`
+  - Motion control tag 'StopMaster' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `UnwinderA` @ `(global)`
+  - Motion control tag 'UnwinderA' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `UnwinderB` @ `(global)`
+  - Motion control tag 'UnwinderB' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Virtual_BackEar` @ `(global)`
+  - Motion control tag 'Virtual_BackEar' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Virtual_Backear_cutunit` @ `(global)`
+  - Motion control tag 'Virtual_Backear_cutunit' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Virtual_FrontEar` @ `(global)`
+  - Motion control tag 'Virtual_FrontEar' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Virtual_Master` @ `(global)`
+  - Motion control tag 'Virtual_Master' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Virtual_Waistband` @ `(global)`
+  - Motion control tag 'Virtual_Waistband' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+- **tag** `Wrk_MI_PCAMStop` @ `(global)`
+  - Motion control tag 'Wrk_MI_PCAMStop' usado en motion instruction pero el bit .ER nunca se lee — falta error handling explícito.
+  - _evidence:_ Best practice Rockwell MOTION-RM002: inspeccionar .ER tras cada motion instruction.
+
+### `otu_without_otl` (medium, C.1)
+
+- **tag** `AllWaysOff` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AllWaysOff'
+- **tag** `AltaBlue_Plus_Transactions_0[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_0[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_0[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_0[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_1[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_1[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_1[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_1[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_2[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_2[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_2[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_2[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_3[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_3[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_3[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_3[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_4[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_4[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_4[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_4[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_5[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_5[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_5[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_5[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_6[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_6[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_6[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_6[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_7[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_7[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_7[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_7[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_8[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_8[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_8[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_8[2].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_9[1].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_9[1].TransComplete'
+- **tag** `AltaBlue_Plus_Transactions_9[2].TransComplete` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AltaBlue_Plus_Transactions_9[2].TransComplete'
+- **tag** `AlwaysOff` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AlwaysOff'
+- **tag** `AuxiliaryMotorManualControlMode` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'AuxiliaryMotorManualControlMode'
+- **tag** `Axis_Home.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Axis_Home.PC'
+- **tag** `BackcutunitAxisMRP.DN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'BackcutunitAxisMRP.DN'
+- **tag** `CPT_Timer.EN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'CPT_Timer.EN'
+- **tag** `ErrorDisplayShift.EN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ErrorDisplayShift.EN'
+- **tag** `ErrorDisplayShift.UL` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ErrorDisplayShift.UL'
+- **tag** `ErrorDisplayShiftSourceBit` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ErrorDisplayShiftSourceBit'
+- **tag** `FluffReadyFlag` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'FluffReadyFlag'
+- **tag** `FluffSplicerPumpWork` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'FluffSplicerPumpWork'
+- **tag** `GlueCamSwitchControl.EN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'GlueCamSwitchControl.EN'
+- **tag** `GlueCamSwitchControl2.EN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'GlueCamSwitchControl2.EN'
+- **tag** `GlueTestButton` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'GlueTestButton'
+- **tag** `HMICommand.11` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'HMICommand.11'
+- **tag** `HommingJog_MAS.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'HommingJog_MAS.PC'
+- **tag** `HommingMove_MAS.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'HommingMove_MAS.PC'
+- **tag** `Homming_AarmJog_MAS.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Homming_AarmJog_MAS.PC'
+- **tag** `Homming_AarmMove_MAS.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Homming_AarmMove_MAS.PC'
+- **tag** `Homming_MAJ.DN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Homming_MAJ.DN'
+- **tag** `LeaveHomming_MAM.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'LeaveHomming_MAM.PC'
+- **tag** `LeftPrepareCylinderTemp` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'LeftPrepareCylinderTemp'
+- **tag** `MAG_BackEarVirtual.ER` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MAG_BackEarVirtual.ER'
+- **tag** `MAG_FrontEarVirtual.ER` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MAG_FrontEarVirtual.ER'
+- **tag** `MAG_WaistbandVirtual.ER` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MAG_WaistbandVirtual.ER'
+- **tag** `MAPC_BackEarVirtual_cutunit.ER` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MAPC_BackEarVirtual_cutunit.ER'
+- **tag** `MI_ChangeJog.ER` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MI_ChangeJog.ER'
+- **tag** `MI_Move2StopLocation.ER` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MI_Move2StopLocation.ER'
+- **tag** `MI_RunJog.ER` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MI_RunJog.ER'
+- **tag** `MasterAxisMRP.DN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MasterAxisMRP.DN'
+- **tag** `MessageDisplayShift.EN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MessageDisplayShift.EN'
+- **tag** `MessageDisplayShift.UL` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'MessageDisplayShift.UL'
+- **tag** `Offset_MAM.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Offset_MAM.PC'
+- **tag** `RegReArmed` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'RegReArmed'
+- **tag** `RegReArmed1` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'RegReArmed1'
+- **tag** `RegReArmed2` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'RegReArmed2'
+- **tag** `RejectMotorCAM_Stop.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'RejectMotorCAM_Stop.PC'
+- **tag** `RejectMotorMAM.DN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'RejectMotorMAM.DN'
+- **tag** `RejectMotorMAM.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'RejectMotorMAM.PC'
+- **tag** `Reposition.DN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Reposition.DN'
+- **tag** `Reposition.PC` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Reposition.PC'
+- **tag** `RightPrepareCylinderTemp` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'RightPrepareCylinderTemp'
+- **tag** `ServoAxisMAR.IP` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ServoAxisMAR.IP'
+- **tag** `ServoAxisMAR1.IP` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ServoAxisMAR1.IP'
+- **tag** `ServoAxisMAR2.IP` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ServoAxisMAR2.IP'
+- **tag** `ServoAxis_MCCP.DN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'ServoAxis_MCCP.DN'
+- **tag** `Transaction.Enabled` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Transaction.Enabled'
+- **tag** `VBPSwitchTime.EN` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'VBPSwitchTime.EN'
+- **tag** `Wrk_ONS_HomeStart` @ `(global)`
+  - Tag tiene OTU (unlatch) pero ningún OTL — el unlatch es no-op (bit ya estaría en 0 sin OTL previo).
+  - _evidence:_ OTU detectado, OTL ausente para 'Wrk_ONS_HomeStart'
+
+### `routine_empty` (low, C.1)
+
+- **routine** `MainRoutine` @ `Programs/SafetyProgram/Routines/MainRoutine`
+  - Routine sin código (vacía).
+  - _evidence:_ code is empty
+- **routine** `S00_Tags_Mapping` @ `Programs/SafetyProgram/Routines/S00_Tags_Mapping`
+  - Routine sin código (vacía).
+  - _evidence:_ code is empty
+- **routine** `S01_E_Stop` @ `Programs/SafetyProgram/Routines/S01_E_Stop`
+  - Routine sin código (vacía).
+  - _evidence:_ code is empty
+- **routine** `S02_SafetyDoor` @ `Programs/SafetyProgram/Routines/S02_SafetyDoor`
+  - Routine sin código (vacía).
+  - _evidence:_ code is empty
+- **routine** `S03_DriveSTOControl` @ `Programs/SafetyProgram/Routines/S03_DriveSTOControl`
+  - Routine sin código (vacía).
+  - _evidence:_ code is empty
+
+### `tag_naming_legacy_lowercase` (low, C.2)
+
+- **tag** `candelet` @ `Tags(controller)/candelet`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='candelet', scope=controller
+- **tag** `coolingenable` @ `Tags(controller)/coolingenable`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='coolingenable', scope=controller
+- **tag** `fluffsplicepulse` @ `Tags(controller)/fluffsplicepulse`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='fluffsplicepulse', scope=controller
+- **tag** `fvb_teste` @ `Tags(controller)/fvb_teste`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='fvb_teste', scope=controller
+- **tag** `new_int` @ `Tags(controller)/new_int`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='new_int', scope=controller
+- **tag** `new_sint` @ `Tags(controller)/new_sint`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='new_sint', scope=controller
+- **tag** `pulpsplicedelay` @ `Tags(controller)/pulpsplicedelay`
+  - Tag controller-scope con naming todo lowercase — sin prefijo semántico.
+  - _evidence:_ name='pulpsplicedelay', scope=controller
+
+### `tag_scope_mismatch` (low, C.1)
+
+- **tag** `ABP_ParameterSelect` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 10 hits, all in Programs/AltaBluePlusControl
+- **tag** `AOI_AUXMotor` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 8 hits, all in Programs/MainProgram
+- **tag** `AQL_MaterialActualDiameterDisplay` @ `controller-scope (only used in Programs/Unwinder)`
+  - Tag controller-scope solo usado en program 'Unwinder' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 8 hits, all in Programs/Unwinder
+- **tag** `AddressIndex` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `Air_Pressure_Alarm` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 2 hits, all in Programs/MainProgram
+- **tag** `AlarmRedLamp` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
+- **tag** `AlarmSwitch` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 14 hits, all in Programs/MainProgram
+- **tag** `AltaBluePlus_Index` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 39 hits, all in Programs/MainProgram
+- **tag** `AltaBlue_Plus` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 10 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_CommandHMI` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 35 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Data` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 112 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Display` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 10 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_DisplayHMI` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_0` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_1` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_2` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_3` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_4` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_5` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_6` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_7` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_8` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_EN_9` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Parameters` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 10 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_SW_Command` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 491 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_SW_CommandHMI` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 11 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_StateHMI` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_0` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_1` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_2` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_3` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_4` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_5` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_6` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 8 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_7` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_8` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AltaBlue_Plus_Transactions_9` @ `controller-scope (only used in Programs/AltaBluePlusControl)`
+  - Tag controller-scope solo usado en program 'AltaBluePlusControl' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 6 hits, all in Programs/AltaBluePlusControl
+- **tag** `AlwaysOn` @ `controller-scope (only used in Programs/MainProgram)`
+  - Tag controller-scope solo usado en program 'MainProgram' — candidato a program-local para reducir namespace global.
+  - _evidence:_ references_of: 1 hits, all in Programs/MainProgram
