@@ -282,29 +282,32 @@ Esta sección es **propositiva** — capacidades NO en el Vision original que me
 ### 7.0 Scoreboard
 
 ```
-SPRINT 1 · Foundation              [█░░░] 1/4 subtasks  (~2.5 hr)   ← activo
-SPRINT 2 · Universalidad           [░░]   0/2           (~3-4 hr)
+SPRINT 1 · Foundation              [████] 4/4 subtasks  (~2.5 hr)   CERRADO 2026-05-06
+SPRINT 2 · Universalidad           [░░]   0/2           (~3-4 hr)   ← activo
 SPRINT 3 · Validación cruzada      [░░]   0/2           (~3 hr)
 SPRINT 4 · Asesor proactivo        [░░]   0/2           (~5-6 hr)   paralelizable post-S1
 SPRINT 5 · Visual operativo        [░░]   0/2           (~4-5 hr)
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [█░░░░░░░░░░░]  8% (1/12)  ~18-21 hr total
+GLOBAL                             [████░░░░░░░░] 33% (4/12)  ~18-21 hr total
 ```
 
 > Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
 
 ### 7.1 Reglas operativas (no negociables)
 
+> **Sprint Batch Mode activado 2026-05-06.** Owner autorizó ejecución en flujo continuo dentro del sprint para reducir ruido conversacional y acelerar entrega. Las reglas 4 y 6 se reformularon; el resto preservado.
+
 1. Una subtarea = uno o más commits relacionados; `[x]` cuando todos sus acceptance pasan.
 2. `[ ]` pending → `[~]` in progress (al empezar) → `[x]` done (al cerrar).
 3. NO empezar subtarea con dependencias `[ ]`.
-4. NO commit sin OK explícito del owner. La estructura por sprints NO anula esta regla — es por commit, cada vez.
+4. **NO commit sin OK explícito del owner.** Regla absoluta preservada — pero el OK opera **por sprint completo**, no por commit individual. 1 OK del owner al cierre del sprint cubre todos los commits batch del sprint (consolidados o granulares según decisión de Claude). La regla absoluta sigue siendo "history persistente requiere OK"; lo que cambia es la frecuencia del OK.
 5. Hallazgos fuera del plan → 7.4 Discovered, NO ejecutar unilateral.
-6. **Cierre formal de sprint:** al marcar `[x]` la última subtarea del sprint, agregar fila resumen en Done Log (7.3) con outcome del sprint completo + recalcular scoreboard.
+6. **Cierre formal de sprint = único checkpoint con owner.** Claude ejecuta TODAS las subtareas del sprint sin reportes intermedios. Solo interrumpe el flujo en 4 casos: (a) bloqueo técnico real (código falla, dependencia rota), (b) acceptance criteria de subtarea NO se cumple tras intento honesto, (c) hallazgo arquitectónico fuera del plan, (d) cierre del sprint. Al cierre: 1 reporte consolidado + propuesta de commits batch + 1 OK del owner.
 7. **No saltar sprints** salvo paralelización explícita autorizada por owner (Sprint 4 puede correr en paralelo con Sprints 2/3 si owner lo decide).
-8. **Bloqueo durante subtarea** → marcar `[~]` con nota del bloqueo, parar, reportar al owner.
+8. **Bloqueo durante subtarea** → marcar `[~]` con nota del bloqueo, parar, reportar al owner (caso (a)/(b) de regla 6).
 9. DTs vigentes (DT-001 a DT-010); lección 2026-05-03 vigente (no instalar infra especulativa).
+10. **Auditabilidad preservada:** los commits siguen granulares (uno por subtarea cuando hay valor histórico, consolidados cuando no). Owner puede revertir/cherry-pick selectivo en cualquier momento. Diff completo del sprint visible antes del OK.
 
 ### 7.2 Sprints y subtareas
 
@@ -329,21 +332,21 @@ GLOBAL                             [█░░░░░░░░░░░]  8% (1
 - Commit: `fix(tracer): build_xref procesa código ST — cierra falso positivo M*Data en Caso #5`
 - Constraints: sin dependencias nuevas (DT-008); reusar `st_tokenizer` existente; mantener tag_root indexing para tags estructurados; idempotencia de `build_xref` preservada (drop+recreate xref).
 
-**`[ ]` A.1.1 — feat(library): batch 5 logic base (XIC/XIO/OTE/OTL/OTU)** · ~30 min
+**`[x]` A.1.1 — feat(library): batch 5 logic base (XIC/XIO/OTE/OTL/OTU)** · ~30 min · cerrada 2026-05-06
 - Dependencias: ninguna (paralelizable con C.3 pero recomiendo serial para mantener foco)
 - Output: 5 nuevas `InstructionMetadata` en `rockwell_comprehender/instruction_library/__init__.py` siguiendo patrón motion (ver MAJ/MAS/MAH como referencia).
 - Acceptance: `len(list_instructions(category="logic")) ≥ 5`; smoke por instrucción `get_instruction_metadata("XIC") is not None` válido.
 - Curación: NotebookLM serial estricto — query template en Apéndice B. Una query por instrucción, delay 2-3s entre llamadas.
 - Commit: `feat(library): batch 5 logic base (XIC/XIO/OTE/OTL/OTU)`
 
-**`[ ]` A.1.2 — feat(library): batch 5 data+timer (MOV/COP/CPS/TON/ONS)** · ~30 min
+**`[x]` A.1.2 — feat(library): batch 5 data+timer (MOV/COP/CPS/TON/ONS)** · ~30 min · cerrada 2026-05-06
 - Dependencias: A.1.1 `[x]` (orden por categoría, no técnica)
 - Output: 5 entries adicionales (MOV, COP, CPS — data movement; TON, ONS — timer).
 - Acceptance: smoke por instrucción válido; total instruction_library ≥27 entries tras este commit.
 - Curación: NotebookLM serial — Apéndice B.
 - Commit: `feat(library): batch 5 data+timer (MOV/COP/CPS/TON/ONS)`
 
-**`[ ]` A.1.3 — feat(library): batch 4 comparators (EQU/NEQ/GRT/LES)** · ~25 min
+**`[x]` A.1.3 — feat(library): batch 4 comparators (EQU/NEQ/GRT/LES)** · ~25 min · cerrada 2026-05-06
 - Dependencias: A.1.2 `[x]`
 - Output: 4 entries comparators.
 - Acceptance: total instruction_library ≥31 entries; smoke válido por instrucción.
@@ -462,6 +465,8 @@ GLOBAL                             [█░░░░░░░░░░░]  8% (1
 | Fecha cierre | Task ID | Commit hash | Outcome (1 línea) |
 |--------------|---------|-------------|-------------------|
 | 2026-05-05 | C.3 (Sprint 1) | `c251d18` | `build_xref` procesa código ST; CINTA xref +38 rows operator=`:=`; M*Data dejan de ser falsos positivos en Caso #5; backing tags AOI sin regresión; AQL_M2 5/5 ST roots validados |
+| 2026-05-06 | A.1 bloque (Sprint 1) | `6e82812` | RLL stdlib coverage +14: 5 logic base (XIC/XIO/OTE/OTL/OTU) + 5 data+timer (MOV/COP/CPS/TON/ONS) + 4 comparators (EQU/NEQ/GRT/LES). Catálogo 17→31 entries. 6 categorías (safety/motion/logic/data movement/timer/comparator). Curados via 3 queries comprehensivas NotebookLM contra pub 1756-RM003. |
+| 2026-05-06 | **SPRINT 1 cerrado** | _(pendiente)_ | Foundation completo (4/4): tracer xref cubre RLL+ST + instruction_library 31 entries. Entregable de cierre cumplido — un L5X mixto se instrumenta completo + ≥31 instrucciones stdlib reconocidas. Sprint Batch Mode activado en sec 7.1 (regla 4 y 6 reformuladas). |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 
