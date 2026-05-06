@@ -722,14 +722,74 @@ def _render_xref_summary(p, tag_name: str, max_per_kind: int = 8) -> str:
             )
         return "".join(out)
 
+    # Trace back embebido (D.1 Sprint 5): árbol de antecedentes BFS
+    # depth=3, max_branches=8 — suficiente para visualización rápida sin
+    # saturar el HTML. Para análisis profundo el usuario sigue teniendo
+    # la API Python.
+    try:
+        tree = p.trace_back(tag_name, depth=3, max_branches=8)
+        trace_html = _render_trace_tree(tree)
+    except Exception as exc:
+        trace_html = (
+            f'<p class="meta">Trace back no disponible: {_e(str(exc))}</p>'
+        )
+
     return (
         '<h3>Trace de uso (xref v0.2)</h3>'
         + _block("Writers", writers, n_w)
         + _block("Readers", readers, n_r)
-        + '<p class="meta">Para cadenas causales completas usar '
+        + '<details class="trace-back-details">'
+        + '<summary><strong>Trace back (antecedentes, depth=3)</strong></summary>'
+        + trace_html
+        + '</details>'
+        + '<p class="meta">Cadenas más profundas: '
           '<code>project.find_causal_path(from_tag, to_tag)</code> o '
           '<code>project.trace_back(tag, depth=N)</code> desde Python.</p>'
     )
+
+
+def _render_trace_tree(node, indent: int = 0) -> str:
+    """Renderiza un TraceNode como HTML <ul> anidado.
+
+    Visualización compacta para D.1 Sprint 5 — limita branches a 5 por
+    nodo para mantener legibilidad. Si el nodo está truncado por depth/
+    cycle/branches lo indica con badge.
+    """
+    if not node:
+        return '<p class="meta">(sin antecedentes detectados)</p>'
+
+    # Root level
+    out = ['<ul class="trace-tree">']
+    _render_trace_node(node, out, depth=0)
+    out.append('</ul>')
+    return "".join(out)
+
+
+def _render_trace_node(node, out: list, depth: int) -> None:
+    via_html = ""
+    if node.via:
+        via_html = (
+            f' <span class="meta">← via <code>{_e(node.via.operator)}</code> '
+            f'@ <code>{_e(node.via.location)}</code></span>'
+        )
+    trunc_html = ""
+    if node.truncated:
+        trunc_html = f' <span class="trunc-badge">[trunc:{_e(node.truncated)}]</span>'
+    out.append(
+        f'<li><code>{_e(node.operand)}</code>{via_html}{trunc_html}'
+    )
+    children = node.children[:5]
+    if children:
+        out.append('<ul>')
+        for c in children:
+            _render_trace_node(c, out, depth + 1)
+        out.append('</ul>')
+    if len(node.children) > 5:
+        out.append(
+            f'<p class="meta">... y {len(node.children) - 5} más '
+            '(usar <code>trace_back(tag, depth, max_branches)</code> para ver completo)</p>'
+        )
+    out.append('</li>')
 
 
 def _panel_placeholder(title: str, note: str) -> str:
