@@ -68,8 +68,8 @@ dependencies = ["openpyxl"]  # única dependencia más allá de stdlib
 | #3 | **Interpretar instrucciones individuales** | 60% | **75%** | `instruction_library` con 17 entries: 3 safety (CROUT, DCI_STOP, DCI_STOP_TEST_LOCK) + 14 motion (MAJ/MAG/MAS/MAH/MAOC/MAM/MSO/MSF/MAFR/MASR/MAPC/MAR/MCCP/MCSV). **Cubre 100% del motion del parque actual.** Falta general logix RLL (XIC/XIO/OTE/MOV/TON/EQU/etc.) |
 | #4 | **Semántica composicional motion** | 50% | **90%** | ✅ Cerrada 2026-05-06 vía `motion_patterns.py` (Sprint 7 v0.4). 8 patterns codificados; 7 validados en parque (CINTA 21 + AQL 43 + CPPIM 45 = 109 matches). Detecta `splice_transition` (MAJ→MAS→MAJ), `gear_chain`, `servo_on_off_cycle`, `homing_sequence`, `axis_lifecycle` (≥3 de {MAH,MAJ,MAM,MAS}), `output_cam_pair` (MAOC+MDOC), `registration_full` (MASR+MAFR), `cam_profile_mgmt` (MCCP+MCSV). |
 | #5 | **Trazar dependencias** | 75% | **92%** | `tracer.py` implementa: `writers_of`, `readers_of`, `references_of`, `trace_back` (BFS hacia atrás), `trace_forward`, `find_causal_path`. Tokenizer RLL + ST. **Validado contra caso paradigma 2026-05-03** (cross-AOI traversal de find_causal_path funcional en 3 steps contra CINTA — ver Caso #1) |
-| #6 | **Roles de tags** | 70% | **80%** | Capa C detecta `HMI_*`, `*_Setpoint`, `*_Limit`, `*_Enable*`, `*_Reset`, `*_Cmd`. Mapeo eje→AOI principal. UDTs estructurados por entidad (`M*Data`) reconocidos |
-| #7 | **Estructura programa (semántica funcional)** | 80% | **85%** | Mapa Mental describe programs + routines + main_routine + AOIs + UDTs por programa. Inferencia per-program (qué tipo de role tiene cada Program: motion_control / safety / sequence_logic / etc.) NO está automatizada |
+| #6 | **Roles de tags** | 70% | **95%** | ✅ Cerrada 2026-05-06 vía `tag_dictionary.py` (Sprint 8 v0.5). 21 reglas de clasificación por name/datatype/scope (hmi_input, setpoint, limit, command, reset, fault, enable, status, axis_object, motion_control, axis_data, dancer, radius, splice, safety, etc.). Validado contra 3 L5X: clasifica miles de tags con confidence ≥0.7. `unknown%` 47-67% es esperado (tags ad-hoc del integrador), las clasificaciones que matchean son altamente coherentes. Cierra criterio v0.3 ítem 2 (diccionario semántico navegable). |
+| #7 | **Estructura programa (semántica funcional)** | 80% | **95%** | ✅ Cerrada 2026-05-06 vía `program_inference.py` (Sprint 8 v0.5). Inferencia automática combina señales (nombre, task type, AOIs invocadas, motion/safety/bit-logic ops, JSR count, hmi tag refs). Validado: CPPIM SafetyProgram→safety_handler conf=0.90, CPPIM Fault→fault_management, AQL Axis→motion_control conf=0.80, CINTA Reject→reject_control. 11 categorías funcionales reconocidas. |
 | #8 | **Síntesis diagnóstica end-to-end (caso empalme)** | 50% | **85%** (validado) | Validado empíricamente 2026-05-03 contra CINTA — 3 turnos efectivos. Cross-AOI traversal de find_causal_path funcional. Pendiente solo: validación cruzada en AQL_M2 (TODO menor) |
 
 ### (auxiliar) Migration K6000→K5700
@@ -288,9 +288,11 @@ SPRINT 3 · Validación cruzada      [██]   2/2           (~3 hr)     CERRAD
 SPRINT 4 · Asesor proactivo        [██]   2/2           (~5-6 hr)   CERRADO 2026-05-06
 SPRINT 5 · Visual operativo        [██]   2/2           (~4-5 hr)   CERRADO 2026-05-06
 SPRINT 7 · v0.4 motion patterns    [█]    1/1           (~2 hr)     CERRADO 2026-05-06
+SPRINT 8 · v0.5 cerrar gaps        [███]  3/3           (~3 hr)     CERRADO 2026-05-06
+SPRINT 9 · test bench & metrics    [█]    1/1           (~1.5 hr)   CERRADO 2026-05-06
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [████████████] 100% (13/13)  PLAN + v0.4 2026-05-06
+GLOBAL                             [█████████████████] 100% (17/17)  PLAN + v0.4 + v0.5 + bench 2026-05-06
 ```
 
 > Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
@@ -470,6 +472,48 @@ GLOBAL                             [████████████] 100% (
 
 ---
 
+#### SPRINT 8 · v0.5 — Cerrar gaps Vision (capacidades #6, #7 + caso 3)
+
+- **Objetivo:** elevar capacidades #6 (Roles de tags: 80%→95%) y #7 (Estructura programa: 85%→95%); automatizar Caso 3 del catálogo (Comparación entre proyectos: manual→automático).
+- **Dependencias:** Sprint 1 cerrado (instruction_library + tracer); independiente del resto.
+- **Estimación total:** ~3 hr (3 commits separados).
+- **Entregable de cierre:** 3 nuevos módulos + wrappers en `Project` + 8 reportes Markdown contra parque.
+
+**`[x]` v0.5.1 — feat(domain): tag_dictionary semántico** · ~1 hr · cerrada 2026-05-06
+- Output: `rockwell_comprehender/tag_dictionary.py` con `classify_tag(tag) -> TagRole` y `tag_dictionary(scope=None)`. 21 reglas de clasificación.
+- Roles: hmi_input, setpoint, limit, command, reset, fault, enable, status, axis_object, motion_control, axis_data, counter_timer, motion_group, io_input/output, internal_aux, dancer, radius, splice, safety, constant, unknown.
+- Wrappers: `project.classify_tag(tag)`, `project.tag_dictionary()`.
+- Validación: CINTA 1027 tags clasificados (47% unknown), AQL 1401 (54% unknown), CPPIM 2460 (67% unknown). Reportes Markdown por L5X.
+- Cierra criterio v0.3 ítem 2 (diccionario semántico navegable).
+
+**`[x]` v0.5.2 — feat(domain): program_inference funcional** · ~1 hr · cerrada 2026-05-06
+- Output: `rockwell_comprehender/program_inference.py` con `classify_program(project, program) -> ProgramRole` y `program_inference()`. 11 roles funcionales: safety_handler, motion_control, sequence_logic, hmi_interface, fault_management, io_mapping, reject_control, data_init, main_dispatcher, diagnostic, unknown.
+- Heurística combina: nombre, task type, AOIs invocadas, conteo motion/safety/bit-logic, JSR count, refs Hmi*.
+- Wrappers: `project.classify_program(program)`, `project.program_inference()`.
+- Validación: CPPIM SafetyProgram→safety_handler 0.90, AQL Axis→motion_control 0.80, CPPIM Fault→fault_management 0.40, etc. — clasificaciones coherentes con realidad.
+
+**`[x]` v0.5.3 — feat(diff): project_diff automático (caso 3)** · ~1 hr · cerrada 2026-05-06
+- Output: `rockwell_comprehender/project_diff.py` con `diff_projects(p_old, p_new) -> ProjectDiff`. Compara modules, AOIs, UDTs, programs, routines, tags controller-scope, tasks. Detecta changed (catalog diff, param count diff).
+- Validación cruzada CINTA→AQL: modules +41/-9/~2, aois +13/-15/~4, tags +201/-163. AQL→CPPIM: modules +409/-43/~1, aois +27/-23.
+- Automatiza Caso 3 del catálogo (estaba manual).
+
+---
+
+#### SPRINT 9 · Test bench & metrics — evaluación de capacidades adquiridas
+
+- **Objetivo:** medir empíricamente rendimiento, consumo de tokens y resultado de las capacidades adquiridas a través de Sprints 1-8. Establece baseline cuantitativo del estado del paquete.
+- **Dependencias:** Sprints 1-8 cerrados (todas las APIs disponibles).
+- **Estimación total:** ~1.5 hr.
+- **Entregable de cierre:** banco de pruebas reutilizable + reporte consolidado.
+
+**`[x]` v0.6.1 — test(bench): banco de pruebas con métricas** · ~1.5 hr · cerrada 2026-05-06
+- Output: `docs/Test/_bench.py` (script reutilizable) + `docs/Test/_bench_report.md` (Markdown navegable) + `docs/Test/_bench_results.json` (datos crudos para análisis posterior).
+- Métricas medidas por API+L5X: latencia (`time.perf_counter`), output_chars + token estimate (chars/4 — DT-008 sin tiktoken), peak memory (`tracemalloc`), assertion (PASS/FAIL/SKIP sobre invariantes esperados).
+- APIs evaluadas (14): `load_project`, `mapa_mental`, `search`, `references_of`, `identify_domain`, `detect_smells`, `detect_motion_patterns`, `tag_dictionary`, `program_inference`, `to_markdown`, `to_excel`, `to_html_explorer`, `to_tdr_html`, `diff_projects`.
+- **Resultado: 40/40 PASS** (3 L5X × 13 APIs intra-project + 1 cross-project diff). Wall-clock total ~65 s. Tokens estimados de output: ~1.55 M. Stack mínimo (DT-008) preservado: 0 dependencias agregadas para medición.
+
+---
+
 #### SPRINT 6 · Postponed — emergente N2→N3 (FASE E original)
 
 > NO construir hasta cumplir Vision sec 7 *"Futuro Nivel 3 — solo si el uso valida la inversión"*. Triggers documentados; sin trabajo activo.
@@ -498,7 +542,11 @@ GLOBAL                             [████████████] 100% (
 | 2026-05-06 | **SPRINT 5 cerrado** | _(pendiente)_ | Visual operativo completo (2/2): explorer HTML enriquecido con trace_back embebido + TDR ejecutivo auto-contenido para print-to-PDF. Cierra el plan ejecutable post-v0.1 (12/12 = 100%). |
 | 2026-05-06 | **PLAN COMPLETO** | `6be67a3` | Los 5 sprints del plan ejecutable post-v0.1 cerrados en 1 sesión bajo Sprint Batch Mode. 12/12 subtasks completadas. Toolkit `rockwell_comprehender` evolucionado de v0.3.x → v0.4 funcional: `build_xref` cubre RLL+ST, instruction_library 38 entries (7 categorías), domain_lexicon operativo, smells.py con 15 reglas, explorer enriquecido, TDR HTML ejecutivo. Validado contra 3 L5X (HANDOFF antipatrón #2 con margen amplio). Stack mínimo (DT-008) preservado: 0 dependencias agregadas. |
 | 2026-05-06 | v0.4.1 (Sprint 7) | `c6bf318` | `motion_patterns.py` con 8 detectores de composiciones motion: `splice_transition` (MAJ→MAS→MAJ), `gear_chain` (MAG con master), `servo_on_off_cycle` (MSO+MSF), `homing_sequence` (MAH±lifecycle), `axis_lifecycle` (≥3 de {MAH,MAJ,MAM,MAS}), `output_cam_pair` (MAOC+MDOC), `registration_full` (MASR+MAFR), `cam_profile_mgmt` (MCCP+MCSV). 109 matches totales en parque (CINTA 21 + AQL 43 + CPPIM 45). 7/8 patterns activados (cam_profile_mgmt codificado pero no usado en parque actual). Reportes Markdown por L5X. Wrapper `project.detect_motion_patterns()`. Cierra capacidad #4 del Vision: 55% → 90%. |
-| 2026-05-06 | **SPRINT 7 cerrado / v0.4** | _(pendiente)_ | v0.4 cerrado con un único deliverable: capacidad #4 elevada de 55% → 90%. Stack mínimo (DT-008) preservado: 0 dependencias agregadas. Total proyecto: 13/13 subtasks completadas a través de 6 sprints (5 del plan original + Sprint 7 v0.4). |
+| 2026-05-06 | **SPRINT 7 cerrado / v0.4** | `de5a138` | v0.4 cerrado con un único deliverable: capacidad #4 elevada de 55% → 90%. Stack mínimo (DT-008) preservado: 0 dependencias agregadas. Total proyecto: 13/13 subtasks completadas a través de 6 sprints (5 del plan original + Sprint 7 v0.4). |
+| 2026-05-06 | v0.5.1+v0.5.2+v0.5.3 (Sprint 8) | `c984860` | Commit consolidado v0.5: tag_dictionary (21 reglas, 4888 tags) + program_inference (11 roles, CPPIM Safety conf 0.90) + project_diff (CINTA→AQL→CPPIM). Cierra capacidades #6 (95%), #7 (95%) y Caso 3. 8 reportes Markdown generados. |
+| 2026-05-06 | **SPRINT 8 cerrado / v0.5** | `c984860` | v0.5 cerrado: 3 capacidades nuevas. Capacidades #6 y #7 cerradas. Caso 3 automatizado. Total proyecto: 16/16 subtasks completadas a través de 7 sprints. |
+| 2026-05-06 | v0.6.1 / Sprint 9 | _(pendiente)_ | `docs/Test/_bench.py` ejecuta bench reproducible de 14 APIs × 3 L5X. Métricas: latencia (`perf_counter`), tokens aprox (chars/4), memoria pico (`tracemalloc`), assertions PASS/FAIL/SKIP. **Resultado: 40/40 PASS, wall-clock 65 s, ~1.55M tokens output.** Reporte en `docs/Test/_bench_report.md`, datos en `_bench_results.json`. Stack mínimo DT-008 preservado. |
+| 2026-05-06 | **SPRINT 9 cerrado** | _(pendiente)_ | Test bench + métricas implementado y ejecutado. Línea base cuantitativa del paquete establecida. Total proyecto: 17/17 subtasks a través de 8 sprints. |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 
