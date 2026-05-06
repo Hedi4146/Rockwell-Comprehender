@@ -460,6 +460,21 @@ class Project:
         from .smells import detect_smells as _detect
         return _detect(self)
 
+    def detect_motion_patterns(self) -> list:
+        """Detecta patrones de composición motion nivel-2 (v0.4).
+
+        Wrapper de conveniencia para `motion_patterns.detect_motion_patterns`.
+        Identifica composiciones recurrentes de motion instructions
+        (splice transition, gear chain, axis lifecycle, etc.) que
+        representan funciones semánticas de mayor nivel que los átomos
+        individuales.
+
+        Returns:
+            list[MotionPatternMatch] ordenada por confidence desc + pattern.
+        """
+        from .motion_patterns import detect_motion_patterns as _detect
+        return _detect(self)
+
     def _ensure_xref_built(self) -> None:
         """Construye el xref la primera vez que se necesita."""
         if self._xref_built:
