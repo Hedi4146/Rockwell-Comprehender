@@ -285,11 +285,11 @@ Esta sección es **propositiva** — capacidades NO en el Vision original que me
 SPRINT 1 · Foundation              [████] 4/4 subtasks  (~2.5 hr)   CERRADO 2026-05-06
 SPRINT 2 · Universalidad           [██]   2/2           (~3-4 hr)   CERRADO 2026-05-06
 SPRINT 3 · Validación cruzada      [██]   2/2           (~3 hr)     CERRADO 2026-05-06
-SPRINT 4 · Asesor proactivo        [░░]   0/2           (~5-6 hr)   ← activo
-SPRINT 5 · Visual operativo        [░░]   0/2           (~4-5 hr)
+SPRINT 4 · Asesor proactivo        [██]   2/2           (~5-6 hr)   CERRADO 2026-05-06
+SPRINT 5 · Visual operativo        [░░]   0/2           (~4-5 hr)   ← activo
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [████████░░░░] 67% (8/12)  ~18-21 hr total
+GLOBAL                             [██████████░░] 83% (10/12)  ~18-21 hr total
 ```
 
 > Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
@@ -406,7 +406,7 @@ GLOBAL                             [████████░░░░] 67% (8
 - **Estimación total:** ~5-6 hr (2 commits).
 - **Entregable de cierre:** `project.detect_smells()` retorna ≥15 reglas activadas, sin falsos positivos sistemáticos, contra los 3 L5X.
 
-**`[ ]` C.1 — feat(smells): architecture smell detector** · ~2-3 hr
+**`[x]` C.1 — feat(smells): architecture smell detector** · ~2-3 hr · cerrada 2026-05-06
 - Dependencias: A.1.3 `[x]` (necesita reconocer operadores para razonar OTL/OTU pairing)
 - Output: módulo `rockwell_comprehender/smells.py` con `detect_smells(project)` y 5 reglas iniciales:
   1. OTL/OTU sin pareja (latch sin unlatch o viceversa)
@@ -417,7 +417,7 @@ GLOBAL                             [████████░░░░] 67% (8
 - Acceptance: smoke contra CINTA+AQL detecta ≥3 smells reales sin falsos positivos por regla; reporte `docs/Análisis/<L5X>_smells.md` legible.
 - Commit: `feat(smells): architecture smell detector — 5 reglas iniciales`
 
-**`[ ]` C.2 — feat(smells): best practices auditor** · ~3 hr
+**`[x]` C.2 — feat(smells): best practices auditor** · ~3 hr · cerrada 2026-05-06
 - Dependencias: C.1 `[x]`
 - Output: extensión de `smells.py` con ≥10 reglas curadas vía NotebookLM (mejores prácticas Rockwell):
   - UDTs vs tags planos
@@ -472,7 +472,9 @@ GLOBAL                             [████████░░░░] 67% (8
 | 2026-05-06 | **SPRINT 2 cerrado** | `66506e7` | Universalidad completo (2/2): cobertura ST en library + lexicón síntoma→código operativo. Criterio v0.3 del Vision alcanzado en su primer ítem. Stack mínimo (DT-008) preservado — solo `re` + estructuras del modelo. |
 | 2026-05-06 | B.1 (Sprint 3) | `24e3994` | `_caso1_test_runner.py` parametrizado por L5X (CINTA + AQL via PROJECT_CONFIGS). Veredicto AQL: **PASS - generaliza completamente** (4/4: AOIs core 3/3, identify_domain conf=1.00, writers/readers OK, find_causal_path 3 steps idéntica a CINTA). Cadena causal análoga: HmiNewDiameter → DIV → LocHmiNewRadius → MOV → LocNewRadius → RadiusComputation invoke → ReelRadiusA. Sección "Re-ejecución contra AQL_M2" agregada en Caso_1_Empalme_test_funcional.md. |
 | 2026-05-06 | B.2 (Sprint 3) | `ac00889` | Audit casos 1-6 contra CPPIM_BD800_1 (Amantrini v33, ControlLogix L83ES). 4/6 casos PASS (Mapa Mental 35K chars, Comparación carga paralela OK, Código muerto 27/100 sample sin errores, TDR 1.4 MB). 2/6 N/A por arquitectura (Caso 1 no tiene splice Diatec, Caso 4 ya en K5700). 5 raC_* libraries Modbus TCP detectadas, 0 routines protected en este L5X. Loader: 0 errores parseando 410 modules + 28 AOIs + 53 routines + 2460 tags. Reporte completo en `docs/Análisis/CPPIM_caso_audit.md`. |
-| 2026-05-06 | **SPRINT 3 cerrado** | _(pendiente)_ | Validación cruzada completa (2/2): toolkit validado en 3 L5X de arquitectura distinta (CINTA Diatec custom, AQL Diatec legacy, CPPIM Amantrini moderno). HANDOFF antipatrón #2 cerrado con margen amplio. Caso paradigma del empalme validado en 2/3 (los Diatec); Amantrini requiere caso paradigma propio (input v0.4). |
+| 2026-05-06 | **SPRINT 3 cerrado** | `fa51141` | Validación cruzada completa (2/2): toolkit validado en 3 L5X de arquitectura distinta (CINTA Diatec custom, AQL Diatec legacy, CPPIM Amantrini moderno). HANDOFF antipatrón #2 cerrado con margen amplio. Caso paradigma del empalme validado en 2/3 (los Diatec); Amantrini requiere caso paradigma propio (input v0.4). |
+| 2026-05-06 | C.1+C.2 (Sprint 4) | `ee1d051` | `rockwell_comprehender/smells.py` con `detect_smells(project)`. **15 reglas activas**: C.1 estructurales (5: otl_otu_unpaired, aoi_too_many_params, routine_empty/trivial, program_unscheduled, tag_scope_mismatch); C.2 best practices Rockwell (10: motion_no_error_check, aoi_naming_lowercase, program_disabled, aoi_not_invoked, routine_jsr_self, st_transitional_no_oneshot, tag_naming_legacy_lowercase, safety_program_naming, task_without_programs, program_main_routine_missing). Wrapper `project.detect_smells()`. Reportes generados en `docs/Análisis/<L5X>_smells.md`: CINTA 130 smells (29K chars), AQL 230 smells (53K), CPPIM 755 smells (177K). Stack mínimo (DT-008) preservado. |
+| 2026-05-06 | **SPRINT 4 cerrado** | _(pendiente)_ | Asesor proactivo completo (2/2): toolkit pasa de "responde lo que pregunto" a "sugiere lo que debo revisar". 15 reglas activas, 1115 smells totales detectados a través del parque (130+230+755), distribuidos en 3 categorías (high/medium/low) con reportes Markdown navegables por L5X. |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 
