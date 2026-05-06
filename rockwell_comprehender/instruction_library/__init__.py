@@ -20,18 +20,19 @@ Uso:
     # O vía Project:
     project.get_instruction_metadata("CROUT")
 
-Catálogo v0.3.x (31 instrucciones):
+Catálogo v0.3.x (38 entries: 31 instrucciones + 7 constructos ST):
 - Safety: CROUT, DCI_STOP, DCI_STOP_TEST_LOCK
 - Motion: MAJ, MAG, MAS, MAH, MAOC, MAM, MSO, MSF, MAFR, MASR, MAPC, MAR, MCCP, MCSV
 - Logic (bit): XIC, XIO, OTE, OTL, OTU, ONS
 - Data movement: MOV, COP, CPS
 - Timer: TON
 - Comparator: EQU, NEQ, GRT, LES
+- ST construct: IF, CASE, FOR, WHILE, REPEAT, ASSIGN, FUNC_CALL
 
 Fuentes:
 - Rockwell pub 1756-RM095 (GuardLogix Safety Instructions)
 - Rockwell pub MOTION-RM002 (Logix 5000 Motion Instructions)
-- Rockwell pub 1756-RM003 (General Instructions)
+- Rockwell pub 1756-RM003 (General Instructions, cap 24 = ST language)
 """
 
 from __future__ import annotations
@@ -1255,7 +1256,239 @@ _LES = InstructionMetadata(
 )
 
 
-# Catálogo público (orden curado: safety, motion, logic, data movement, timer, comparator)
+# ──────────────────────────────────────────────────────────────────────
+# Structured Text constructs — pub 1756-RM003 cap 24
+# Curados via NotebookLM batch (2026-05-06) — A.2 Sprint 2.
+#
+# A diferencia de instrucciones (MOV, EQU, MAJ), los constructos ST son
+# elementos del lenguaje de programación. Se documentan aquí por valor
+# referencial (qué semántica tiene IF / CASE / FOR en el corpus), no
+# para procesamiento por el tracer — el st_tokenizer trata IF/CASE/FOR
+# como keywords e ignora su matching con OPERATOR_TABLE.
+#
+# Categoría: "st_construct". Los pins describen elementos sintácticos
+# (condition, body, count, etc.) en lugar de operandos productivos.
+# ──────────────────────────────────────────────────────────────────────
+
+
+_ST_IF = InstructionMetadata(
+    name="IF",
+    full_name="IF-THEN-ELSIF-ELSE Conditional Branch",
+    category="st_construct",
+    summary=(
+        "Selecciona ejecución de bloques evaluando condiciones booleanas en "
+        "orden. Solo ejecuta el bloque de la PRIMERA condición verdadera; "
+        "el resto se ignora incondicionalmente."
+    ),
+    pins=[
+        InstructionPin("bool_expression", "input", "BOOL",
+                       "Expresión booleana o etiqueta BOOL — debe evaluar a TRUE/FALSE"),
+        InstructionPin("statement_block", "input", "STATEMENT",
+                       "Cuerpo: 1+ instrucciones/asignaciones a ejecutar si la condición es true"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 24 — Structured Text Programming, p.946"],
+    notes=(
+        "Sintaxis: `IF cond1 THEN <stmt>; [ELSIF cond2 THEN <stmt>;] [ELSE "
+        "<stmt>;] END_IF;`. Orden de evaluación lógica: NOT > AND > XOR > OR. "
+        "Sin short-circuit dentro de una expresión booleana compuesta. Anidamiento "
+        "permitido sin límite documentado. No genera fallos propios del constructo. "
+        "Puede contener instrucciones motion/timer pero requiere disciplina de "
+        "edge-trigger (ver FUNC_CALL gotcha)."
+    ),
+)
+
+
+_ST_CASE = InstructionMetadata(
+    name="CASE",
+    full_name="CASE-OF Numeric Selection",
+    category="st_construct",
+    summary=(
+        "Selecciona y ejecuta UN bloque basándose en valor de expresión numérica. "
+        "Análogo a switch/case en C. Sin fall-through automático — tras ejecutar "
+        "un caso, salta a END_CASE."
+    ),
+    pins=[
+        InstructionPin("numeric_expression", "input", "SINT|INT|DINT|REAL",
+                       "Expresión numérica a evaluar"),
+        InstructionPin("selector", "input", "literal|range",
+                       "Valor discreto (1:), lista (1,2,3:), o rango (1..5:)"),
+        InstructionPin("statement_block", "input", "STATEMENT",
+                       "Cuerpo del caso a ejecutar"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 24 — Structured Text Programming, p.940"],
+    notes=(
+        "Sintaxis: `CASE expr OF sel1: <stmt>; [selN: <stmt>;] [ELSE <stmt>;] "
+        "END_CASE;`. Gotcha REAL: comparación discreta de REAL es altamente "
+        "propensa a fallar por precisión float — preferir rangos `selA..selB:`. "
+        "REAL = NaN: no coincide con ningún selector estático → cae en cláusula "
+        "ELSE si existe, sino el constructo no produce efecto."
+    ),
+)
+
+
+_ST_FOR = InstructionMetadata(
+    name="FOR",
+    full_name="FOR-DO Counted Loop",
+    category="st_construct",
+    summary=(
+        "Bucle iterativo con contador automático incremental/decremental. Ejecuta "
+        "bloque un número determinado de veces dentro de un único scan."
+    ),
+    pins=[
+        InstructionPin("count", "both", "SINT|INT|DINT",
+                       "Tag contador (lectura+escritura por el constructo)"),
+        InstructionPin("initial_value", "input", "SINT|INT|DINT",
+                       "Valor inicial del contador"),
+        InstructionPin("final_value", "input", "SINT|INT|DINT",
+                       "Valor límite (inclusive) — sale del bucle cuando se sobrepasa"),
+        InstructionPin("increment", "input", "SINT|INT|DINT",
+                       "(opcional) Step por iteración. Default: 1"),
+        InstructionPin("statement_block", "input", "STATEMENT",
+                       "Cuerpo de la iteración"),
+    ],
+    fault_modes=[
+        InstructionFault(
+            "WatchdogTimeout",
+            "Fallo Mayor Tipo 6 Código 1 si el bucle excede el watchdog de la task — "
+            "el FOR retiene el scan e itera internamente"
+        ),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 24 — Structured Text Programming, p.942"],
+    notes=(
+        "Sintaxis: `FOR count := init TO final [BY step] DO <stmt>; [EXIT;] "
+        "END_FOR;`. Step negativo: bucle finaliza cuando index < final. EXIT "
+        "permite romper anticipadamente (usualmente condicionado por IF interno). "
+        "El controlador NO yields entre iteraciones — bucle largo bloquea otras "
+        "tasks/I/O updates."
+    ),
+)
+
+
+_ST_WHILE = InstructionMetadata(
+    name="WHILE",
+    full_name="WHILE-DO Pre-condition Loop",
+    category="st_construct",
+    summary=(
+        "Bucle pre-condicional. Evalúa condición ANTES de ejecutar; si false al "
+        "inicio, el cuerpo NO se ejecuta nunca. Repite mientras condición sea true."
+    ),
+    pins=[
+        InstructionPin("bool_expression", "input", "BOOL",
+                       "Condición de continuación — false termina el bucle"),
+        InstructionPin("statement_block", "input", "STATEMENT",
+                       "Cuerpo del bucle"),
+    ],
+    fault_modes=[
+        InstructionFault(
+            "WatchdogTimeout",
+            "Fallo Mayor Tipo 6 Código 1 si el cuerpo nunca altera bool_expression "
+            "(bucle infinito); el controlador se congela"
+        ),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 24 — Structured Text Programming, p.951"],
+    notes=(
+        "Sintaxis: `WHILE bool_expr DO <stmt>; [EXIT;] END_WHILE;`. Ideal para "
+        "recorridos de longitud no conocida a priori (ej. parsing de buffer hasta "
+        "delimitador). Si la condición es false al primer encuentro, el bloque NO "
+        "se ejecuta — diferencia clave con REPEAT."
+    ),
+)
+
+
+_ST_REPEAT = InstructionMetadata(
+    name="REPEAT",
+    full_name="REPEAT-UNTIL Post-condition Loop",
+    category="st_construct",
+    summary=(
+        "Bucle post-condicional. Ejecuta el cuerpo PRIMERO, luego evalúa "
+        "condición. El bloque se ejecuta SIEMPRE al menos 1 vez (a diferencia "
+        "de WHILE)."
+    ),
+    pins=[
+        InstructionPin("statement_block", "input", "STATEMENT",
+                       "Cuerpo del bucle (se ejecuta al menos 1 vez)"),
+        InstructionPin("bool_expression", "input", "BOOL",
+                       "Condición de SALIDA — true detiene el bucle"),
+    ],
+    fault_modes=[
+        InstructionFault(
+            "WatchdogTimeout",
+            "Fallo Mayor Tipo 6 Código 1 si la condición nunca se vuelve true"
+        ),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 24 — Structured Text Programming, p.949"],
+    notes=(
+        "Sintaxis: `REPEAT <stmt>; [EXIT;] UNTIL bool_expr END_REPEAT;`. Útil "
+        "para lógica donde un bloque procesa estado y reporta si terminó. La "
+        "iteración bloquea otros peldaños/líneas externas durante su ejecución."
+    ),
+)
+
+
+_ST_ASSIGN = InstructionMetadata(
+    name="ASSIGN",
+    full_name="Assignment Statement (:= operator)",
+    category="st_construct",
+    summary=(
+        "Asigna el valor resultante de una expresión a una etiqueta. Operador "
+        "`:=` retentivo (valor persiste); `[:=]` no retentivo (se resetea a 0 "
+        "cada RUN o paso SFC auto-reset)."
+    ),
+    pins=[
+        InstructionPin("tag", "output", "BOOL|SINT|INT|DINT|REAL|STRING",
+                       "Etiqueta de destino"),
+        InstructionPin("expression", "input", "literal|tag|expression",
+                       "Literal numérico/string, etiqueta, u operación algebraica"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 24 — Structured Text Programming, p.928-929"],
+    notes=(
+        "Sintaxis: retentiva `tag := expression;`, no retentiva `tag [:=] "
+        "expression;`. Punto y coma OBLIGATORIO. Gotcha I/O asíncronas: I/O "
+        "updates ocurren independientes del scan ST — referenciar un input "
+        "físico múltiples veces en una expresión puede leer valores distintos. "
+        "Recomendado: bufferizar a tag interno antes de usar. La no-retentiva "
+        "[:=] resetea a 0 al entrar en RUN o al abandonar paso SFC auto-reset. "
+        "Procesado por el tracer (operator='`:=`') con writes=(0,) y "
+        "sub-parsing del rhs como expresión (igual que CPT)."
+    ),
+)
+
+
+_ST_FUNC_CALL = InstructionMetadata(
+    name="FUNC_CALL",
+    full_name="Function/Procedure Call Statement",
+    category="st_construct",
+    summary=(
+        "Invocación de instrucción Logix (TON, COP, MAM, MOV, AOI, etc.) o "
+        "función inline (ABS, SQRT) desde código ST. Equivalente al uso del "
+        "bloque en RLL/FBD."
+    ),
+    pins=[
+        InstructionPin("instruction_or_func", "input", "MNEMONIC",
+                       "Nombre de la instrucción o función a invocar"),
+        InstructionPin("operand_list", "input", "tag|literal|expression",
+                       "Operandos en orden posicional según signature de la instrucción"),
+    ],
+    references=[
+        "Rockwell pub 1756-RM003 cap 24, p.936 (concepto general en ST)",
+        "Rockwell pub MOTION-RM002 p.350-353, 388 (uso específico Motion en ST)",
+    ],
+    notes=(
+        "Sintaxis instrucción: `instr(op1, op2, ...);`. Sintaxis función: "
+        "`tag := func_name(op1);`. **Gotcha CRÍTICO** transicional/motion: en "
+        "ST toda instrucción se comporta como si EnableIn fuese siempre true "
+        "cada scan. Instrucciones transicionales (MAM, MAS, MDO, ABL, etc.) "
+        "se RE-DISPARAN en TODOS los scans si están directas — deben empaquetarse "
+        "DENTRO de un IF disparado por One-Shot (OSR/OSRI). Diferencia clave "
+        "función vs instrucción: funciones devuelven un único valor (anidan en "
+        "expresiones, ej `var := ABS(x);`); instrucciones no devuelven valor "
+        "(son declaraciones independientes terminadas en `;` que mutan estructuras "
+        "pasadas por operando, ej bits .EN/.DN/.ER)."
+    ),
+)
+
+
+# Catálogo público (orden curado: safety, motion, logic, data movement, timer, comparator, st_construct)
 ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _CROUT,
     _DCI_STOP,
@@ -1288,6 +1521,13 @@ ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _NEQ,
     _GRT,
     _LES,
+    _ST_IF,
+    _ST_CASE,
+    _ST_FOR,
+    _ST_WHILE,
+    _ST_REPEAT,
+    _ST_ASSIGN,
+    _ST_FUNC_CALL,
 ]
 
 
