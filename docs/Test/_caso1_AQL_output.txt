@@ -1,0 +1,141 @@
+﻿
+==============================================================================
+CARGA · AQL
+==============================================================================
+OK | parque_l5x/AQL_M2.L5X
+target=CPU_AQL_M2 | processor=1756-L61 | sw=20.01
+modules=44 | tasks=4 | programs=7 | aois=24 | routines=29 | tags(top)=1401
+
+--- TURNO 1 | MAPA MENTAL + identify_domain('empalme') --------------------
+
+[Mapa Mental | primeras 40 lineas]
+# Mapa Mental — CPU_AQL_M2
+
+## Identidad
+
+- **Controlador:** `1756-L61` (firmware 20.12)
+- **Studio 5000:** v20.01
+- **Schema L5X:** 1.0
+- **Creado:** Fri Feb 15 12:45:57 2008
+- **Última modificación:** Tue Jan 28 19:53:44 2025
+- **Owner del export:** Windows 用户, hch
+- **Fecha de export:** Sun Dec 21 10:19:38 2025
+
+## Arquitectura física
+
+Topología: **44 módulos** organizados en árbol bajo el chassis local.
+
+### Topología (árbol parent → child)
+
+```
+Local  [1756-L61]
+  └─ Ethernet  [1756-ENBT/A]
+    └─ DEBO_TNT  [1794-AENT]
+      └─ MODULO_0_DI_DEBO_TNT  [1794-IB16/A]
+      └─ MODULO_1_DO_DEBO_TNT  [1794-OB16/A]
+      └─ ANALOG_DEBO_TNT  [1794-IE4XOE2/B]
+  └─ Sercos  [1756-M16SE]
+    └─ M9_507U1  [2094-BC02-M02]
+    └─ M10_508U1  [2094-BM01]
+    └─ M11_510U1  [2094-BM01]
+    └─ M12_509U1  [2094-BM01]
+    └─ M13_511U1  [2094-BMP5]
+    └─ M14_512U1  [2094-BM01]
+    └─ M15_513U1  [2094-BM01]
+    └─ M16_514U1  [2094-BM02]
+    └─ M1_501U1  [2094-BC02-M02]
+    └─ M2_502U1  [2094-BM02]
+    └─ M4_503U1  [2094-BM02]
+    └─ M3_504U1  [2094-BM01]
+    └─ M5_505U1  [2094-BMP5]
+    └─ M6_506U1  [2094-BMP5]
+
+[identify_domain('problema en empalme') | top 8]
+  1.00  aoi       CtcDiatecSplicer  kw=['ctc', 'splice', 'splicer']
+  1.00  aoi       CtcDiatecSplicerBuffer  kw=['ctc', 'splice', 'splicer']
+  0.80  aoi       DancerCorAndNewRadiusComputation  kw=['computation', 'dancer', 'newradius', 'radius']
+  0.80  aoi       FullSpeedSplicer  kw=['splice', 'splicer']
+  0.80  aoi       FullSpeedSplicer2  kw=['splice', 'splicer']
+  0.80  aoi       Full_Speed_Splicer  kw=['splice', 'splicer']
+  0.70  aoi       Axis_ObjectCIP  kw=['ctc']
+  0.70  aoi       RadiusComputation  kw=['computation', 'radius']
+
+--- TURNO 2 | AOIs core: CtcDiatecSplicer + Unwinder + DancerCorAndNewRadiusComputation 
+  [splice_aoi   ] CtcDiatecSplicer: params=38 | routines=['EnableInFalse', 'Logic']
+  [unwinder_aoi ] Unwinder: params=29 | routines=['Logic']
+  [dancer_aoi   ] DancerCorAndNewRadiusComputation: params=29 | routines=['Logic']
+  [radius_aoi   ] RadiusComputation: params=24 | routines=['Logic']
+
+[Invocaciones de los AOIs core]
+  CtcDiatecSplicer                           -> INSTANCIADO en 1
+      via AOIs/Unwinder/Routines/Logic
+  Unwinder                                   -> INSTANCIADO en 8
+      via AOIs/Full_Speed_Splicer/Routines/Logic
+      via Programs/Axis/Routines/Ax
+      via Programs/Debo_Tela/Routines/R00_Main
+  DancerCorAndNewRadiusComputation           -> INSTANCIADO en 1
+      via AOIs/Unwinder/Routines/Logic
+  RadiusComputation                          -> INSTANCIADO en 1
+      via AOIs/Unwinder/Routines/Logic
+
+--- TURNO 3 | TRACE CAUSAL · find_causal_path / writers / readers (v0.2) --
+
+[search 'Data.HmiNewDiameter']
+  AOIs/Unwinder/Routines/Logic :: …)[XIO(Data.HmiEnableDiameterSensor) DIV(Data.HmiNewDiameter,2,LocHmiNewRadius) 
+
+[v0.2 | writers_of('Data.ReelRadiusA')]
+  WRITE  loc=AOIs/Unwinder/Routines/Logic/Rung_24  op=RadiusComputation  operand=Data.ReelRadiusA(tag)
+
+[v0.2 | writers_of('Data.HmiNewDiameter')]
+  WRITE  loc=AOIs/Unwinder/Routines/Logic/Rung_11  op=MUL  operand=Data.HmiNewDiameter(tag)
+  WRITE  loc=AOIs/Unwinder/Routines/Logic/Rung_11  op=MUL  operand=Data.HmiNewDiameter(tag)
+  WRITE  loc=AOIs/Unwinder/Routines/Logic/Rung_30  op=MUL  operand=Data.HmiNewDiameter(tag)
+  WRITE  loc=AOIs/Unwinder/Routines/Logic/Rung_30  op=MUL  operand=Data.HmiNewDiameter(tag)
+
+[v0.2 | readers_of('Data.HmiNewDiameter')]
+  READ   loc=AOIs/Unwinder/Routines/Logic/Rung_11  op=DIV  operand=Data.HmiNewDiameter(tag)
+
+[v0.2 | find_causal_path('Data.ReelRadiusA' <- 'Data.HmiNewDiameter') depth=8]
+  PATH ENCONTRADO | 3 steps:
+   [0] -> LocNewRadius
+        via RadiusComputation en AOIs/Unwinder/Routines/Logic/Rung_24 (operand=Data.ReelRadiusA/tag)
+   [1] -> LocHmiNewRadius
+        via MOV en AOIs/Unwinder/Routines/Logic/Rung_30 (operand=LocNewRadius/tag)
+   [2] -> Data.HmiNewDiameter
+        via DIV en AOIs/Unwinder/Routines/Logic/Rung_11 (operand=LocHmiNewRadius/tag)
+
+[v0.2 | trace_back('Data.ReelRadiusA', depth=4)]
+Data.ReelRadiusA
+  AxA.AverageVelocity  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+  AxStart  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+    StartAcqLayer  <- via Unwinder@Programs/Axis/Routines/Ax/Rung_8
+    StartWaistband  <- via Unwinder@Programs/Axis/Routines/Ax/Rung_9
+  DancerPositionA  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+    I01040  <- via Unwinder@Programs/Axis/Routines/Ax/Rung_8
+    I03030  <- via Unwinder@Programs/Axis/Routines/Ax/Rung_9
+  Data.GearRatioA  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+    AxA.AverageVelocity  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+    AxStart  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+      StartAcqLayer  <- via Unwinder@Programs/Axis/Routines/Ax/Rung_8
+      StartWaistband  <- via Unwinder@Programs/Axis/Routines/Ax/Rung_9
+    DancerPositionA  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+      I01040  <- via Unwinder@Programs/Axis/Routines/Ax/Rung_8
+      I03030  <- via Unwinder@Programs/Axis/Routines/Ax/Rung_9
+    Data.HmiEnableDiameterSensor  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+    Data.HmiEnableRewinderA  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+  Data.HmiEnableDiameterSensor  <- via RadiusComputation@AOIs/Unwinder/Routines/Logic/Rung_24
+
+--- TURNO 4 | VEREDICTO ---------------------------------------------------
+AOIs core presentes: 3/3
+  - CtcDiatecSplicer: OK
+  - Unwinder: OK
+  - DancerCorAndNewRadiusComputation: OK
+
+identify_domain('empalme'): 13 hits, top conf=1.00
+writers_of('Data.ReelRadiusA'): 1 hits
+writers_of('Data.HmiNewDiameter'): 4 hits
+find_causal_path('Data.ReelRadiusA' <- 'Data.HmiNewDiameter'): PATH 3 steps
+
+VEREDICTO AQL: PASS - generaliza completamente
+
+[FIN DEL TEST]

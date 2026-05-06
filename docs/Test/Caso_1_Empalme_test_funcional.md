@@ -217,3 +217,98 @@ Si Hedi cierra v0.1 oficialmente con este resultado, el siguiente movimiento nat
 ---
 
 *Re-ejecución 2026-05-03 por Claude Code Opus 4.7 (1M context). Sesión limpia post-revert del desvío Ruflo. Stack mínimo per DT-008 mantenido — sin dependencias agregadas, sin frameworks externos, sin commits sin OK del owner.*
+
+---
+
+## Re-ejecución contra AQL_M2 — Validación cruzada (B.1, Sprint 3, 2026-05-06)
+
+**Contexto:** B.1 del plan ejecutable (sec 7.2 audit `05_*.md`). Objetivo: confirmar que el toolkit generaliza de CINTA (CompactLogix 1768-L43, AOIs con prefijo `AHT_`) a AQL (ControlLogix 1756-L61, AOIs Diatec legacy SIN prefijo) sin cambios de código.
+
+**Runner:** `_caso1_test_runner.py` parametrizado en B.1 — soporta `CINTA` y `AQL` via tabla `PROJECT_CONFIGS` que mapea identifiers análogos por L5X.
+
+**Comando ejecutado:**
+```powershell
+$env:PYTHONUTF8="1"; python docs/Test/_caso1_test_runner.py AQL
+```
+
+Output completo: [`docs/Test/_caso1_AQL_output.txt`](_caso1_AQL_output.txt).
+
+### Resultados por turno
+
+**Turno 1 — Mapa Mental + identify_domain:**
+- AQL identificado: `CPU_AQL_M2`, ControlLogix 1756-L61, Studio 5000 v20.01.
+- 44 modules, 24 AOIs, 7 programs, 29 routines, 1401 tags.
+- `identify_domain("problema en empalme")` → **13 hits**, top confidence **1.00** (`CtcDiatecSplicer`, `CtcDiatecSplicerBuffer`); 0.80 (`DancerCorAndNewRadiusComputation`, `FullSpeedSplicer`); 0.70 (`RadiusComputation`).
+
+**Turno 2 — AOIs core presentes:**
+
+| AOI esperado | AQL | Status |
+|---|---|:---:|
+| `CtcDiatecSplicer` | 38 params, routines `EnableInFalse + Logic` | ✅ |
+| `Unwinder` (legacy, sin AHT_) | 29 params, routine `Logic` | ✅ |
+| `DancerCorAndNewRadiusComputation` | 29 params, routine `Logic` | ✅ |
+| `RadiusComputation` | 24 params, routine `Logic` | ✅ |
+
+Invocaciones detectadas:
+- `Unwinder` → 8 instancias (`Full_Speed_Splicer/Logic`, `Programs/Axis/Routines/Ax`, `Programs/Debo_Tela/Routines/R00_Main`, ...)
+- `CtcDiatecSplicer` → 1 (vía `AOIs/Unwinder/Logic`)
+- `DancerCorAndNewRadiusComputation` → 1 (vía `AOIs/Unwinder/Logic`)
+- `RadiusComputation` → 1 (vía `AOIs/Unwinder/Logic`)
+
+**Turno 3 — Trace causal v0.2:**
+
+`writers_of("Data.ReelRadiusA")`: 1 hit — `AOIs/Unwinder/Routines/Logic/Rung_24` op `RadiusComputation` (invocación AOI con backing tag).
+
+`writers_of("Data.HmiNewDiameter")`: 4 hits — todos `MUL` en `AOIs/Unwinder/Routines/Logic` rungs 11 y 30. Esto sugiere que en AQL el HmiNewDiameter es **escribible desde el código** (no solo leído del HMI), patrón distinto a CINTA.
+
+`find_causal_path("Data.ReelRadiusA" ← "Data.HmiNewDiameter", depth=8)`:
+
+```
+PATH ENCONTRADO | 3 steps:
+ [0] -> LocNewRadius
+      via RadiusComputation en AOIs/Unwinder/Logic/Rung_24 (operand=Data.ReelRadiusA)
+ [1] -> LocHmiNewRadius
+      via MOV en AOIs/Unwinder/Logic/Rung_30 (operand=LocNewRadius)
+ [2] -> Data.HmiNewDiameter
+      via DIV en AOIs/Unwinder/Logic/Rung_11 (operand=LocHmiNewRadius)
+```
+
+**Cadena análoga a CINTA**, mismo número de steps, mismo patrón estructural:
+```
+HmiNewDiameter --DIV(/2)--> LocHmiNewRadius --MOV--> LocNewRadius --RadiusComputation--> ReelRadiusA
+```
+
+`trace_back("Data.ReelRadiusA", depth=4)`: árbol de antecedentes consistente. El AOI `RadiusComputation` recibe inputs adicionales en AQL (`AxA.AverageVelocity`, `DancerPositionA`, `Data.GearRatioA`, `Data.HmiEnableDiameterSensor`, `Data.HmiEnableRewinderA`) que en CINTA no aparecían — sugiere que la versión Diatec legacy de AQL es más rica que la AHT_ de CINTA.
+
+### Veredicto AQL_M2
+
+**✅ PASS — generaliza completamente** (4/4 criterios):
+
+| Criterio | Resultado |
+|---|---|
+| AOIs core presentes (3/3) | ✅ 3/3 |
+| `identify_domain("empalme")` confidence ≥ 0.7 en top hit | ✅ 1.00 |
+| `writers_of(reel_radius)` con resultados | ✅ 1 hit (cross-AOI invoke) |
+| `find_causal_path` resuelve cadena | ✅ 3 steps |
+
+### Diferencias notables CINTA vs AQL
+
+| Aspecto | CINTA | AQL |
+|---|---|---|
+| Convención AOIs | Prefijo `AHT_` (custom integrador) | Sin prefijo (Diatec legacy) |
+| Procesador | CompactLogix 1768-L43 | ControlLogix 1756-L61 |
+| Nro AOIs | 26 | 24 |
+| Nro tags top | 209 | 1401 |
+| `Data.HmiNewDiameter` | Solo lectura (set por HMI) | Escribible desde código (MUL en `Unwinder/Logic`) |
+| Inputs de RadiusComputation | Pocos | Más ricos (AverageVelocity, GearRatio, EnableDiameterSensor) |
+| Steps en find_causal_path | 3 (validado 2026-05-03) | 3 (validado 2026-05-06) |
+
+### Conclusión B.1
+
+El toolkit `rockwell_comprehender` v0.3.x **generaliza estructuralmente** entre dos arquitecturas distintas (CompactLogix Diatec custom vs ControlLogix Diatec legacy) sin cambios de código. La cadena causal del caso empalme se reconstruye en 3 steps en ambos L5X. Esto cierra el HANDOFF antipatrón #2 ("nunca declarar validado en un solo caso") con margen — el toolkit ahora está validado en 2 L5X de arquitectura distinta para el caso paradigma.
+
+`identify_domain` (A.3) demuestra utilidad práctica: con la misma query en lenguaje natural localiza los AOIs relevantes en ambos proyectos sin necesidad de conocer los names exactos.
+
+---
+
+*Re-ejecución 2026-05-06 por Claude Code Opus 4.7 (1M context) — Sprint Batch Mode activo. B.1 cerrada con runner parametrizable + sección de validación cruzada documentada.*
