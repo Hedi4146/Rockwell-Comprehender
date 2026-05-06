@@ -66,7 +66,7 @@ dependencies = ["openpyxl"]  # única dependencia más allá de stdlib
 | #1 | **Lectura estructural L5X** | 85% | **95%** | Loader + model maduros. Validado contra CINTA (1.2 MB v20.01), AQL (2.9 MB v20.12), CPPIM (~15 MB v33). 12-44 modules, 26-57 AOIs, 17-47 routines parseados sin fallo |
 | #2 | **Localizar por dominio funcional** | 70% | **80%** | `patterns.py` Capa C detecta zonas (UWM01, MDP01, etc.), categorías de drives, dual-channel safety (CROUT/DCS_*), roles HMI. `mapamental` infiere función de ejes vía tag/AOI naming |
 | #3 | **Interpretar instrucciones individuales** | 60% | **75%** | `instruction_library` con 17 entries: 3 safety (CROUT, DCI_STOP, DCI_STOP_TEST_LOCK) + 14 motion (MAJ/MAG/MAS/MAH/MAOC/MAM/MSO/MSF/MAFR/MASR/MAPC/MAR/MCCP/MCSV). **Cubre 100% del motion del parque actual.** Falta general logix RLL (XIC/XIO/OTE/MOV/TON/EQU/etc.) |
-| #4 | **Semántica composicional motion** | 50% | **55%** | Átomos curados (cada motion instr individual), pero **composiciones no**. Ejemplo: "MAJ + MAS encadenado = transición controlada" no es detectable. Plan v2 (revertido) Phase 3 apuntaba a 75% |
+| #4 | **Semántica composicional motion** | 50% | **90%** | ✅ Cerrada 2026-05-06 vía `motion_patterns.py` (Sprint 7 v0.4). 8 patterns codificados; 7 validados en parque (CINTA 21 + AQL 43 + CPPIM 45 = 109 matches). Detecta `splice_transition` (MAJ→MAS→MAJ), `gear_chain`, `servo_on_off_cycle`, `homing_sequence`, `axis_lifecycle` (≥3 de {MAH,MAJ,MAM,MAS}), `output_cam_pair` (MAOC+MDOC), `registration_full` (MASR+MAFR), `cam_profile_mgmt` (MCCP+MCSV). |
 | #5 | **Trazar dependencias** | 75% | **92%** | `tracer.py` implementa: `writers_of`, `readers_of`, `references_of`, `trace_back` (BFS hacia atrás), `trace_forward`, `find_causal_path`. Tokenizer RLL + ST. **Validado contra caso paradigma 2026-05-03** (cross-AOI traversal de find_causal_path funcional en 3 steps contra CINTA — ver Caso #1) |
 | #6 | **Roles de tags** | 70% | **80%** | Capa C detecta `HMI_*`, `*_Setpoint`, `*_Limit`, `*_Enable*`, `*_Reset`, `*_Cmd`. Mapeo eje→AOI principal. UDTs estructurados por entidad (`M*Data`) reconocidos |
 | #7 | **Estructura programa (semántica funcional)** | 80% | **85%** | Mapa Mental describe programs + routines + main_routine + AOIs + UDTs por programa. Inferencia per-program (qué tipo de role tiene cada Program: motion_control / safety / sequence_logic / etc.) NO está automatizada |
@@ -287,9 +287,10 @@ SPRINT 2 · Universalidad           [██]   2/2           (~3-4 hr)   CERRADO
 SPRINT 3 · Validación cruzada      [██]   2/2           (~3 hr)     CERRADO 2026-05-06
 SPRINT 4 · Asesor proactivo        [██]   2/2           (~5-6 hr)   CERRADO 2026-05-06
 SPRINT 5 · Visual operativo        [██]   2/2           (~4-5 hr)   CERRADO 2026-05-06
+SPRINT 7 · v0.4 motion patterns    [█]    1/1           (~2 hr)     CERRADO 2026-05-06
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [████████████] 100% (12/12)  PLAN COMPLETO 2026-05-06
+GLOBAL                             [████████████] 100% (13/13)  PLAN + v0.4 2026-05-06
 ```
 
 > Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
@@ -452,6 +453,23 @@ GLOBAL                             [████████████] 100% (
 
 ---
 
+#### SPRINT 7 · v0.4 — Motion patterns nivel-2 (cierra capacidad #4)
+
+- **Objetivo:** cerrar la capacidad #4 del Vision (Semántica composicional motion) que estaba en 55%. Convertir el reconocimiento de instrucciones individuales (átomos: MAJ/MAS/MAH/...) en reconocimiento de **composiciones** que representan funciones semánticas de mayor nivel.
+- **Dependencias:** Sprint 1 cerrado (necesita instruction_library con motion ops curadas) + análisis empírico previo del parque.
+- **Estimación total:** ~2 hr (1 commit consolidado).
+- **Entregable de cierre:** módulo `motion_patterns.py` con detectores; cobertura ≥75% en al menos 1 L5X; capacidad #4 sube de 55% → 85%+.
+
+**`[x]` v0.4.1 — feat(motion): patterns nivel-2 (8 detectores)** · ~2 hr · cerrada 2026-05-06
+- Análisis empírico previo del parque: pares más frecuentes (MAJ→MAS, MAG→MAG, MSO→MSF, MASR→MAFR), sets recurrentes ({MAH,MAJ,MAM,MAS}, {MAOC,MDOC}, {MAFR,MASR,MSF,MSO}).
+- Output: módulo `rockwell_comprehender/motion_patterns.py` con 8 detectores: `splice_transition`, `gear_chain`, `servo_on_off_cycle`, `homing_sequence`, `axis_lifecycle`, `output_cam_pair`, `registration_full`, `cam_profile_mgmt`. API: `MotionPattern`, `MotionPatternMatch`, `detect_motion_patterns(project)`, `motion_patterns_to_markdown(p, matches)`.
+- Wrapper: `project.detect_motion_patterns()`.
+- Validación: CINTA 21 matches, AQL 43, CPPIM 45 (109 totales). 7/8 patterns activados al menos 1 vez (`cam_profile_mgmt` codificado pero no usado en parque actual). Reportes Markdown en `docs/Análisis/<L5X>_motion_patterns.md`.
+- Commit: `feat(motion): motion patterns nivel-2 (8 detectores) — cierra capacidad #4`
+- Constraints: stack mínimo (DT-008) — solo stdlib + tokenize_rll/tokenize_st + estructuras del modelo. Sin dependencias agregadas.
+
+---
+
 #### SPRINT 6 · Postponed — emergente N2→N3 (FASE E original)
 
 > NO construir hasta cumplir Vision sec 7 *"Futuro Nivel 3 — solo si el uso valida la inversión"*. Triggers documentados; sin trabajo activo.
@@ -478,7 +496,9 @@ GLOBAL                             [████████████] 100% (
 | 2026-05-06 | D.1 (Sprint 5) | `f369046` | `_render_xref_summary` extendido en `reporters/html_explorer.py` con bloque colapsable de `trace_back` (depth=3, max_branches=8) renderizado como árbol HTML anidado. Nueva función `_render_trace_tree` para visualización recursiva de TraceNode. Validado: HTMLs CINTA (253K bytes) + AQL (583K bytes) generados sin error con `trace-back-details`, `trace-tree`, header xref correctos. Sin libs JS externas. |
 | 2026-05-06 | D.2 (Sprint 5) | `12bc7e8` | Nuevo módulo `rockwell_comprehender/reporters/tdr_html.py` con `to_tdr_html(project, output_path)`. TDR auto-contenido con 5 secciones: Resumen ejecutivo (KPIs), Mapa Mental (MD→HTML), Smells & Best Practices (top reglas, top 10 high), Casos de dominio (5 ejemplos identify_domain), Recomendaciones del asesor (síntesis automática por severidad). CSS+JS inline, apto para Print to PDF. Validado contra CINTA (22K bytes) + AQL (26K bytes), 5/5 secciones presentes. |
 | 2026-05-06 | **SPRINT 5 cerrado** | _(pendiente)_ | Visual operativo completo (2/2): explorer HTML enriquecido con trace_back embebido + TDR ejecutivo auto-contenido para print-to-PDF. Cierra el plan ejecutable post-v0.1 (12/12 = 100%). |
-| 2026-05-06 | **PLAN COMPLETO** | _(pendiente)_ | Los 5 sprints del plan ejecutable post-v0.1 cerrados en 1 sesión bajo Sprint Batch Mode. 12/12 subtasks completadas. Toolkit `rockwell_comprehender` evolucionado de v0.3.x → v0.4 funcional: `build_xref` cubre RLL+ST, instruction_library 38 entries (7 categorías), domain_lexicon operativo, smells.py con 15 reglas, explorer enriquecido, TDR HTML ejecutivo. Validado contra 3 L5X (HANDOFF antipatrón #2 con margen amplio). Stack mínimo (DT-008) preservado: 0 dependencias agregadas. |
+| 2026-05-06 | **PLAN COMPLETO** | `6be67a3` | Los 5 sprints del plan ejecutable post-v0.1 cerrados en 1 sesión bajo Sprint Batch Mode. 12/12 subtasks completadas. Toolkit `rockwell_comprehender` evolucionado de v0.3.x → v0.4 funcional: `build_xref` cubre RLL+ST, instruction_library 38 entries (7 categorías), domain_lexicon operativo, smells.py con 15 reglas, explorer enriquecido, TDR HTML ejecutivo. Validado contra 3 L5X (HANDOFF antipatrón #2 con margen amplio). Stack mínimo (DT-008) preservado: 0 dependencias agregadas. |
+| 2026-05-06 | v0.4.1 (Sprint 7) | `c6bf318` | `motion_patterns.py` con 8 detectores de composiciones motion: `splice_transition` (MAJ→MAS→MAJ), `gear_chain` (MAG con master), `servo_on_off_cycle` (MSO+MSF), `homing_sequence` (MAH±lifecycle), `axis_lifecycle` (≥3 de {MAH,MAJ,MAM,MAS}), `output_cam_pair` (MAOC+MDOC), `registration_full` (MASR+MAFR), `cam_profile_mgmt` (MCCP+MCSV). 109 matches totales en parque (CINTA 21 + AQL 43 + CPPIM 45). 7/8 patterns activados (cam_profile_mgmt codificado pero no usado en parque actual). Reportes Markdown por L5X. Wrapper `project.detect_motion_patterns()`. Cierra capacidad #4 del Vision: 55% → 90%. |
+| 2026-05-06 | **SPRINT 7 cerrado / v0.4** | _(pendiente)_ | v0.4 cerrado con un único deliverable: capacidad #4 elevada de 55% → 90%. Stack mínimo (DT-008) preservado: 0 dependencias agregadas. Total proyecto: 13/13 subtasks completadas a través de 6 sprints (5 del plan original + Sprint 7 v0.4). |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 

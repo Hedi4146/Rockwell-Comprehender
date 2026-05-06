@@ -167,6 +167,9 @@ Si el sistema resuelve este caso bien, está logrado.
 - ✅ Sin guía manual, identifico que el caso de empalme involucra dominio "splice + unwinder" — **cumplido 2026-05-06 vía `domain_lexicon.identify_domain()`** (Sprint 2 A.3). `project.identify_domain("problema en empalme")` en CINTA retorna `AHT_CtcSplicer` (1.00), `AHT_DancerCorAndNewRadiusComputation` (0.80), `AHT_Unwinder` (0.70) en top hits. Generaliza a AQL_M2 (HANDOFF antipatrón #2 cumplido).
 - ⚠️ Genero la cadena causal en 1-2 turnos con confianza alta — capacidad técnica disponible (`find_causal_path` cross-AOI del tracer v0.2, validado en Caso #1 empalme 2026-05-03 en 3 turnos efectivos). Pendiente: integrar `identify_domain` + `find_causal_path` en flujo conversacional explícito de "1-2 turnos" — task no en plan actual, candidata a Discovered si owner pide más automatización.
 
+**v0.4 logrado cuando** _(agregado 2026-05-06 al cerrar v0.4):_
+- ✅ Detecto **composiciones motion nivel-2** ("MAJ→MAS encadenado = transición de empalme estilo Diatec", "MAG con master = gear chain", "MAH+MAJ+MAM+MAS = axis lifecycle manager") sin necesidad de inspección manual de cada rung — **cumplido 2026-05-06 vía `motion_patterns.detect_motion_patterns()`** (Sprint 7 v0.4). 8 patterns codificados (`splice_transition`, `gear_chain`, `servo_on_off_cycle`, `homing_sequence`, `axis_lifecycle`, `output_cam_pair`, `registration_full`, `cam_profile_mgmt`). Validado en 3 L5X: CINTA 21 matches, AQL 43, CPPIM 45 (109 totales). 7/8 patterns activados en parque actual; `cam_profile_mgmt` codificado pero sin uso en estos proyectos. Cierra capacidad #4 del Vision (estaba en 55%).
+
 **Nivel 2 logrado cuando:**
 - Ejecuto análisis sobre archivos del parque sin que se suban manualmente
 - Múltiples sesiones de Claude Code mantienen continuidad del análisis
