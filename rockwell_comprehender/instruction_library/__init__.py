@@ -20,9 +20,13 @@ Uso:
     # O vía Project:
     project.get_instruction_metadata("CROUT")
 
-Catálogo v0.3.x (17 instrucciones):
+Catálogo v0.3.x (31 instrucciones):
 - Safety: CROUT, DCI_STOP, DCI_STOP_TEST_LOCK
 - Motion: MAJ, MAG, MAS, MAH, MAOC, MAM, MSO, MSF, MAFR, MASR, MAPC, MAR, MCCP, MCSV
+- Logic (bit): XIC, XIO, OTE, OTL, OTU, ONS
+- Data movement: MOV, COP, CPS
+- Timer: TON
+- Comparator: EQU, NEQ, GRT, LES
 
 Fuentes:
 - Rockwell pub 1756-RM095 (GuardLogix Safety Instructions)
@@ -839,7 +843,419 @@ _MCSV = InstructionMetadata(
 )
 
 
-# Catálogo público (orden curado: safety primero, después motion)
+# ──────────────────────────────────────────────────────────────────────
+# Logic (bit instructions) — pub 1756-RM003 cap 2
+# Curadas vía NotebookLM batch (2026-05-05) — A.1.1 Sprint 1.
+# ──────────────────────────────────────────────────────────────────────
+
+
+_XIC = InstructionMetadata(
+    name="XIC",
+    full_name="Examine If Closed",
+    category="logic",
+    summary=(
+        "Examina un bit; si está en estado verdadero (1) la condición de "
+        "salida del rung se establece en verdadero. Instrucción de solo "
+        "lectura — nunca modifica el bit referenciado."
+    ),
+    pins=[
+        InstructionPin("Data Bit", "input", "BOOL",
+                       "Etiqueta del bit a probar (closed = 1 = activo)"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 2 — Bit Instructions, p.76"],
+    notes=(
+        "Comportamiento en false-rung: propaga la condición falsa sin alterar "
+        "el bit. Si el operando es referencia indirecta a array y el índice "
+        "está fuera de rango, puede generar fallo mayor/menor de indexación."
+    ),
+)
+
+
+_XIO = InstructionMetadata(
+    name="XIO",
+    full_name="Examine If Open",
+    category="logic",
+    summary=(
+        "Examina un bit; si está en estado falso (0) la condición de salida "
+        "del rung se establece en verdadero. Instrucción de solo lectura — "
+        "complemento lógico de XIC."
+    ),
+    pins=[
+        InstructionPin("Data Bit", "input", "BOOL",
+                       "Etiqueta del bit a probar (open = 0 = inactivo)"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 2 — Bit Instructions, p.78"],
+    notes=(
+        "Comportamiento en false-rung: igual que XIC, propaga la condición "
+        "falsa sin alterar el bit. Posibles fallos de indexación si se usa "
+        "con arrays."
+    ),
+)
+
+
+_OTE = InstructionMetadata(
+    name="OTE",
+    full_name="Output Energize",
+    category="logic",
+    summary=(
+        "Activa (1) o desactiva (0) un bit en función exclusiva de la "
+        "condición de entrada del rung. Instrucción NO retentiva — pierde "
+        "estado al cambiar a Program mode o tras pérdida de energía."
+    ),
+    pins=[
+        InstructionPin("Data Bit", "output", "BOOL",
+                       "Etiqueta del bit que será modificado por el rung"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 2 — Bit Instructions, p.95"],
+    notes=(
+        "Comportamiento en false-rung: fuerza activamente el bit a 0 (no es "
+        "inacción — es write a 0). A diferencia de OTL/OTU, no requiere "
+        "instrucción complementaria para apagarlo: la pérdida de la "
+        "condición verdadera del rung apaga el bit automáticamente."
+    ),
+)
+
+
+_OTL = InstructionMetadata(
+    name="OTL",
+    full_name="Output Latch",
+    category="logic",
+    summary=(
+        "Enclava (fija a 1) un bit cuando el rung es verdadero y lo mantiene "
+        "indefinidamente. Instrucción RETENTIVA — el bit persiste a través "
+        "de ciclos power-cycle y cambios a Program mode."
+    ),
+    pins=[
+        InstructionPin("Data Bit", "output", "BOOL",
+                       "Etiqueta del bit a enclavar a 1"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 2 — Bit Instructions, p.97"],
+    notes=(
+        "Comportamiento en false-rung: NO realiza acción (no toca el bit, no "
+        "lo apaga). Requiere estrictamente una instrucción OTU apuntando al "
+        "mismo bit para apagarlo. En CompactLogix 5380/5480 / ControlLogix "
+        "5580 / GuardLogix nuevos: si operando es array indirecto con "
+        "subíndice fuera de rango, no genera fallo cuando el rung es falso "
+        "(evaluación silenciosa)."
+    ),
+)
+
+
+_OTU = InstructionMetadata(
+    name="OTU",
+    full_name="Output Unlatch",
+    category="logic",
+    summary=(
+        "Desenclava (borra a 0) un bit cuando el rung es verdadero. "
+        "Instrucción complementaria a OTL — su única acción es forzar el "
+        "bit a 0."
+    ),
+    pins=[
+        InstructionPin("Data Bit", "output", "BOOL",
+                       "Etiqueta del bit a desenclavar a 0"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 2 — Bit Instructions, p.99"],
+    notes=(
+        "Comportamiento en false-rung: NO realiza acción (mantiene el bit "
+        "intacto sea cual sea su estado). Se usa típicamente para resetear "
+        "bits previamente enclavados por OTL en lógica de start/stop "
+        "retentiva."
+    ),
+)
+
+
+# ──────────────────────────────────────────────────────────────────────
+# Data movement + Timer + One-Shot — pub 1756-RM003 cap 2/3/7/8
+# Curadas vía NotebookLM batch (2026-05-05) — A.1.2 Sprint 1.
+# ──────────────────────────────────────────────────────────────────────
+
+
+_MOV = InstructionMetadata(
+    name="MOV",
+    full_name="Move",
+    category="data movement",
+    summary=(
+        "Copia el valor del operando Source al operando Dest. El valor de "
+        "Source permanece sin cambios. Aplica conversión de tipo automática "
+        "si los datatypes difieren — usar con precaución (truncamiento o "
+        "redondeo posibles)."
+    ),
+    pins=[
+        InstructionPin("Source", "input", "SINT|INT|DINT|LINT|REAL|LREAL|STRING",
+                       "Valor a mover (inmediato o etiqueta)"),
+        InstructionPin("Dest", "output", "SINT|INT|DINT|LINT|REAL|LREAL|STRING",
+                       "Etiqueta donde se almacena el resultado"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 7 — Move/Logical Instructions, p.435"],
+    notes=(
+        "Recomendado: Source y Dest del mismo datatype para evitar conversiones "
+        "implícitas. STRING: si Source.LEN > SIZE(Dest.DATA), trunca y setea "
+        "S:V (overflow). Posible fallo de indexación si se usa array indirecto "
+        "fuera de rango."
+    ),
+)
+
+
+_COP = InstructionMetadata(
+    name="COP",
+    full_name="Copy File",
+    category="data movement",
+    summary=(
+        "Copia byte a byte un bloque de memoria contigua de Source a Dest. "
+        "No realiza conversiones de tipo. Asíncrona — interrumpible por "
+        "tareas de mayor prioridad."
+    ),
+    pins=[
+        InstructionPin("Source", "input", "SINT|INT|DINT|LINT|REAL|STRING|UDT",
+                       "Elemento inicial desde el cual copiar (etiqueta/array)"),
+        InstructionPin("Dest", "output", "SINT|INT|DINT|LINT|REAL|STRING|UDT",
+                       "Elemento inicial que será sobrescrito"),
+        InstructionPin("Length", "input", "DINT",
+                       "Número de elementos del DESTINO a copiar (no bytes)"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 8 — Array (File)/Misc Instructions, p.502"],
+    notes=(
+        "Asíncrona/interrumpible: durante la ejecución, otras tareas pueden "
+        "alterar el contenido de Source. Solo recomendada cuando los datos "
+        "Source no cambian abruptamente desde otras tareas o E/S. Bytes "
+        "copiados limitados al menor de: (Length × bytes_dest_elem), "
+        "tamaño_total_dest, tamaño_total_source. Para buffers de comunicación "
+        "o mapeo I/O, preferir CPS."
+    ),
+)
+
+
+_CPS = InstructionMetadata(
+    name="CPS",
+    full_name="Synchronous Copy File",
+    category="data movement",
+    summary=(
+        "Copia byte a byte idéntica a COP, pero sincrónica e ininterrumpible. "
+        "Garantiza que la copia ocurre como operación atómica respecto a "
+        "otras tareas e I/O."
+    ),
+    pins=[
+        InstructionPin("Source", "input", "SINT|INT|DINT|LINT|REAL|STRING|UDT",
+                       "Elemento inicial desde el cual copiar"),
+        InstructionPin("Dest", "output", "SINT|INT|DINT|LINT|REAL|STRING|UDT",
+                       "Elemento inicial que será sobrescrito"),
+        InstructionPin("Length", "input", "DINT",
+                       "Número de elementos del DESTINO a copiar"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 8 — Array (File)/Misc Instructions, p.502"],
+    notes=(
+        "Diferencia clave vs COP: tareas del sistema o actualizaciones I/O "
+        "que intenten interrumpir se retrasan hasta que CPS termine. Uso "
+        "obligatorio para: buffers DeviceNet/EtherNet/IP, mapeo I/O, "
+        "snapshot consistente de datos compartidos. Costo: bloquea otras "
+        "actividades del controlador durante la copia — usar para buffers "
+        "pequeños/críticos, no para arrays masivos."
+    ),
+)
+
+
+_TON = InstructionMetadata(
+    name="TON",
+    full_name="Timer On Delay",
+    category="timer",
+    summary=(
+        "Temporizador no retentivo. Acumula tiempo mientras la condición "
+        "del rung sea verdadera. Activa .DN cuando .ACC ≥ .PRE. Al hacerse "
+        "falso el rung, .ACC/.EN/.TT/.DN se resetean a 0."
+    ),
+    pins=[
+        InstructionPin("Timer", "both", "TIMER",
+                       "Estructura de control (.EN/.TT/.DN/.PRE/.ACC)"),
+        InstructionPin("Preset", "input", "DINT",
+                       "Tiempo objetivo en milisegundos (.PRE)"),
+        InstructionPin("Accum", "output", "DINT",
+                       "Tiempo acumulado en ms desde habilitación (.ACC)"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 3 — Timer/Counter Instructions, p.143"],
+    notes=(
+        "Bits de la estructura TIMER: .EN (Enable, true cuando rung true), "
+        ".TT (Timer Timing, true cuando .EN true y .ACC < .PRE), .DN (Done, "
+        "true cuando .ACC ≥ .PRE). Base de tiempo fija: 1 ms. La instrucción "
+        "calcula delta de tiempo desde el último scan true — no bloquea ni "
+        "interrumpe tasks. Comportamiento NO retentivo: rung false reinicia "
+        "todo. Para retentivo usar RTO."
+    ),
+)
+
+
+_ONS = InstructionMetadata(
+    name="ONS",
+    full_name="One Shot",
+    category="logic",
+    summary=(
+        "Genera un pulso true durante exactamente un ciclo de scan cuando "
+        "la condición del rung pasa de false a true (rising edge). "
+        "Exclusiva de Ladder Diagram."
+    ),
+    pins=[
+        InstructionPin("Storage Bit", "both", "BOOL",
+                       "Bit que retiene el estado del rung del scan anterior "
+                       "(read+write por la instrucción)"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 2 — Bit Instructions, p.80"],
+    notes=(
+        "Rising-edge detection: evalúa true SOLO cuando rung_in es true Y "
+        "Storage Bit es false. Tras evaluación, guarda el estado actual en "
+        "Storage Bit. Restricción: exclusiva de Ladder — para ST/FBD usar "
+        "OSF/OSR/OSFI/OSRI. Gotcha crítico: si Storage Bit se sobrescribe "
+        "desde otra instrucción, HMI o tarea concurrente, la detección de "
+        "edge se corrompe y produce comportamiento errático. Casos típicos: "
+        "disparar cálculos one-shot, incrementar contadores, capturar "
+        "snapshots sin re-ejecución por scan."
+    ),
+)
+
+
+# ──────────────────────────────────────────────────────────────────────
+# Comparators — pub 1756-RM003 cap 5
+# Curados vía NotebookLM batch (2026-05-05) — A.1.3 Sprint 1.
+#
+# Pin shape común: Source A (input), Source B (input). Sin pin output
+# explícito — el resultado afecta la condición del rung. Restricción de
+# lenguaje: estos mnemónicos solo existen en RLL/FBD; en ST se usan los
+# operadores relacionales nativos (=, <>, >, <).
+# ──────────────────────────────────────────────────────────────────────
+
+
+_EQU = InstructionMetadata(
+    name="EQU",
+    full_name="Equal To",
+    category="comparator",
+    summary=(
+        "Comprueba si Source A == Source B (algebraicamente para números, "
+        "lexicográficamente para STRING). Si verdadero, propaga rung true."
+    ),
+    pins=[
+        InstructionPin("Source A", "input",
+                       "SINT|INT|DINT|LINT|USINT|UINT|UDINT|ULINT|REAL|LREAL|STRING",
+                       "Valor o cadena base"),
+        InstructionPin("Source B", "input",
+                       "SINT|INT|DINT|LINT|USINT|UINT|UDINT|ULINT|REAL|LREAL|STRING",
+                       "Valor o cadena de referencia"),
+    ],
+    fault_modes=[
+        InstructionFault("ArrayIndexOutOfBounds",
+                         "Fallo mayor de indexación si operandos usan arrays con índice fuera de límites"),
+        InstructionFault("StringLengthCorrupted",
+                         "Fallo menor Tipo 4 Código 51 si .LEN > SIZE(.DATA) en alguna cadena"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 5 — Compare Instructions, p.302"],
+    notes=(
+        "Tipos mixtos: promoción automática al de mayor clasificación (ej INT→REAL); "
+        "DINT grandes a REAL pueden perder precisión por float 32-bit. STRING: "
+        "comparación case-sensitive lexicográfica por ASCII Hex. REAL gotcha: si "
+        "cualquier operando es NaN, evalúa siempre como FALSE. Restricción de "
+        "lenguaje: solo RLL/FBD; en ST usar operador `=`."
+    ),
+)
+
+
+_NEQ = InstructionMetadata(
+    name="NEQ",
+    full_name="Not Equal",
+    category="comparator",
+    summary=(
+        "Comprueba si Source A != Source B. Si verdadero (los valores difieren), "
+        "propaga rung true. Complemento lógico de EQU."
+    ),
+    pins=[
+        InstructionPin("Source A", "input",
+                       "SINT|INT|DINT|LINT|USINT|UINT|UDINT|ULINT|REAL|LREAL|STRING",
+                       "Valor o cadena base"),
+        InstructionPin("Source B", "input",
+                       "SINT|INT|DINT|LINT|USINT|UINT|UDINT|ULINT|REAL|LREAL|STRING",
+                       "Valor o cadena de referencia"),
+    ],
+    fault_modes=[
+        InstructionFault("ArrayIndexOutOfBounds",
+                         "Fallo mayor por índice de array fuera de límites"),
+        InstructionFault("StringLengthCorrupted",
+                         "Fallo menor Tipo 4 Código 51 si .LEN excede SIZE(.DATA)"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 5 — Compare Instructions, p.365"],
+    notes=(
+        "Tipos mixtos: misma promoción que EQU. STRING: case-sensitive; longitudes "
+        "distintas o cualquier carácter en posición divergente → TRUE. REAL gotcha "
+        "(diferente a EQU): si cualquier operando es NaN, evalúa como TRUE (NaN no "
+        "es igual a nada, ni a sí mismo). Restricción de lenguaje: solo RLL/FBD; "
+        "en ST usar operador `<>`."
+    ),
+)
+
+
+_GRT = InstructionMetadata(
+    name="GRT",
+    full_name="Greater Than",
+    category="comparator",
+    summary=(
+        "Comprueba estrictamente si Source A > Source B. Si verdadero, propaga "
+        "rung true. Comparación numérica para tipos numéricos, lexicográfica "
+        "para STRING."
+    ),
+    pins=[
+        InstructionPin("Source A", "input",
+                       "SINT|INT|DINT|LINT|USINT|UINT|UDINT|ULINT|REAL|LREAL|STRING",
+                       "Valor a someter a prueba"),
+        InstructionPin("Source B", "input",
+                       "SINT|INT|DINT|LINT|USINT|UINT|UDINT|ULINT|REAL|LREAL|STRING",
+                       "Valor que sirve como límite/techo comparativo"),
+    ],
+    fault_modes=[
+        InstructionFault("ArrayIndexOutOfBounds",
+                         "Fallo por subíndice de array fuera de rango"),
+        InstructionFault("StringLengthCorrupted",
+                         "Fallo menor Tipo 4 Código 51 si STRING tiene .LEN > SIZE(.DATA)"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 5 — Compare Instructions, p.311"],
+    notes=(
+        "Tipos mixtos: promoción ascendente antes de comparar. STRING: orden "
+        "lexicográfico ASCII Hex de izquierda a derecha — la minúscula 'a' "
+        "(0x61) es mayor que mayúscula 'Z' (0x5A); 'ab' > 'a'. REAL gotcha: "
+        "cualquier NaN → rung FALSE incondicional. Restricción de lenguaje: "
+        "solo RLL/FBD; en ST usar operador `>`."
+    ),
+)
+
+
+_LES = InstructionMetadata(
+    name="LES",
+    full_name="Less Than",
+    category="comparator",
+    summary=(
+        "Comprueba estrictamente si Source A < Source B. Si verdadero, propaga "
+        "rung true. Complemento de GRT con la misma semántica de tipos y "
+        "STRING."
+    ),
+    pins=[
+        InstructionPin("Source A", "input",
+                       "SINT|INT|DINT|LINT|USINT|UINT|UDINT|ULINT|REAL|LREAL|STRING",
+                       "Valor a someter a prueba"),
+        InstructionPin("Source B", "input",
+                       "SINT|INT|DINT|LINT|USINT|UINT|UDINT|ULINT|REAL|LREAL|STRING",
+                       "Valor que sirve como límite/base inferior"),
+    ],
+    fault_modes=[
+        InstructionFault("ArrayIndexOutOfBounds",
+                         "Fallo por índice fuera de rango pre-creado en memoria"),
+        InstructionFault("StringLengthCorrupted",
+                         "Fallo menor Tipo 4 Código 51 si cadena truncada/corrupta"),
+    ],
+    references=["Rockwell pub 1756-RM003 cap 5 — Compare Instructions, p.329"],
+    notes=(
+        "Tipos mixtos: promoción al mayor + cálculo de conversión transitorio "
+        "(ligeramente más lento). STRING: 'A' (0x41) < 'a' (0x61) — case-sensitive. "
+        "REAL gotcha: cualquier NaN → rung FALSE. Restricción de lenguaje: solo "
+        "RLL/FBD; en ST usar operador `<`."
+    ),
+)
+
+
+# Catálogo público (orden curado: safety, motion, logic, data movement, timer, comparator)
 ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _CROUT,
     _DCI_STOP,
@@ -858,6 +1274,20 @@ ALL_INSTRUCTIONS: list[InstructionMetadata] = [
     _MAR,
     _MCCP,
     _MCSV,
+    _XIC,
+    _XIO,
+    _OTE,
+    _OTL,
+    _OTU,
+    _ONS,
+    _MOV,
+    _COP,
+    _CPS,
+    _TON,
+    _EQU,
+    _NEQ,
+    _GRT,
+    _LES,
 ]
 
 
