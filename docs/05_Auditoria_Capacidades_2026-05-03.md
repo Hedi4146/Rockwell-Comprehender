@@ -286,10 +286,10 @@ SPRINT 1 · Foundation              [████] 4/4 subtasks  (~2.5 hr)   CER
 SPRINT 2 · Universalidad           [██]   2/2           (~3-4 hr)   CERRADO 2026-05-06
 SPRINT 3 · Validación cruzada      [██]   2/2           (~3 hr)     CERRADO 2026-05-06
 SPRINT 4 · Asesor proactivo        [██]   2/2           (~5-6 hr)   CERRADO 2026-05-06
-SPRINT 5 · Visual operativo        [░░]   0/2           (~4-5 hr)   ← activo
+SPRINT 5 · Visual operativo        [██]   2/2           (~4-5 hr)   CERRADO 2026-05-06
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [██████████░░] 83% (10/12)  ~18-21 hr total
+GLOBAL                             [████████████] 100% (12/12)  PLAN COMPLETO 2026-05-06
 ```
 
 > Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
@@ -437,14 +437,14 @@ GLOBAL                             [██████████░░] 83% (1
 - **Estimación total:** ~4-5 hr (2 commits).
 - **Entregable de cierre:** HTMLs de los 3 L5X navegables por terceros sin curva de aprendizaje; PDF del TDR exportable; cierra Vision criterio Nivel 3 parcial ("otro ingeniero usa la herramienta sin curva significativa").
 
-**`[ ]` D.1 — feat(explorer): tracer integrado en panel del tag (Propuesta E)** · ~2-3 hr
+**`[x]` D.1 — feat(explorer): tracer integrado en panel del tag (Propuesta E)** · ~2-3 hr · cerrada 2026-05-06
 - Dependencias: A.3 `[x]`
 - Output: modificación de `reporters/html_explorer.py` para que el panel del tag (doc 06 sec 5.3.7) llame `find_causal_path` y muestre trace embebido.
 - Acceptance: HTMLs de CINTA+AQL: click en tag → muestra writers_of; click en "trace back" → path BFS hasta inputs externos.
 - Commit: `feat(explorer): tracer v0.2 integrado en panel del tag (cierra spec doc 06 v0.2)`
 - Constraints: sin librerías JS externas; CSS+JS inline (doc 06 sec 4).
 
-**`[ ]` D.2 — feat(reporter): TDR HTML ejecutivo** · ~2 hr
+**`[x]` D.2 — feat(reporter): TDR HTML ejecutivo** · ~2 hr · cerrada 2026-05-06
 - Dependencias: D.1 `[x]`
 - Output: `reporters/tdr_html.py` — combina mapa mental + smells + cadenas causales + recomendaciones del asesor en un único HTML ejecutivo.
 - Acceptance: TDR generado contra CINTA+AQL es coherente, navegable, exportable a PDF (Print to PDF del browser).
@@ -474,7 +474,11 @@ GLOBAL                             [██████████░░] 83% (1
 | 2026-05-06 | B.2 (Sprint 3) | `ac00889` | Audit casos 1-6 contra CPPIM_BD800_1 (Amantrini v33, ControlLogix L83ES). 4/6 casos PASS (Mapa Mental 35K chars, Comparación carga paralela OK, Código muerto 27/100 sample sin errores, TDR 1.4 MB). 2/6 N/A por arquitectura (Caso 1 no tiene splice Diatec, Caso 4 ya en K5700). 5 raC_* libraries Modbus TCP detectadas, 0 routines protected en este L5X. Loader: 0 errores parseando 410 modules + 28 AOIs + 53 routines + 2460 tags. Reporte completo en `docs/Análisis/CPPIM_caso_audit.md`. |
 | 2026-05-06 | **SPRINT 3 cerrado** | `fa51141` | Validación cruzada completa (2/2): toolkit validado en 3 L5X de arquitectura distinta (CINTA Diatec custom, AQL Diatec legacy, CPPIM Amantrini moderno). HANDOFF antipatrón #2 cerrado con margen amplio. Caso paradigma del empalme validado en 2/3 (los Diatec); Amantrini requiere caso paradigma propio (input v0.4). |
 | 2026-05-06 | C.1+C.2 (Sprint 4) | `ee1d051` | `rockwell_comprehender/smells.py` con `detect_smells(project)`. **15 reglas activas**: C.1 estructurales (5: otl_otu_unpaired, aoi_too_many_params, routine_empty/trivial, program_unscheduled, tag_scope_mismatch); C.2 best practices Rockwell (10: motion_no_error_check, aoi_naming_lowercase, program_disabled, aoi_not_invoked, routine_jsr_self, st_transitional_no_oneshot, tag_naming_legacy_lowercase, safety_program_naming, task_without_programs, program_main_routine_missing). Wrapper `project.detect_smells()`. Reportes generados en `docs/Análisis/<L5X>_smells.md`: CINTA 130 smells (29K chars), AQL 230 smells (53K), CPPIM 755 smells (177K). Stack mínimo (DT-008) preservado. |
-| 2026-05-06 | **SPRINT 4 cerrado** | _(pendiente)_ | Asesor proactivo completo (2/2): toolkit pasa de "responde lo que pregunto" a "sugiere lo que debo revisar". 15 reglas activas, 1115 smells totales detectados a través del parque (130+230+755), distribuidos en 3 categorías (high/medium/low) con reportes Markdown navegables por L5X. |
+| 2026-05-06 | **SPRINT 4 cerrado** | `03470a1` | Asesor proactivo completo (2/2): toolkit pasa de "responde lo que pregunto" a "sugiere lo que debo revisar". 15 reglas activas, 1115 smells totales detectados a través del parque (130+230+755), distribuidos en 3 categorías (high/medium/low) con reportes Markdown navegables por L5X. |
+| 2026-05-06 | D.1 (Sprint 5) | `f369046` | `_render_xref_summary` extendido en `reporters/html_explorer.py` con bloque colapsable de `trace_back` (depth=3, max_branches=8) renderizado como árbol HTML anidado. Nueva función `_render_trace_tree` para visualización recursiva de TraceNode. Validado: HTMLs CINTA (253K bytes) + AQL (583K bytes) generados sin error con `trace-back-details`, `trace-tree`, header xref correctos. Sin libs JS externas. |
+| 2026-05-06 | D.2 (Sprint 5) | `12bc7e8` | Nuevo módulo `rockwell_comprehender/reporters/tdr_html.py` con `to_tdr_html(project, output_path)`. TDR auto-contenido con 5 secciones: Resumen ejecutivo (KPIs), Mapa Mental (MD→HTML), Smells & Best Practices (top reglas, top 10 high), Casos de dominio (5 ejemplos identify_domain), Recomendaciones del asesor (síntesis automática por severidad). CSS+JS inline, apto para Print to PDF. Validado contra CINTA (22K bytes) + AQL (26K bytes), 5/5 secciones presentes. |
+| 2026-05-06 | **SPRINT 5 cerrado** | _(pendiente)_ | Visual operativo completo (2/2): explorer HTML enriquecido con trace_back embebido + TDR ejecutivo auto-contenido para print-to-PDF. Cierra el plan ejecutable post-v0.1 (12/12 = 100%). |
+| 2026-05-06 | **PLAN COMPLETO** | _(pendiente)_ | Los 5 sprints del plan ejecutable post-v0.1 cerrados en 1 sesión bajo Sprint Batch Mode. 12/12 subtasks completadas. Toolkit `rockwell_comprehender` evolucionado de v0.3.x → v0.4 funcional: `build_xref` cubre RLL+ST, instruction_library 38 entries (7 categorías), domain_lexicon operativo, smells.py con 15 reglas, explorer enriquecido, TDR HTML ejecutivo. Validado contra 3 L5X (HANDOFF antipatrón #2 con margen amplio). Stack mínimo (DT-008) preservado: 0 dependencias agregadas. |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 
