@@ -283,13 +283,13 @@ Esta sección es **propositiva** — capacidades NO en el Vision original que me
 
 ```
 SPRINT 1 · Foundation              [████] 4/4 subtasks  (~2.5 hr)   CERRADO 2026-05-06
-SPRINT 2 · Universalidad           [░░]   0/2           (~3-4 hr)   ← activo
-SPRINT 3 · Validación cruzada      [░░]   0/2           (~3 hr)
+SPRINT 2 · Universalidad           [██]   2/2           (~3-4 hr)   CERRADO 2026-05-06
+SPRINT 3 · Validación cruzada      [░░]   0/2           (~3 hr)     ← activo
 SPRINT 4 · Asesor proactivo        [░░]   0/2           (~5-6 hr)   paralelizable post-S1
 SPRINT 5 · Visual operativo        [░░]   0/2           (~4-5 hr)
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [████░░░░░░░░] 33% (4/12)  ~18-21 hr total
+GLOBAL                             [██████░░░░░░] 50% (6/12)  ~18-21 hr total
 ```
 
 > Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
@@ -362,14 +362,14 @@ GLOBAL                             [████░░░░░░░░] 33% (4
 - **Estimación total:** ~3-4 hr (2 commits).
 - **Entregable de cierre:** `project.identify_domain("problema en empalme")` en CINTA retorna AOIs candidatos correctos con confidence ≥0.7. Criterio v0.3 del Vision sec 8 marcado ✅ en `docs/00_Vision_y_Roadmap.md`.
 
-**`[ ]` A.2 — feat(library): cobertura ST mínima** · ~1 hr
+**`[x]` A.2 — feat(library): cobertura ST mínima** · ~1 hr · cerrada 2026-05-06
 - Dependencias: A.1.3 `[x]`
 - Output: 6-8 entries para constructos ST comunes (IF, CASE, FOR, WHILE, REPEAT, asignación `:=`, function-style call) + audit en `docs/Test/_st_coverage_audit.md`.
 - Acceptance: cobertura ≥80% de constructos detectados en el parque (medido por audit); smoke contra `st_tokenizer` no rompe.
 - Curación: NotebookLM serial — Apéndice B (template adaptado a constructos ST).
 - Commit: `feat(library): cobertura ST básica — N constructos`
 
-**`[ ]` A.3 — feat(domain): lexicón síntoma→código (criterio v0.3)** · ~2-3 hr
+**`[x]` A.3 — feat(domain): lexicón síntoma→código (criterio v0.3)** · ~2-3 hr · cerrada 2026-05-06
 - Dependencias: A.1.3 `[x]`
 - Output: módulo nuevo `rockwell_comprehender/domain_lexicon.py` con `identify_domain(project, query: str) -> list[DomainHit]`. Heurísticas: regex sobre tag/AOI/routine names + tabla síntomas→keywords.
 - Acceptance: `project.identify_domain("problema en empalme")` en CINTA retorna `AHT_CtcSplicer + AHT_Unwinder + DancerCorAndNewRadiusComputation` con confidence ≥0.7. Tras cierre, marcar criterio v0.3 ✅ en `docs/00_Vision_y_Roadmap.md` sec 8.
@@ -466,7 +466,10 @@ GLOBAL                             [████░░░░░░░░] 33% (4
 |--------------|---------|-------------|-------------------|
 | 2026-05-05 | C.3 (Sprint 1) | `c251d18` | `build_xref` procesa código ST; CINTA xref +38 rows operator=`:=`; M*Data dejan de ser falsos positivos en Caso #5; backing tags AOI sin regresión; AQL_M2 5/5 ST roots validados |
 | 2026-05-06 | A.1 bloque (Sprint 1) | `6e82812` | RLL stdlib coverage +14: 5 logic base (XIC/XIO/OTE/OTL/OTU) + 5 data+timer (MOV/COP/CPS/TON/ONS) + 4 comparators (EQU/NEQ/GRT/LES). Catálogo 17→31 entries. 6 categorías (safety/motion/logic/data movement/timer/comparator). Curados via 3 queries comprehensivas NotebookLM contra pub 1756-RM003. |
-| 2026-05-06 | **SPRINT 1 cerrado** | _(pendiente)_ | Foundation completo (4/4): tracer xref cubre RLL+ST + instruction_library 31 entries. Entregable de cierre cumplido — un L5X mixto se instrumenta completo + ≥31 instrucciones stdlib reconocidas. Sprint Batch Mode activado en sec 7.1 (regla 4 y 6 reformuladas). |
+| 2026-05-06 | **SPRINT 1 cerrado** | `6622d5d` | Foundation completo (4/4): tracer xref cubre RLL+ST + instruction_library 31 entries. Entregable de cierre cumplido — un L5X mixto se instrumenta completo + ≥31 instrucciones stdlib reconocidas. Sprint Batch Mode activado en sec 7.1 (regla 4 y 6 reformuladas). |
+| 2026-05-06 | A.2 (Sprint 2) | `2a98036` | ST coverage: 7 entries `st_construct` (IF/CASE/FOR/WHILE/REPEAT/ASSIGN/FUNC_CALL) curadas via NotebookLM contra pub 1756-RM003 cap 24. Audit empírico en docs/Test/_st_coverage_audit.md: 5 routines ST en parque (CINTA+AQL), 0 errores tokenize_st, cobertura 7/7 = 100% (acceptance ≥80% cumplido con margen). Catálogo 31→38 entries. |
+| 2026-05-06 | A.3 (Sprint 2) | `a00890d` | `domain_lexicon.py` con `identify_domain(query)`: 30+ síntomas en lexicón (es+en) + related keywords + scoring heurístico. Acceptance contra CINTA cumplido: AHT_CtcSplicer (1.00), AHT_DancerCorAndNewRadiusComputation (0.80), AHT_Unwinder (0.70). Generaliza a AQL_M2. Criterio v0.3 ✅ marcado en Vision sec 8 (1er ítem); 2do ítem técnicamente disponible vía `find_causal_path`. |
+| 2026-05-06 | **SPRINT 2 cerrado** | _(pendiente)_ | Universalidad completo (2/2): cobertura ST en library + lexicón síntoma→código operativo. Criterio v0.3 del Vision alcanzado en su primer ítem. Stack mínimo (DT-008) preservado — solo `re` + estructuras del modelo. |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 
