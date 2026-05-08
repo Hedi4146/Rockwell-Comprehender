@@ -630,10 +630,8 @@ GLOBAL                             [██████████████�
 | 2026-05-07 | v0.7.4 (Sprint 10) | `ebf014c` | `__main__.py` CLI con subcomandos ask/audit/compare/bench/version. Stdlib only (argparse). Permite uso desde shell sin Claude Code. |
 | 2026-05-07 | v0.7.5 (Sprint 10) | `ebf014c` | `docs/AGENT_CONTRACT.md` (~13K chars) + `docs/Test/_behavior_tests.py` con **15/15 PASS** (wall-clock 1.5s). Cubre determinismo, pattern recognition, cross-L5X, audit log, CLI, diff_projects. |
 | 2026-05-07 | **SPRINT 10 cerrado / v0.7** | `ebf014c` | Formalización del agente completa (5/5): toolkit reproducible + auditable + versátil. Total proyecto: **22/22 subtasks** a través de 9 sprints (Sprint 6 postponed por DT-005). |
-| 2026-05-07 | v0.8.1 (Sprint 11) | _(pendiente)_ | tag_dictionary refinado: +9 reglas (alarm_numbered, io_analog, clock_signal, counter_data, bit_storage, auxiliary_cam, virtual_axis, motion_velocity, date_time) + 2 datatype-driven (output_cam, message). `classify_tag(tag, project)` detecta `aoi_instance` / `udt_struct` cuando datatype es nombre de AOI/UDT del proyecto. Unknown% reducido: CINTA -6.1pp, AQL -7.1pp, CPPIM -12.3pp. |
-| 2026-05-07 | v0.8.2 (Sprint 11) | _(pendiente)_ | `_detect_protected_routines` en loader: detecta routines RLL/ST con code='' (Source Protected potencial) y emite Observation explícita. CPPIM detecta 5 routines en SafetyProgram. Cierra caveat #4 del Caso_5 report. Capacidad #1: 96%→98%. |
-| 2026-05-07 | v0.8.3 (Sprint 11) | _(pendiente)_ | program_inference con thresholds más finos: motion_ops≥20 (denso) bonus +0.7; MainProgram name match exacto bonus 0.3→0.6. MainProgram conf 0.30→0.60-0.70. Capacidad #7: 95%→97%. |
-| 2026-05-07 | **SPRINT 11 cerrado / v0.8** | _(pendiente)_ | Polish de gaps marginales completo (3/3). Capacidades del Vision: #1 96%→98%, #6 95%→96%, #7 95%→97%. Total proyecto: **25/25 subtasks** a través de 10 sprints. |
+| 2026-05-07 | v0.8.1+v0.8.2+v0.8.3 (Sprint 11) | `4b7c5f5` | Commit consolidado v0.8: tag_dictionary +11 reglas (unknown% -6 a -12pp), loader detecta protected routines (CPPIM 5 in SafetyProgram), program_inference thresholds finos (MainProgram conf 0.30→0.60). Capacidades: #1 96→98%, #6 95→96%, #7 95→97%. |
+| 2026-05-07 | **SPRINT 11 cerrado / v0.8** | `4b7c5f5` | Polish de gaps marginales completo (3/3). Total proyecto: **25/25 subtasks** a través de 10 sprints. |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 
