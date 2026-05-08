@@ -495,6 +495,15 @@ class Project:
         from .program_inference import program_inference as _pi
         return _pi(self)
 
+    def ask(self, question: str):
+        """Agente determinístico (v0.7) — pregunta en lenguaje natural.
+
+        Wrapper de conveniencia para `agent.ask`. Mismo
+        `(project, question)` retorna mismo `AgentResponse` (verificable).
+        """
+        from .agent import ask as _ask
+        return _ask(self, question)
+
     def _ensure_xref_built(self) -> None:
         """Construye el xref la primera vez que se necesita."""
         if self._xref_built:

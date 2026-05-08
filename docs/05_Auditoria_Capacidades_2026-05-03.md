@@ -290,12 +290,13 @@ SPRINT 5 · Visual operativo        [██]   2/2           (~4-5 hr)   CERRADO
 SPRINT 7 · v0.4 motion patterns    [█]    1/1           (~2 hr)     CERRADO 2026-05-06
 SPRINT 8 · v0.5 cerrar gaps        [███]  3/3           (~3 hr)     CERRADO 2026-05-06
 SPRINT 9 · test bench & metrics    [█]    1/1           (~1.5 hr)   CERRADO 2026-05-06
+SPRINT 10 · v0.7 formalización     [█████] 5/5          (~8.5 hr)   CERRADO 2026-05-07
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [█████████████████] 100% (17/17)  PLAN + v0.4 + v0.5 + bench 2026-05-06
+GLOBAL                             [██████████████████████] 100% (22/22)  PLAN + v0.4 + v0.5 + bench + v0.7 (formalización)
 ```
 
-> Cada subtarea = 1/12 (~8.3%) del global. Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
+> Cada subtarea ≈ 1/N del global (N varía según sprints activos). Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
 
 ### 7.1 Reglas operativas (no negociables)
 
@@ -514,6 +515,52 @@ GLOBAL                             [██████████████�
 
 ---
 
+#### SPRINT 10 · v0.7 — Formalización del agente (reproducibilidad + auditabilidad + versatilidad)
+
+- **Objetivo:** formalizar el toolkit como agente reproducible y auditable. La combinación Claude+toolkit ya opera como agente (Nivel 2 del Vision); este sprint le da contrato escrito, trazabilidad de decisiones y canales múltiples de uso (Claude Code, script, notebook, CLI).
+- **Contexto:** owner reconoce que el escenario es novedoso (no hay precedente público de "tool-using LLM agent para comprensión profunda de proyectos PLC"). Por eso la formalización es valiosa: el comportamiento debe ser determinístico, auditable y verificable, sin manual público que copiar.
+- **Dependencias:** Sprints 1-9 cerrados (todas las APIs disponibles).
+- **Estimación total:** ~8.5 hr (5 commits, 1 por subtask).
+- **Entregable de cierre:** orquestador `agent.py` determinístico + slash commands + audit trail estructurado + CLI + contrato `SKILL.md` + behavior tests.
+
+**`[x]` v0.7.1 — feat(agent): orquestador determinístico** · ~3 hr · cerrada 2026-05-07
+- Dependencias: ninguna (todas las APIs ya están)
+- Output: `rockwell_comprehender/agent.py` con `ask(project, question: str) -> AgentResponse`. Estructura: `AgentResponse(answer, evidence, tools_called, confidence)`.
+- Sin LLM (DT-008): mapea pregunta → secuencia de calls vía `identify_domain` + heurísticas sobre keywords (`empalme`, `falla`, `huérfano`, `compara`, `audit`, etc.). Cubre top ~20-30 patrones de pregunta comunes; el resto retorna `confidence=0` con sugerencia "consultar via Claude".
+- Wrapper: `project.ask(question)`.
+- Acceptance: misma `(project, question)` retorna mismo `AgentResponse` (determinístico, verificable). Smoke contra 5+ preguntas tipo en CINTA + AQL.
+- Commit: `feat(agent): orquestador determinístico — ask(project, question) -> AgentResponse`
+
+**`[x]` v0.7.2 — feat(commands): slash commands Claude Code** · ~1 hr · cerrada 2026-05-07
+- Dependencias: v0.7.1 (los commands invocan `agent.ask()` o APIs directas)
+- Output: `.claude/commands/`: `/diagnose <síntoma>`, `/audit <L5X>`, `/compare <a> <b>`, `/explain <tag>`, `/health <L5X>`. Cada command es un markdown con prompt template que invoca el toolkit.
+- Acceptance: cada command ejecuta sin error y produce output útil. Documentado en `docs/Inf Fase 3/SLASH_COMMANDS.md` con ejemplos.
+- Commit: `feat(commands): 5 slash commands para Claude Code`
+
+**`[x]` v0.7.3 — feat(audit): audit trail JSONL** · ~1 hr · cerrada 2026-05-07
+- Dependencias: ninguna (puede correr en paralelo con v0.7.1)
+- Output: `rockwell_comprehender/audit_log.py` con `AuditLogger` que decora APIs públicas. Cada call deja registro estructurado en `docs/Audit_trail/<session_id>.jsonl`: `{timestamp, project, api, args_summary, output_summary, duration_ms}`.
+- Activación: opt-in vía env var `ROCKWELL_AUDIT=1` o flag explícito en `load_project(..., audit=True)`. NO impacta perf por default.
+- Acceptance: ejecutar bench con audit ON genera JSONL parseable; cada API queda registrada con args+resultado.
+- Commit: `feat(audit): audit trail JSONL para reproducibilidad y trazabilidad`
+
+**`[x]` v0.7.4 — feat(cli): CLI ergonómico** · ~1.5 hr · cerrada 2026-05-07
+- Dependencias: v0.7.1 (usa `agent.ask()`)
+- Output: `rockwell_comprehender/__main__.py` + entry point `python -m rockwell_comprehender`. Subcomandos: `ask "..." --project=X.L5X`, `audit X.L5X`, `compare A.L5X B.L5X`, `bench`, `version`. Usa `argparse` (stdlib).
+- Acceptance: cada subcomando funciona desde shell sin Claude Code; output legible en terminal.
+- Commit: `feat(cli): python -m rockwell_comprehender (ask/audit/compare/bench)`
+- Constraints: stdlib only (argparse). DT-008.
+
+**`[x]` v0.7.5 — docs(contract): AGENT_CONTRACT.md + behavior tests** · ~2 hr · cerrada 2026-05-07
+- Dependencias: v0.7.1 + v0.7.2 + v0.7.3 + v0.7.4 cerradas (necesita el sistema completo para documentar)
+- Output:
+  - `docs/SKILL.md` — contrato formal del agente: qué pregunta acepta, qué retorna, garantías deterministas, latencia esperada por tipo de query, casos NO cubiertos, política de confidence.
+  - `docs/Test/_behavior_tests.py` — extiende bench con assertions sobre **respuestas específicas** (no solo "no falla"): `agent.ask(CINTA, "problema en empalme")` debe retornar AHT_CtcSplicer en evidence con confidence ≥0.7.
+- Acceptance: SKILL.md ≥1500 palabras; behavior_tests pasan ≥10 assertions sobre los 3 L5X.
+- Commit: `docs(contract): SKILL.md + behavior tests — formaliza agente reproducible`
+
+---
+
 #### SPRINT 6 · Postponed — emergente N2→N3 (FASE E original)
 
 > NO construir hasta cumplir Vision sec 7 *"Futuro Nivel 3 — solo si el uso valida la inversión"*. Triggers documentados; sin trabajo activo.
@@ -539,14 +586,20 @@ GLOBAL                             [██████████████�
 | 2026-05-06 | **SPRINT 4 cerrado** | `03470a1` | Asesor proactivo completo (2/2): toolkit pasa de "responde lo que pregunto" a "sugiere lo que debo revisar". 15 reglas activas, 1115 smells totales detectados a través del parque (130+230+755), distribuidos en 3 categorías (high/medium/low) con reportes Markdown navegables por L5X. |
 | 2026-05-06 | D.1 (Sprint 5) | `f369046` | `_render_xref_summary` extendido en `reporters/html_explorer.py` con bloque colapsable de `trace_back` (depth=3, max_branches=8) renderizado como árbol HTML anidado. Nueva función `_render_trace_tree` para visualización recursiva de TraceNode. Validado: HTMLs CINTA (253K bytes) + AQL (583K bytes) generados sin error con `trace-back-details`, `trace-tree`, header xref correctos. Sin libs JS externas. |
 | 2026-05-06 | D.2 (Sprint 5) | `12bc7e8` | Nuevo módulo `rockwell_comprehender/reporters/tdr_html.py` con `to_tdr_html(project, output_path)`. TDR auto-contenido con 5 secciones: Resumen ejecutivo (KPIs), Mapa Mental (MD→HTML), Smells & Best Practices (top reglas, top 10 high), Casos de dominio (5 ejemplos identify_domain), Recomendaciones del asesor (síntesis automática por severidad). CSS+JS inline, apto para Print to PDF. Validado contra CINTA (22K bytes) + AQL (26K bytes), 5/5 secciones presentes. |
-| 2026-05-06 | **SPRINT 5 cerrado** | _(pendiente)_ | Visual operativo completo (2/2): explorer HTML enriquecido con trace_back embebido + TDR ejecutivo auto-contenido para print-to-PDF. Cierra el plan ejecutable post-v0.1 (12/12 = 100%). |
+| 2026-05-06 | **SPRINT 5 cerrado** | `6be67a3` | Visual operativo completo (2/2): explorer HTML enriquecido con trace_back embebido + TDR ejecutivo auto-contenido para print-to-PDF. Cierra el plan ejecutable post-v0.1 (12/12 = 100%). |
 | 2026-05-06 | **PLAN COMPLETO** | `6be67a3` | Los 5 sprints del plan ejecutable post-v0.1 cerrados en 1 sesión bajo Sprint Batch Mode. 12/12 subtasks completadas. Toolkit `rockwell_comprehender` evolucionado de v0.3.x → v0.4 funcional: `build_xref` cubre RLL+ST, instruction_library 38 entries (7 categorías), domain_lexicon operativo, smells.py con 15 reglas, explorer enriquecido, TDR HTML ejecutivo. Validado contra 3 L5X (HANDOFF antipatrón #2 con margen amplio). Stack mínimo (DT-008) preservado: 0 dependencias agregadas. |
 | 2026-05-06 | v0.4.1 (Sprint 7) | `c6bf318` | `motion_patterns.py` con 8 detectores de composiciones motion: `splice_transition` (MAJ→MAS→MAJ), `gear_chain` (MAG con master), `servo_on_off_cycle` (MSO+MSF), `homing_sequence` (MAH±lifecycle), `axis_lifecycle` (≥3 de {MAH,MAJ,MAM,MAS}), `output_cam_pair` (MAOC+MDOC), `registration_full` (MASR+MAFR), `cam_profile_mgmt` (MCCP+MCSV). 109 matches totales en parque (CINTA 21 + AQL 43 + CPPIM 45). 7/8 patterns activados (cam_profile_mgmt codificado pero no usado en parque actual). Reportes Markdown por L5X. Wrapper `project.detect_motion_patterns()`. Cierra capacidad #4 del Vision: 55% → 90%. |
 | 2026-05-06 | **SPRINT 7 cerrado / v0.4** | `de5a138` | v0.4 cerrado con un único deliverable: capacidad #4 elevada de 55% → 90%. Stack mínimo (DT-008) preservado: 0 dependencias agregadas. Total proyecto: 13/13 subtasks completadas a través de 6 sprints (5 del plan original + Sprint 7 v0.4). |
 | 2026-05-06 | v0.5.1+v0.5.2+v0.5.3 (Sprint 8) | `c984860` | Commit consolidado v0.5: tag_dictionary (21 reglas, 4888 tags) + program_inference (11 roles, CPPIM Safety conf 0.90) + project_diff (CINTA→AQL→CPPIM). Cierra capacidades #6 (95%), #7 (95%) y Caso 3. 8 reportes Markdown generados. |
 | 2026-05-06 | **SPRINT 8 cerrado / v0.5** | `c984860` | v0.5 cerrado: 3 capacidades nuevas. Capacidades #6 y #7 cerradas. Caso 3 automatizado. Total proyecto: 16/16 subtasks completadas a través de 7 sprints. |
-| 2026-05-06 | v0.6.1 / Sprint 9 | _(pendiente)_ | `docs/Test/_bench.py` ejecuta bench reproducible de 14 APIs × 3 L5X. Métricas: latencia (`perf_counter`), tokens aprox (chars/4), memoria pico (`tracemalloc`), assertions PASS/FAIL/SKIP. **Resultado: 40/40 PASS, wall-clock 65 s, ~1.55M tokens output.** Reporte en `docs/Test/_bench_report.md`, datos en `_bench_results.json`. Stack mínimo DT-008 preservado. |
-| 2026-05-06 | **SPRINT 9 cerrado** | _(pendiente)_ | Test bench + métricas implementado y ejecutado. Línea base cuantitativa del paquete establecida. Total proyecto: 17/17 subtasks a través de 8 sprints. |
+| 2026-05-06 | v0.6.1 / Sprint 9 | `b33e10f` | `docs/Test/_bench.py` ejecuta bench reproducible de 14 APIs × 3 L5X. Métricas: latencia (`perf_counter`), tokens aprox (chars/4), memoria pico (`tracemalloc`), assertions PASS/FAIL/SKIP. **Resultado: 40/40 PASS, wall-clock 65 s, ~1.55M tokens output.** Reporte en `docs/Test/_bench_report.md`, datos en `_bench_results.json`. Stack mínimo DT-008 preservado. |
+| 2026-05-06 | **SPRINT 9 cerrado** | `b33e10f` | Test bench + métricas implementado y ejecutado. Línea base cuantitativa del paquete establecida. Total proyecto: 17/17 subtasks a través de 8 sprints. |
+| 2026-05-07 | v0.7.1 (Sprint 10) | _(pendiente)_ | `agent.py` con `ask(project, question) -> AgentResponse`. 8 patterns: splice/unwinder/dancer/safety/dead_code/smell/motion/general_health + tag_explain/aoi_explain/program_explain. Sin LLM (DT-008): regex + heurística sobre lexicón. Determinismo verificado: misma `(L5X, question)` retorna mismo response. Wrapper `project.ask()`. |
+| 2026-05-07 | v0.7.2 (Sprint 10) | _(pendiente)_ | 5 slash commands en `.claude/commands/`: `/diagnose`, `/audit`, `/compare`, `/explain`, `/health`. Documentación en `docs/Inf Fase 3/SLASH_COMMANDS.md`. Cada command es Markdown con prompt template que invoca el toolkit. |
+| 2026-05-07 | v0.7.3 (Sprint 10) | _(pendiente)_ | `audit_log.py` con `enable_audit/disable_audit/record/audit_log` decorator + `instrument_project(project)` para decoración runtime de Project methods. Activable via env var `ROCKWELL_AUDIT=1` o programáticamente. Output JSONL en `docs/Audit_trail/<session>.jsonl`. Smoke test: 187 records JSONL parseables (1 session_start + 185 calls + 1 session_end). |
+| 2026-05-07 | v0.7.4 (Sprint 10) | _(pendiente)_ | `__main__.py` (CLI) con subcomandos `ask`, `audit`, `compare`, `bench`, `version`. Stdlib only (argparse). Permite `python -m rockwell_comprehender ask "..." --project=X.L5X` desde shell sin Claude Code. Versatilidad de canal cumplida: Claude Code + script Python + CLI todos invocan el mismo toolkit. |
+| 2026-05-07 | v0.7.5 (Sprint 10) | _(pendiente)_ | `docs/AGENT_CONTRACT.md` (~13K chars, 12 secciones): contrato formal del agente, garantías deterministas, latencias del bench, política de confidence, casos NO cubiertos. `docs/Test/_behavior_tests.py` con 15 tests. **Resultado: 15/15 PASS** (wall-clock 1.5s). Tests cubren: determinismo, pattern recognition, cross-L5X, audit log, CLI importable, diff_projects. |
+| 2026-05-07 | **SPRINT 10 cerrado / v0.7** | _(pendiente)_ | Formalización del agente completa (5/5): toolkit ahora reproducible, auditable y versátil. Total proyecto: **22/22 subtasks** a través de 9 sprints (Sprint 6 sigue postponed por DT-005). |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 

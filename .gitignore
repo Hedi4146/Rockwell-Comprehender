@@ -35,6 +35,9 @@ env/
 
 # Claude Code (config local de la herramienta)
 .claude/
+# Excepción: slash commands del proyecto (parte del agente v0.7.2 — versionables)
+!.claude/commands/
+!.claude/commands/**
 
 # Backups locales (no versionar)
 *.bak.*
