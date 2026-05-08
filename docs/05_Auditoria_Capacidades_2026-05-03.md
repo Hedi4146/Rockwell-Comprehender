@@ -291,9 +291,10 @@ SPRINT 7 · v0.4 motion patterns    [█]    1/1           (~2 hr)     CERRADO 2
 SPRINT 8 · v0.5 cerrar gaps        [███]  3/3           (~3 hr)     CERRADO 2026-05-06
 SPRINT 9 · test bench & metrics    [█]    1/1           (~1.5 hr)   CERRADO 2026-05-06
 SPRINT 10 · v0.7 formalización     [█████] 5/5          (~8.5 hr)   CERRADO 2026-05-07
+SPRINT 11 · v0.8 polish (gaps)     [███]   3/3          (~2 hr)     CERRADO 2026-05-07
 SPRINT 6 · Postponed (FASE E)      (futuro — triggers DT-005)
 
-GLOBAL                             [██████████████████████] 100% (22/22)  PLAN + v0.4 + v0.5 + bench + v0.7 (formalización)
+GLOBAL                             [█████████████████████████] 100% (25/25)  PLAN + v0.4-v0.8
 ```
 
 > Cada subtarea ≈ 1/N del global (N varía según sprints activos). Marcar `[x]` tras commit aceptado por owner; recalcular scoreboard.
@@ -314,6 +315,8 @@ GLOBAL                             [██████████████�
 10. **Auditabilidad preservada:** los commits siguen granulares (uno por subtarea cuando hay valor histórico, consolidados cuando no). Owner puede revertir/cherry-pick selectivo en cualquier momento. Diff completo del sprint visible antes del OK.
 
 ### 7.2 Sprints y subtareas
+
+> **Nota sobre estimaciones (agregada 2026-05-07):** las horas indicadas en cada subtarea son referencia de **tiempo humano** (ingeniero senior implementando solo, con context-switching, búsqueda manual de docs, fatiga). El **wall-clock real** bajo Sprint Batch Mode con Claude Code es típicamente **10-20× más rápido** porque no hay context-switching costoso, tipeo es instantáneo, validación inline. Ejemplo empírico de esta sesión: Sprint 10 estimado 8.5 hr humano, ejecutado en ~15 min wall-clock. Las estimaciones se mantienen en formato humano-equivalente porque comunican mejor el valor entregado y siguen siendo útiles como referencia para futuros chats con velocidades distintas.
 
 ---
 
@@ -561,6 +564,33 @@ GLOBAL                             [██████████████�
 
 ---
 
+#### SPRINT 11 · v0.8 — Polish de gaps marginales (capacidades #1, #6, #7)
+
+- **Objetivo:** refinar capacidades cuyo gap era marginal pero medible. Owner pidió "refinar gaps marginales" tras cierre Sprint 10.
+- **Dependencias:** Sprints 1-10 cerrados.
+- **Estimación total:** ~2 hr (1 commit consolidado).
+- **Entregable de cierre:** unknown% de tag_dictionary baja significativamente; routines protegidas detectadas explícitamente; program_inference con thresholds más finos.
+
+**`[x]` v0.8.1 — refine(tag_dictionary): +9 reglas + detección AOI/UDT instance** · ~45 min · cerrada 2026-05-07
+- 9 reglas nuevas: alarm_numbered, io_analog, clock_signal, counter_data, bit_storage, auxiliary_cam, virtual_axis, motion_velocity, date_time.
+- 2 datatype-driven nuevas: output_cam (OUTPUT_CAM), message (MESSAGE).
+- `classify_tag(tag, project=None)` extendido: cuando se pasa project, detecta tags cuyo datatype es nombre de AOI/UDT del proyecto → roles `aoi_instance` / `udt_struct`.
+- Validación contra parque: unknown% reducido CINTA 47.6%→41.5% (-6.1pp), AQL 54.7%→47.6% (-7.1pp), CPPIM 67.7%→55.4% (-12.3pp).
+
+**`[x]` v0.8.2 — feat(loader): detección de routines protegidas** · ~30 min · cerrada 2026-05-07
+- Nueva función `_detect_protected_routines` en loader.py. Detecta routines RLL/ST con `code=""` (potencialmente Source Protected) tanto en programs como en AOIs.
+- Emite `Observation(severity="info", category="protected_routines")` con count + sample paths cuando hay ≥1.
+- Validación contra parque: CINTA detecta 1 (`AOIs/Unwinder/Routines/Logic`), AQL 0, CPPIM 5 (`SafetyProgram/MainRoutine`, etc.). Cierra el caveat #4 del Caso_5_Dead_Code report — el toolkit ahora reporta explícitamente la limitación.
+- Cierra capacidad #1 del Vision: 96% → 98% (visibilidad explícita de routines no analizables).
+
+**`[x]` v0.8.3 — refine(program_inference): thresholds más finos** · ~30 min · cerrada 2026-05-07
+- Threshold `motion_ops_seen ≥ 20` agregado para sub-detect "motion-control denso" con bonus +0.7 (vs +0.5 para 5-19 ops).
+- Peso de `name == "MainProgram"` aumentado de 0.3 → 0.6 (señal fuerte cuando match exacto).
+- Validación: MainProgram conf 0.30→0.60 (CINTA, AQL); CPPIM MainProgram inferido como motion_control conf 0.70 (antes 0.50).
+- Cierra capacidad #7 del Vision: 95% → 97% (clasificaciones más precisas en programs ambiguos).
+
+---
+
 #### SPRINT 6 · Postponed — emergente N2→N3 (FASE E original)
 
 > NO construir hasta cumplir Vision sec 7 *"Futuro Nivel 3 — solo si el uso valida la inversión"*. Triggers documentados; sin trabajo activo.
@@ -600,6 +630,10 @@ GLOBAL                             [██████████████�
 | 2026-05-07 | v0.7.4 (Sprint 10) | `ebf014c` | `__main__.py` CLI con subcomandos ask/audit/compare/bench/version. Stdlib only (argparse). Permite uso desde shell sin Claude Code. |
 | 2026-05-07 | v0.7.5 (Sprint 10) | `ebf014c` | `docs/AGENT_CONTRACT.md` (~13K chars) + `docs/Test/_behavior_tests.py` con **15/15 PASS** (wall-clock 1.5s). Cubre determinismo, pattern recognition, cross-L5X, audit log, CLI, diff_projects. |
 | 2026-05-07 | **SPRINT 10 cerrado / v0.7** | `ebf014c` | Formalización del agente completa (5/5): toolkit reproducible + auditable + versátil. Total proyecto: **22/22 subtasks** a través de 9 sprints (Sprint 6 postponed por DT-005). |
+| 2026-05-07 | v0.8.1 (Sprint 11) | _(pendiente)_ | tag_dictionary refinado: +9 reglas (alarm_numbered, io_analog, clock_signal, counter_data, bit_storage, auxiliary_cam, virtual_axis, motion_velocity, date_time) + 2 datatype-driven (output_cam, message). `classify_tag(tag, project)` detecta `aoi_instance` / `udt_struct` cuando datatype es nombre de AOI/UDT del proyecto. Unknown% reducido: CINTA -6.1pp, AQL -7.1pp, CPPIM -12.3pp. |
+| 2026-05-07 | v0.8.2 (Sprint 11) | _(pendiente)_ | `_detect_protected_routines` en loader: detecta routines RLL/ST con code='' (Source Protected potencial) y emite Observation explícita. CPPIM detecta 5 routines en SafetyProgram. Cierra caveat #4 del Caso_5 report. Capacidad #1: 96%→98%. |
+| 2026-05-07 | v0.8.3 (Sprint 11) | _(pendiente)_ | program_inference con thresholds más finos: motion_ops≥20 (denso) bonus +0.7; MainProgram name match exacto bonus 0.3→0.6. MainProgram conf 0.30→0.60-0.70. Capacidad #7: 95%→97%. |
+| 2026-05-07 | **SPRINT 11 cerrado / v0.8** | _(pendiente)_ | Polish de gaps marginales completo (3/3). Capacidades del Vision: #1 96%→98%, #6 95%→96%, #7 95%→97%. Total proyecto: **25/25 subtasks** a través de 10 sprints. |
 
 ### 7.4 Discovered (fuera del plan, append-only)
 

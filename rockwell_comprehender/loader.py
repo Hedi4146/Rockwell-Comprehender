@@ -139,6 +139,9 @@ def load_project(filepath: str, db_path: Optional[str] = None) -> Project:
         observations=observations,
     )
 
+    # 8.b Detección de routines protegidas (v0.8.2 — capacidad #1 refinement)
+    _detect_protected_routines(program_routines, aois, observations)
+
     # 9. Persistir en SQLite
     project = Project(
         identity=identity,
@@ -740,6 +743,64 @@ def _extract_routine_code(routine: ET.Element) -> str:
 # ─────────────────────────────────────────────────────────────────────────
 # Detección de inconsistencias
 # ─────────────────────────────────────────────────────────────────────────
+
+
+def _detect_protected_routines(
+    program_routines: list[Routine],
+    aois: list[AOIDetail],
+    observations: list[Observation],
+) -> None:
+    """Detecta routines con code vacío en RLL/ST — potencialmente Source Protected.
+
+    Una routine RLL/ST con `code=""` no necesariamente está Source Protected
+    (puede ser una routine genuinamente vacía recién creada), pero en
+    proyectos productivos del parque esto es altamente correlativo con
+    Source Protection (especialmente en AOIs Amantrini).
+
+    Emite Observation `info` cuando hay >0, para que análisis downstream
+    (smells, dead_code, motion_patterns) puedan considerar el caveat.
+    """
+    prot_program = [
+        r for r in program_routines
+        if r.code == "" and r.type in ("RLL", "ST")
+    ]
+    prot_aoi: list[tuple[str, str]] = []
+    for a in aois:
+        for rname, r in a.routines.items():
+            if r.code == "" and r.type in ("RLL", "ST"):
+                prot_aoi.append((a.name, rname))
+
+    total = len(prot_program) + len(prot_aoi)
+    if total == 0:
+        return
+
+    msg_parts = []
+    if prot_program:
+        sample = ", ".join(f"{r.program}/{r.name}" for r in prot_program[:3])
+        if len(prot_program) > 3:
+            sample += f", +{len(prot_program) - 3} más"
+        msg_parts.append(f"{len(prot_program)} program-routines vacías ({sample})")
+    if prot_aoi:
+        sample = ", ".join(f"{a}/{r}" for a, r in prot_aoi[:3])
+        if len(prot_aoi) > 3:
+            sample += f", +{len(prot_aoi) - 3} más"
+        msg_parts.append(f"{len(prot_aoi)} AOI-routines vacías ({sample})")
+
+    refs = [f"Programs/{r.program}/Routines/{r.name}" for r in prot_program]
+    refs += [f"AOIs/{a}/Routines/{rn}" for a, rn in prot_aoi]
+    observations.append(
+        Observation(
+            severity="info",
+            category="protected_routines",
+            message=(
+                f"Detectadas {total} routines RLL/ST con code='' — potencialmente "
+                f"Source Protected: " + " · ".join(msg_parts) +
+                ". El tracer y dead-code detector tienen visibilidad limitada "
+                "sobre estas routines (no pueden ver invocaciones internas)."
+            ),
+            references=refs[:10],  # cap a 10 para no inflar el mapa mental
+        )
+    )
 
 
 def _detect_structural_issues(

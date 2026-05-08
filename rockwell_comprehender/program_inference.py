@@ -99,7 +99,8 @@ def classify_program(project: "Project", program: "Program") -> ProgramRole:
         candidates["motion_control"] = candidates.get("motion_control", 0) + 0.3
         evidence.append(f"name '{name}' relacionado con motion")
     if name_lower in ("mainprogram", "main"):
-        candidates["main_dispatcher"] = candidates.get("main_dispatcher", 0) + 0.3
+        # v0.8.3: peso mayor — main_dispatcher es señal fuerte cuando el name es exacto
+        candidates["main_dispatcher"] = candidates.get("main_dispatcher", 0) + 0.6
         evidence.append(f"name '{name}' es Main / dispatcher")
     if re.search(r"hmi", name_lower):
         candidates["hmi_interface"] = candidates.get("hmi_interface", 0) + 0.4
@@ -161,7 +162,11 @@ def classify_program(project: "Project", program: "Program") -> ProgramRole:
     if safety_ops_seen >= 1:
         candidates["safety_handler"] = candidates.get("safety_handler", 0) + 0.5
         evidence.append(f"{safety_ops_seen} safety ops (CROUT/DCI_*)")
-    if motion_ops_seen >= 5:
+    # v0.8.3: thresholds más finos para motion_control
+    if motion_ops_seen >= 20:
+        candidates["motion_control"] = candidates.get("motion_control", 0) + 0.7
+        evidence.append(f"{motion_ops_seen} motion ops (denso)")
+    elif motion_ops_seen >= 5:
         candidates["motion_control"] = candidates.get("motion_control", 0) + 0.5
         evidence.append(f"{motion_ops_seen} motion ops")
     elif motion_ops_seen >= 1:

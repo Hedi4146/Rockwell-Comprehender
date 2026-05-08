@@ -86,6 +86,14 @@ _RULES: list[tuple[str, str, re.Pattern | None, re.Pattern | None, float]] = [
      "Motion group (MOTION_GROUP) — agrupador del scheduling motion",
      None, re.compile(r"^MOTION_GROUP$", re.IGNORECASE), 1.0),
 
+    ("output_cam",
+     "Output Cam (OUTPUT_CAM) — coordina pulsos de salida con posición del eje",
+     None, re.compile(r"^OUTPUT_CAM$", re.IGNORECASE), 1.0),
+
+    ("message",
+     "Mensajería CIP (MESSAGE) — comunicación entre controladores",
+     None, re.compile(r"^MESSAGE$", re.IGNORECASE), 1.0),
+
     # Name-driven (semántica explícita en nombre)
     ("hmi_input",
      "Input desde HMI — valor escrito por el operador en pantalla",
@@ -155,6 +163,43 @@ _RULES: list[tuple[str, str, re.Pattern | None, re.Pattern | None, float]] = [
     ("safety",
      "Safety / E-stop — tag con datatype safety o naming safety",
      re.compile(r"^(DCS|DCI|CROUT|EStop|E_Stop|Safety_|SafeOK)", re.IGNORECASE), None, 0.85),
+
+    # ── Reglas de refinamiento v0.8.1 (reduce unknown%) ───────────────
+    ("alarm_numbered",
+     "Alarma con índice numerado (Alarm0, Alarm1, AlarmPresence, ...) — slot de fault detection",
+     re.compile(r"^Alarm\d+$|^Alarm[A-Z]\w*$", re.IGNORECASE), None, 0.80),
+
+    ("io_analog",
+     "Entrada/Salida analógica (AI_*, AO_*) — naming convencional Rockwell para I/O analógico",
+     re.compile(r"^(AI|AO)_\w+", re.IGNORECASE), None, 0.85),
+
+    ("clock_signal",
+     "Señal de reloj/clock (Clock*, Clk_*Hz) — bit periódico de scan",
+     re.compile(r"^(Clock|Clk)\w*", re.IGNORECASE), None, 0.85),
+
+    ("counter_data",
+     "Contador / acumulador — patrón _Counter o _Count en sufijo",
+     re.compile(r"(_Counter|_Count|Accum_)\w*", re.IGNORECASE), None, 0.75),
+
+    ("bit_storage",
+     "Variable bit interna numerada (BIT, BIT0, BIT1, ...) — scratch de bit logic",
+     re.compile(r"^BIT\d*$", re.IGNORECASE), None, 0.70),
+
+    ("auxiliary_cam",
+     "Auxiliary Cam / cam profile — patrón AuxCam, CamProfile",
+     re.compile(r"^(AuxCam|CamProfile|CAM_)\w*", re.IGNORECASE), None, 0.80),
+
+    ("virtual_axis",
+     "Eje virtual — naming Virtual* o VirtualAxis*",
+     re.compile(r"^Virtual\w+", re.IGNORECASE), None, 0.80),
+
+    ("motion_velocity",
+     "Tag de velocidad master/slave — naming *_Velocity, Vmaster, MasterVel",
+     re.compile(r"_Velocity$|^Vmaster|MasterVel|^V_\w+", re.IGNORECASE), None, 0.75),
+
+    ("date_time",
+     "Date/Time data — naming DateTime_*",
+     re.compile(r"^DateTime|_DateTime", re.IGNORECASE), None, 0.85),
 ]
 
 
@@ -163,7 +208,7 @@ _RULES: list[tuple[str, str, re.Pattern | None, re.Pattern | None, float]] = [
 # ──────────────────────────────────────────────────────────────────────
 
 
-def classify_tag(tag: "Tag") -> TagRole:
+def classify_tag(tag: "Tag", project: "Project | None" = None) -> TagRole:
     """Clasifica un tag en su rol semántico inferido.
 
     Aplica reglas en orden — la primera que matchea gana. Si ninguna
@@ -171,6 +216,9 @@ def classify_tag(tag: "Tag") -> TagRole:
 
     Args:
         tag: Tag del modelo (con name, datatype, scope, constant, ...)
+        project: Project opcional (v0.8). Cuando se pasa, permite detectar
+            tags cuyo datatype es nombre de un AOI/UDT del proyecto
+            (instancia de AOI o struct de UDT).
 
     Returns:
         TagRole con role + description + confidence + matched_pattern.
@@ -194,6 +242,24 @@ def classify_tag(tag: "Tag") -> TagRole:
             return TagRole(role=role_id, description=desc, confidence=conf,
                            matched_pattern=f"name~/{name_re.pattern}/")
 
+    # Refinamiento v0.8.1: si project se pasa, verificar si datatype coincide
+    # con nombre de AOI o UDT — son instancias struct.
+    if project is not None and datatype:
+        if any(a.name == datatype for a in project.aois):
+            return TagRole(
+                role="aoi_instance",
+                description=f"Instancia de AOI '{datatype}' — backing tag de una invocación AOI",
+                confidence=0.95,
+                matched_pattern=f"datatype is AOI name",
+            )
+        if any(u.name == datatype for u in project.udts):
+            return TagRole(
+                role="udt_struct",
+                description=f"Estructura de tipo UDT '{datatype}' — datos agrupados por contrato",
+                confidence=0.85,
+                matched_pattern=f"datatype is UDT name",
+            )
+
     return TagRole(role="unknown",
                    description="Sin rol inferible por heurística — requiere inspección manual",
                    confidence=0.0,
@@ -214,7 +280,8 @@ def tag_dictionary(project: "Project", scope: str | None = None) -> list[tuple]:
     for t in project.tags:
         if scope is not None and t.scope != scope:
             continue
-        out.append((t, classify_tag(t)))
+        # v0.8.1: pasar project para que classify_tag detecte aoi_instance / udt_struct
+        out.append((t, classify_tag(t, project)))
     return out
 
 
